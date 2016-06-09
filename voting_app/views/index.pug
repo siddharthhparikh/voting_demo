@@ -2,7 +2,11 @@ extends layout
 
 block content
   h1= 'Chain Vote'
+  #header
   #votetopics
-    button#topic1(type='button' onclick='topic1.pug') Vote Topic 1
-    button#topic2(type='button' onclick='topic2.pug') Vote Topic 2
-    button#topic3(type='button' onclick='topic3.pug') Vote Topic 3
+    a(class='button' href='topic1')
+      p Vote Topic: Who will be elected as the next CEO?
+    a(class='button' href='topic2')
+      p Vote Topic: The Cafeteria needs to bee repained.
+    a(class='button' href='topic3')
+      p Vote Topic: Who thinks that Robert needs to be fired for the fire hydrant incident?

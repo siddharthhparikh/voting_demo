@@ -1,22 +1,44 @@
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   text-align: center;
+  background-image: url('/images/background.png');
 }
 
-a {
-  color: #00B7FF;
+h1 {
+  float: left;
+  color: #252526;
+}
+
+#header {
+  width: 95%;
+  height: 60px;
+  border-bottom: 2px solid #252526;
 }
 
 #votetopics {
-  width: 350px;
-  height: 70%;
-  margin: 0px auto 0px auto;
+  width: 40%;
+  height: 450px;
+  margin: 50px auto 0px auto;
+  padding: 2px
 }
 
-button {
-  display: 'inline-block';
-  width: 300px;
-  height: 100px;
-  margin: 5px;
+a.button {
+  display: block;
+  width: 90%;
+  height: 30%;
+  background-color: #F4F5F6;
+  border: 1px solid #252526;
+  padding: 10px 20px 10px 20px;
+  margin: 2px auto 2px auto;
+  text-decoration: none;
+  color: black;
+  box-sizing: border-box;
+  padding-top: 25px;
+}
+
+a.button:hover {
+  background-color: #252526;
+  color: #F4F5F6;
 }
