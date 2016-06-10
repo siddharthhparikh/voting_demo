@@ -21,4 +21,8 @@ router.get('/topic3', function(req, res) {
   res.render('topic3', { title: 'Vote Chain', votes });
 });
 
+router.post('/num-votes', function (req, res) {
+  console.log( req.body );
+});
+
 module.exports = router;

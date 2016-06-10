@@ -5,11 +5,11 @@ block content
   h2= votes
   h1(class='vote-count') Remaining Votes: 
   #header
-  #content-block
+  form#content-block(action='num-votes' method='post' )
     p Gennaro Cuomo: 
     input(type='number' name='votes1' value='0' class='votes' min='0' max= votes)
     p Ethan Coeytaux: 
     input(type='number' name='votes2' value='0' class='votes' min='0' max= votes)
     p
-    input(action='' method='post' type='submit' class='button' id='submit')
+    input(type='submit' class='button' id='submit')
     

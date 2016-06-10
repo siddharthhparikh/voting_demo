@@ -2,9 +2,10 @@ extends layout
 
 block content
   h1= title
-  h1(id='vote-count') Remaining Votes: 3
+  h2= votes
+  h1(class='vote-count') Remaining Votes: 
   #header
-  #content-block
+  form#content-block(action='num-votes' method='post' )
     p He's outta here: 
     input(type='number' name='votes1' value='0'  class='votes')
     p NO! Rob's the man. :( : 
