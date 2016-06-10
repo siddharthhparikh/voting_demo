@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+  h1(id='vote-count') Remaining Votes: 3
+  #header
+  #content-block
+    p Green: 
+    input(type='number' name='votes1' value='0'  class='votes')
+    p Albatross: 
+    input(type='number' name='votes2' value='0'  class='votes')
+    p I liked it the way it was: 
+    input(type='number' name='votes3' value='0' class='votes')
+    p
+    input(type='submit' class='button' id='submit')
+    

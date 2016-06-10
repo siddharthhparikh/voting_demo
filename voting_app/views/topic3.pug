@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+  h1(id='vote-count') Remaining Votes: 3
+  #header
+  #content-block
+    p He's outta here: 
+    input(type='number' name='votes1' value='0'  class='votes')
+    p NO! Rob's the man. :( : 
+    input(type='number' name='votes2' value='0' class='votes')
+    p
+    input(type='submit' class='button' id='submit')
+    
