@@ -5,8 +5,13 @@ var votes = 5;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  res.render('login', { title: 'Vote Chain' });
+});
+
+router.get('/', function(req, res, next) {
   res.render('index', { title: 'Vote Chain' });
 });
+
 
 // Routing for vote topics
 router.get('/topic1', function(req, res) {
@@ -23,6 +28,11 @@ router.get('/topic3', function(req, res) {
 
 router.post('/num-votes', function (req, res) {
   console.log( req.body );
+});
+
+router.post('/submit-username', function (req, res) {
+  console.log( req.body );
+  res.render('index', {title: 'Vote Chain' });
 });
 
 module.exports = router;
