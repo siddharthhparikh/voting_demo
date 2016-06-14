@@ -6,8 +6,12 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 
+// File paths
 var routes = require('./routes/index');
 var users = require('./routes/users');
+
+// Constants
+const DEFAULT_VOTES = 5;
 
 var app = express();
 
@@ -17,6 +21,7 @@ var TAG = "app.js:";
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -28,6 +33,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+
+//User Array stores all active voting users in Chain Vote.
+//var users = [];
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,15 +1,21 @@
 extends layout
 
 block content
-  h1= title
-  h2= votes
-  h1(class='vote-count') Remaining Votes: 
+
+  script(src="/javascripts/remainingvotes1.js")
+  link(rel='stylesheet', href='/stylesheets/topics.css')
+ 
   #header
+    h1= title
+    h1(id="remaining-votes" class="vote-header")=votes
+    h1(class="vote-header") Remaining Votes: 
+  
+
   form#content-block(action='num-votes' method='post' )
     p Gennaro Cuomo: 
-    input(type='number' name='votes1' value='0' class='votes' min='0' max= votes)
+    input(type='number' id='votes1' name='votes1' class='votes' min='0' max= votes)
     p Ethan Coeytaux: 
-    input(type='number' name='votes2' value='0' class='votes' min='0' max= votes)
+    input(type='number' id='votes2' name='votes2' class='votes' min='0' max= votes)
     p
     input(type='submit' class='button' id='submit')
     
