@@ -1,15 +1,23 @@
 extends layout
 
 block content
-  h1= title
-  h2= votes
-  h1(class='vote-count') Remaining Votes: 
+
+  script(src="/javascripts/remainingvotes.js")
+  link(rel='stylesheet', href='/stylesheets/topics.css')
+ 
   #header
+    h1= title
+    h1(id="remaining-votes" class="vote-header")=votes
+    h1(class="vote-header") Remaining Votes: 
+    
+  #content-header
+    h1(id="topic-description") What should we do about Robert regarding the fire hydrant incident?
+
   form#content-block(action='num-votes' method='post' )
-    p He's outta here: 
-    input(type='number' name='votes1' value='0'  class='votes')
-    p NO! Rob's the man. :( : 
-    input(type='number' name='votes2' value='0' class='votes')
+    p Fire him: 
+    input(type='number' id='votes1' name='votes1' class='votes' min='0' max= votes)
+    p Classic Rob: 
+    input(type='number' id='votes2' name='votes2' class='votes' min='0' max= votes)
     p
     input(type='submit' class='button' id='submit')
     

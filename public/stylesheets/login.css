@@ -1,25 +1,35 @@
+#content-block {
+  width: 20%;
+  height: auto;
+
+  border-bottom: 1px solid #252526;
+  
+  margin-top: 15px;
+  padding: 25px;
+}
+
+#content-header {
+  width: 25%;
+  text-align: left; 
+}
+
 #username {
-  font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif;
-  width: 189px;
-  height: 30px;
+  width: 89%;
+  height: 45px;
+
+  font-size: 20px;
+
   background-color: #F4F5F6;
   border: 1px solid #252526;
-  padding: 5px;
+
   margin: 0px auto 0px auto;
+  padding-left: 2%;
 }
 
-#login-header {
-  border-bottom: 2px solid #252526;
+#submit {
+  margin: 25px auto 20px auto;
+  width: 91%;
   height: 50px;
-  width: 200px;
-  margin: 0px auto 0px auto;
 }
 
-#login-forms {
-  width: 200px;
-  margin: 0px auto 0px auto;
-}
 
-#login {
-  float: left;
-}

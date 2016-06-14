@@ -2,15 +2,17 @@ extends layout
 
 block content
 
-  script(src="/javascripts/remainingvotes1.js")
+  script(src="/javascripts/remainingvotes.js")
   link(rel='stylesheet', href='/stylesheets/topics.css')
  
   #header
     h1= title
     h1(id="remaining-votes" class="vote-header")=votes
     h1(class="vote-header") Remaining Votes: 
-  
 
+  #content-header
+    h1(id="topic-description") Who will be elected as the next CEO?
+   
   form#content-block(action='num-votes' method='post' )
     p Gennaro Cuomo: 
     input(type='number' id='votes1' name='votes1' class='votes' min='0' max= votes)

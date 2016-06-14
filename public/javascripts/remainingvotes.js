@@ -12,7 +12,7 @@ $(document).ready(function() {
     // Set form values.
     var totalVotes = $("#remaining-votes").text();
     $(".votes").val( 0 );
-    $(".votes").click( function(){
+    $(".votes").change( function(){
        // Update the number of remaining votes.
        var votes1 = $("#votes1").val();
        var votes2 = $("#votes2").val();

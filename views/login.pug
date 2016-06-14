@@ -7,13 +7,11 @@ block content
   h1= title
   #header
 
-  #content-block
-    #login-header
-      h2( id='login') Login:
-
-    #login-forms
-      form#content-block(action='submit-username' method='post')
-        input(type='text' name='username' value='Username...' id='username')
-        p
-        input(type='submit' class='button' id='submit')
+  #content-header
+    h1( id='login') Login:
+   
+  form#content-block(action='submit-username' method='post')
+    input(type='text' name='username' placeholder='Username...' id='username')
+    p
+    input(type='submit' class='button' id='submit')
     
