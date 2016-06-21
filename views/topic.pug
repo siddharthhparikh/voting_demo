@@ -1,0 +1,23 @@
+extends layout
+
+block content
+
+  script(src="/javascripts/remaining-votes.js")
+  link(rel='stylesheet', href='/stylesheets/topic.css')
+ 
+  #header
+    h1(id="title")= title   
+    h1( class='vote-header' id='remaining-votes')=votes
+    h1( class='vote-header') Remaining Votes: 
+
+  #content-header
+    h1(id="topic-description")=topicDesc
+   
+  form#content-block(action='submit-votes' method='post' )
+    p=firstCand
+    input(type='number' name='votes1' id='votes1' class='votes' min='0' max= votes)
+    p=secCand
+    input(type='number' name='votes2' id='votes2' class='votes' min='0' max= votes)
+    p
+    input(type='submit' class='button' id='submit')
+    

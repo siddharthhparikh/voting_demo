@@ -1,0 +1,18 @@
+.remainingvotes {
+  margin-left: 10px;
+}
+
+.vote-header {
+  float: right;
+  color: #252526;
+  font-size: 28px;
+}
+
+.votes {
+  width: 30px;
+  height: 30px;
+  padding-left: 15px;
+  font-size: 24px;
+  background-color: #F4F5F6;
+  border: 1px solid #252526;
+}

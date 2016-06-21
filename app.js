@@ -9,9 +9,7 @@ var fs = require('fs');
 // File paths
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
-// Constants
-const DEFAULT_VOTES = 5;
+var bodyParser = require('body-parser')
 
 var app = express();
 
@@ -21,6 +19,8 @@ var TAG = "app.js:";
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+
 
 
 // uncomment after placing your favicon in /public
@@ -33,9 +33,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
-
-//User Array stores all active voting users in Chain Vote.
-//var users = [];
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -68,9 +65,18 @@ app.use(function(err, req, res, next) {
   });
 });
 
+// Topic getter for routing.
+app.get('/topic/:id', function (req, res) {
+  var topic = req.params.id;
+  if(voteTopic.exits( topic )) {
+    res.json(voteTopic.topic);
+  } else {
+    res.json({error:"Page does not exists"});
+  }
+});
 
 // ==================================
-// start blockchain code
+// Start blockchain code
 // ==================================
 var Ibc1 = require('ibm-blockchain-js');
 var ibc = new Ibc1();

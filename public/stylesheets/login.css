@@ -2,7 +2,7 @@
   width: 20%;
   height: auto;
 
-  border-bottom: 1px solid #252526;
+  border-bottom: 2px solid #252526;
   
   margin-top: 15px;
   padding: 25px;
@@ -27,9 +27,11 @@
 }
 
 #submit {
-  margin: 25px auto 20px auto;
-  width: 91%;
   height: 50px;
+  margin-bottom: 10px;
+  display: block;
 }
+
+
 
 

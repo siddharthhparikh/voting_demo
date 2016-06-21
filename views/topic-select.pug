@@ -1,0 +1,28 @@
+extends layout
+
+block content
+
+  script(src='/javascripts/new-topic.js')
+  link(rel='stylesheet', href='/stylesheets/topic-form.css')
+
+  h1(id='title')= title
+  #header
+
+  #content-block 
+    form(action='/open-topic' method='post')
+      input(type='text' name='topicid' value='t1' class='hidden')
+      input(type='submit' name='topicid' class='button' value='Who should be the next CEO?')
+    form(action='/open-topic' method='post')
+      input(type='text' value='t2' name='topicid' class='hidden')
+      input(type='submit' class='button' name='topicid' value='Should we fire Robert after the fire hydrant incident?')
+
+  button( class='button' id='new-topic') + New Topic
+
+  #new-topic-forms
+    h1 Create A Vote Topic
+    form( action='create-topic' method='post')
+      input(type='text' class='new-form-input' id='form-name' name='desc' placeholder='Topic Description')
+      input(type='text' class='new-form-input' id='form-cand1' name='cand1' placeholder='Candidate')
+      input(type='text' class='new-form-input' id='form-cand2' name='cand2' placeholder='Candidate')
+      input(type='submit' class='button' id='topic-submit' value='Submit' )
+      

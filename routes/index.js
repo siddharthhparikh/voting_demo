@@ -2,49 +2,73 @@ var express = require('express');
 var router = express.Router();
 
 
-
-// Number of votes a user starts with.
+// Constants
 const DEFAULT_VOTES = 5;
+
+// List of current available voting topics
+var voteTopics = {
+  "t1" : {
+      "desc" : "Who should be the next CEO?",
+      "cand1" : "Gennaro",
+      "cand2" : "Ethan"
+  },
+   "t2" : {
+      "desc" : "Should we fire Robert after the fire hydrant incident?",
+      "cand1" : "Yes.",
+      "cand2" : "Classic Rob..."
+   }
+}
+
+process.env.voteTopics = voteTopics;
+
+// List of current registered voters.
+var voters = {
+  "Gennaro" : {
+    "votes" : 15
+  },
+  "Ethan" : {
+    "votes" : 15 
+  },
+  "VIP" : {
+    "votes" : 100
+  }
+};
+
 
 // Loads login page.
 router.get('/', function(req, res, next) {
-  res.render('login', { title: 'Vote Chain' });
+  res.render('login', { title: 'Chain Vote' });
 });
 
-// Loads homepage.
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Vote Chain' });
+// Submits Username.
+router.post('/topics', function (req, res) {
+  // Check if user is special.
+  var name = res.body;
+  console.log('!', name);
+  // If user is not specail allocate default votes.
+  res.render('topic-select', {title: 'Chain Vote'});
 });
 
+// Generates a new topic.
+router.post('/create-topic', function (req, res) {
+  console.log(res.body);
+});
 
 // Routing for vote topics.
-router.get('/topic1', function(req, res) {
-  res.render('topic1', { title: 'Vote Chain', votes : DEFAULT_VOTES });
-});
-
-router.get('/topic2', function(req, res) {
-  res.render('topic2', { title: 'Vote Chain', votes : DEFAULT_VOTES });
-});
-
-router.get('/topic3', function(req, res) {
-  res.render('topic3', { title: 'Vote Chain', votes : DEFAULT_VOTES });
+router.post('/open-topic', function(req, res) {
+  //db get topics
+  var topic = req.body['topicid'][0];
+  
+  res.render('topic', { title: 'Chain Vote', votes : DEFAULT_VOTES, topicDesc : voteTopics[topic].desc, firstCand : voteTopics[topic].cand1, secCand : voteTopics[topic].cand2 });
 });
 
 // Submits Votes
-router.post('/num-votes', function (req, res) {
+router.post('/submit-votes', function (req, res) {
   // Allot the number of votes submited to the requested topic
   // ...
   console.log( req.body ); // TODO: Chaincode probably goes here or something.
-});
-
-
-// Submits Username.
-router.post('/submit-username', function (req, res) {
-  // Adds user to the user array in app.js.
-  //users.push({ "name" : res,
-    //           "votes" : DEFAULT_VOTES });
-  // Switches user view to home page.
-  res.render('index', {title: 'Vote Chain' });
+  // Take user back to topic select page.
+  res.render('topic-selecg', { title: 'Chain Vote' });
 });
 
 module.exports = router;
