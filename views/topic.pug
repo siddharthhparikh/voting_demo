@@ -13,11 +13,11 @@ block content
   #content-header
     h1(id="topic-description")=topicDesc
    
-  form#content-block(action='submit-votes' method='post' )
-    p=firstCand
-    input(type='number' name='votes1' id='votes1' class='votes' min='0' max= votes)
-    p=secCand
-    input(type='number' name='votes2' id='votes2' class='votes' min='0' max= votes)
+  form#content-block(action='/submit-votes' method='post' )
+    p #{firstCand} : 
+      input(type='number' name='votes1' id='votes1' class='votes' min='0' max=votes)
+    p #{secCand} : 
+      input(type='number' name='votes2' id='votes2' class='votes' min='0' max=votes)
     p
-    input(type='submit' class='button' id='submit')
+    input(type='submit' name='votes' class='button' id='submit')
     

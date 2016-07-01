@@ -1,777 +1,454 @@
 /*
-Copyright 2016 IBM
+Copyright IBM Corp 2016 All Rights Reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License")
+Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+		 http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-Licensed Materials - Property of IBM
-© Copyright IBM Corp. 2016
 */
+
 package main
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
-	"time"
-    "strings"
+	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
-
-var cpPrefix = "cp:"
-var accountPrefix = "acct:"
-var accountsKey = "accounts"
-
-var recentLeapYear = 2016
 
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
 }
 
-func generateCUSIPSuffix(issueDate string, days int) (string, error) {
-
-	t, err := msToTime(issueDate)
-	if err != nil {
-		return "", err
-	}
-
-	maturityDate := t.AddDate(0, 0, days)
-	month := int(maturityDate.Month())
-	day := maturityDate.Day()
-
-	suffix := seventhDigit[month] + eigthDigit[day]
-	return suffix, nil
-
-}
-
-const (
-	millisPerSecond     = int64(time.Second / time.Millisecond)
-	nanosPerMillisecond = int64(time.Millisecond / time.Nanosecond)
-)
-
-func msToTime(ms string) (time.Time, error) {
-	msInt, err := strconv.ParseInt(ms, 10, 64)
-	if err != nil {
-		return time.Time{}, err
-	}
-
-	return time.Unix(msInt/millisPerSecond,
-		(msInt%millisPerSecond)*nanosPerMillisecond), nil
-}
-
-
-
-type Owner struct {
-	Company string    `json:"company"`
-	Quantity int      `json:"quantity"`
-}
-
-type CP struct {
-	CUSIP     string  `json:"cusip"`
-	Ticker    string  `json:"ticker"`
-	Par       float64 `json:"par"`
-	Qty       int     `json:"qty"`
-	Discount  float64 `json:"discount"`
-	Maturity  int     `json:"maturity"`
-	Owners    []Owner `json:"owner"`
-	Issuer    string  `json:"issuer"`
-	IssueDate string  `json:"issueDate"`
-}
-
+//Account account of user who can vote
 type Account struct {
-	ID          string  `json:"id"`
-	Prefix      string  `json:"prefix"`
-	VoteCount	float64 `json:"voteCount"`
+	ID			string	`json:"account_id"`
+	VoteCount	float64 `json:"vote_count"`
 }
 
-type Transaction struct {
-	CUSIP       string   `json:"cusip"`
-	FromCompany string   `json:"fromCompany"`
-	ToCompany   string   `json:"toCompany"`
-	Quantity    int      `json:"quantity"`
-	Discount    float64  `json:"discount"`
+//Topic voting topic and choices
+type Topic struct {
+	ID			string 		`json:"topic_id"`
+	Issuer		string		`json:"issuer"`
+	Choices		[]string 	`json:"choices"`
+	Votes		[]int 		`json:"votes"`
 }
 
+//Vote vote cast for a given topic
+type Vote struct {
+	Topic		string		`json:"topic"` //topic being voted upon
+	Choice		int			`json:"choice"` //index of choice
+	Qty			int			`json:"qty"` //quantity of votes
+	Voter		string		`json:"voter"`
+	CastDate	string		`json:"castDate"` //current time in milliseconds as a string
+}
+
+// ============================================================================================================================
+// Main
+// ============================================================================================================================
+func main() {
+	err := shim.Start(new(SimpleChaincode))
+	if err != nil {
+		fmt.Printf("Error starting Simple chaincode: %s", err)
+	}
+}
+
+func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var name, value string
+	var err error
+	fmt.Println("running write()")
+
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2: name of the variable and value to set")
+	}
+
+	name = args[0]
+	value = args[1]
+	err = stub.PutState(name, []byte(value))
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
+// Init resets all the things
 func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-    // Initialize the collection of commercial paper keys
-    fmt.Println("Initializing paper keys collection")
+	fmt.Println("Initializing vote topics")
 	var blank []string
 	blankBytes, _ := json.Marshal(&blank)
-	err := stub.PutState("PaperKeys", blankBytes)
-    if err != nil {
-        fmt.Println("Failed to initialize paper key collection")
-    }
+	err := stub.PutState("VoteTopics", blankBytes)
+	if err != nil {
+		fmt.Println("Failed to initialize vote topics")
+	} else {
+		fmt.Println("Successfully initialized vote topics")
+	}
+	
+	blankBytes2, _ := json.Marshal(&blank)
+	err2 := stub.PutState("CastVotes", blankBytes2)
+	if err2 != nil {
+		fmt.Println("Failed to initialize cast votes")
+	} else {
+		fmt.Println("Successfully initialized cast votes")
+	}
 
-	fmt.Println("Initialization complete")
 	return nil, nil
 }
 
 func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    // Obtain the username to associate with the account
-    if len(args) != 1 {
-        fmt.Println("Error obtaining username")
-        return nil, errors.New("createAccount accepts a single username argument")
-    }
-    username := args[0]
-    
-    // Build an account object for the user
-    //var assetIds []string
-    suffix := "000A"
-    prefix := username + suffix
-    var account = Account{ID: username, Prefix: prefix, VoteCount: 10.0}
-    accountBytes, err := json.Marshal(&account)
-    if err != nil {
-        fmt.Println("error creating account" + account.ID)
-        return nil, errors.New("Error creating account " + account.ID)
-    }
-    
-    fmt.Println("Attempting to get state of any existing account for " + account.ID)
-    existingBytes, err := stub.GetState(accountPrefix + account.ID)
-	if err == nil {
-        
-        var company Account
-        err = json.Unmarshal(existingBytes, &company)
-        if err != nil {
-            fmt.Println("Error unmarshalling account " + account.ID + "\n--->: " + err.Error())
-            
-            if strings.Contains(err.Error(), "unexpected end") {
-                fmt.Println("No data means existing account found for " + account.ID + ", initializing account.")
-                err = stub.PutState(accountPrefix+account.ID, accountBytes)
-                
-                if err == nil {
-                    fmt.Println("created account" + accountPrefix + account.ID)
-                    return nil, nil
-                } else {
-                    fmt.Println("failed to create initialize account for " + account.ID)
-                    return nil, errors.New("failed to initialize an account for " + account.ID + " => " + err.Error())
-                }
-            } else {
-                return nil, errors.New("Error unmarshalling existing account " + account.ID)
-            }
-        } else {
-            fmt.Println("Account already exists for " + account.ID + " " + company.ID)
-		    return nil, errors.New("Can't reinitialize existing user " + account.ID)
-        }
-    } else {
-        
-        fmt.Println("No existing account found for " + account.ID + ", initializing account.")
-        err = stub.PutState(accountPrefix+account.ID, accountBytes)
-        
-        if err == nil {
-            fmt.Println("created account" + accountPrefix + account.ID)
-            return nil, nil
-        } else {
-            fmt.Println("failed to create initialize account for " + account.ID)
-            return nil, errors.New("failed to initialize an account for " + account.ID + " => " + err.Error())
-        }
-        
-    }
-    
-    
-}
-
-func (t *SimpleChaincode) issueCommercialPaper(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-
-	/*		0
-		json
-	  	{
-			"ticker":  "string",
-			"par": 0.00,
-			"qty": 10,
-			"discount": 7.5,
-			"maturity": 30,
-			"owners": [ // This one is not required
-				{
-					"company": "company1",
-					"quantity": 5
-				},
-				{
-					"company": "company3",
-					"quantity": 3
-				},
-				{
-					"company": "company4",
-					"quantity": 2
-				}
-			],				
-			"issuer":"company2",
-			"issueDate":"1456161763790"  (current time in milliseconds as a string)
-
-		}
-	*/
-	//need one arg
-	if len(args) != 1 {
-		fmt.Println("error invalid arguments")
-		return nil, errors.New("Incorrect number of arguments. Expecting commercial paper record")
+	if (len(args) != 1) {
+		fmt.Println("Could not obtain username passed to createAcount")
+		return nil, errors.New("Incorrect number of arguments. Expecting 1: username of account")
 	}
 
-	var cp CP
+	username := args[0]
+
+	var account = Account{ID: username, VoteCount: 10}
+	accountBytes, err := json.Marshal(&account)
+	if (err != nil) {
+		fmt.Println("Error creating account " + account.ID)
+		return nil, errors.New("Error creating account " + account.ID)
+	}
+
+	fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
+	existingBytes, err := stub.GetState(account.ID)
+	if (err != nil) {
+		fmt.Println("No existing account found for " + account.ID + ", initializing account")
+        err = stub.PutState(account.ID, accountBytes)
+        
+        if (err == nil) {
+            fmt.Println("Created account " + account.ID)
+            return nil, nil
+        }
+
+        fmt.Println("Failed to initialize an account for " + account.ID)
+        return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
+	}
+
+	var existingAccount Account
+	err = json.Unmarshal(existingBytes, &existingAccount)
+    if (err != nil) {
+        fmt.Println("Error unmarshalling account " + account.ID + "\n--->: " + err.Error())
+            
+        if strings.Contains(err.Error(), "unexpected end") {
+            fmt.Println("No data means existing account found for " + account.ID + ", initializing account.")
+            err = stub.PutState(account.ID, accountBytes)
+                
+            if (err == nil) {
+                fmt.Println("Created account " + account.ID)
+                return nil, nil
+            }
+
+            fmt.Println("Failed to create initialize account for " + account.ID)
+            return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
+        }
+
+        return nil, errors.New("Error unmarshalling existing account " + account.ID)
+    }
+
+	fmt.Println("Account already exists for " + account.ID)
+	return nil, errors.New("Can't reinitialize existing user " + account.ID)
+}
+
+//GetAccount returns the account matching the given username
+func GetAccount(accountID string, stub *shim.ChaincodeStub) (Account, error) {
+	var account Account
+	accountBytes, err := stub.GetState(accountID)
+	if err != nil {
+		fmt.Println("Could not find account " + accountID)
+		return account, errors.New("Account not found " + accountID)
+	}
+
+	err = json.Unmarshal(accountBytes, &account)
+	if err != nil {
+		fmt.Println("Error unmarshalling account " + accountID + "\n err: " + err.Error())
+		return account, errors.New("Could not unmarshal account " + accountID)
+	}
+
+	return account, nil
+}
+
+func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	/*		0
+		json
+		{
+			"topic_id": "string",
+			"issuer": "username",
+			"choices": ["option1", "option2"],
+			"votes": [2, 5]
+		}
+	*/
+
+	if (len(args) != 1) {
+		fmt.Println("Incorrect number of arguments. Expecting 1: json object of topic being issued")
+		return nil, errors.New("Incorrect number of arguments. Expecting 1: json object of topic being issued")
+	}
+
+	var topic Topic
 	var err error
 	var account Account
 
-	fmt.Println("Unmarshalling CP")
-	err = json.Unmarshal([]byte(args[0]), &cp)
-	if err != nil {
-		fmt.Println("error invalid paper issue")
-		return nil, errors.New("Invalid commercial paper issue")
+	fmt.Println("Unmarshalling topic")
+	err = json.Unmarshal([]byte(args[0]), &topic)
+	if (err != nil) {
+		fmt.Println("Invalid topic issued")
+		return nil, errors.New("Invalid topic issued");
 	}
 
-	//generate the CUSIP
-	//get account prefix
-	fmt.Println("Getting state of - " + accountPrefix + cp.Issuer)
-	accountBytes, err := stub.GetState(accountPrefix + cp.Issuer)
-	if err != nil {
-		fmt.Println("Error Getting state of - " + accountPrefix + cp.Issuer)
-		return nil, errors.New("Error retrieving account " + cp.Issuer)
+	fmt.Println("Getting state of issuer " + topic.Issuer)
+	accountBytes, err := stub.GetState(topic.Issuer)
+	if (err != nil) {
+		fmt.Println("Error getting state of - " + topic.Issuer)
+		return nil, errors.New("Error retrieving account " + topic.Issuer)
 	}
 	err = json.Unmarshal(accountBytes, &account)
-	if err != nil {
-		fmt.Println("Error Unmarshalling accountBytes")
-		return nil, errors.New("Error retrieving account " + cp.Issuer)
-	}
-	
-	//account.AssetsIds = append(account.AssetsIds, cp.CUSIP)
-
-	// Set the issuer to be the owner of all quantity
-	var owner Owner
-	owner.Company = cp.Issuer
-	owner.Quantity = cp.Qty
-	
-	cp.Owners = append(cp.Owners, owner)
-
-	suffix, err := generateCUSIPSuffix(cp.IssueDate, cp.Maturity)
-	if err != nil {
-		fmt.Println("Error generating cusip")
-		return nil, errors.New("Error generating CUSIP")
+	if (err != nil) {
+		fmt.Println("Error unmarshalling accountBytes")
+		return nil, errors.New("Error retrieving account " + topic.Issuer)
 	}
 
-	fmt.Println("Marshalling CP bytes")
-	cp.CUSIP = account.Prefix + suffix
-	
-	fmt.Println("Getting State on CP " + cp.CUSIP)
-	cpRxBytes, err := stub.GetState(cpPrefix+cp.CUSIP)
-	if cpRxBytes == nil {
-		fmt.Println("CUSIP does not exist, creating it")
-		cpBytes, err := json.Marshal(&cp)
-		if err != nil {
-			fmt.Println("Error marshalling cp")
-			return nil, errors.New("Error issuing commercial paper")
+	fmt.Println("Getting state on topic " + topic.ID)
+	existingTopicBytes, err := stub.GetState(topic.ID)
+	if (existingTopicBytes == nil) {
+		fmt.Println("Vote does not exist, creating new vote...")
+		topicBytes, err := json.Marshal(&topic)
+		if (err != nil) {
+			fmt.Println("Error marshalling topic")
+			return nil, errors.New("Error issuing topic")
 		}
-		err = stub.PutState(cpPrefix+cp.CUSIP, cpBytes)
-		if err != nil {
-			fmt.Println("Error issuing paper")
-			return nil, errors.New("Error issuing commercial paper")
+
+		err = stub.PutState(topic.ID, topicBytes)
+		if (err != nil) {
+			fmt.Println("Error issuing topic")
+			return nil, errors.New("Error issuing topic")
 		}
 
 		fmt.Println("Marshalling account bytes to write")
 		accountBytesToWrite, err := json.Marshal(&account)
-		if err != nil {
+		if (err != nil) {
 			fmt.Println("Error marshalling account")
-			return nil, errors.New("Error issuing commercial paper")
+			return nil, errors.New("Error issuing topic")
 		}
-		err = stub.PutState(accountPrefix + cp.Issuer, accountBytesToWrite)
-		if err != nil {
+
+		err = stub.PutState(topic.Issuer, accountBytesToWrite)
+		if (err != nil) {
 			fmt.Println("Error putting state on accountBytesToWrite")
-			return nil, errors.New("Error issuing commercial paper")
-		}
-		
-		
-		// Update the paper keys by adding the new key
-		fmt.Println("Getting Paper Keys")
-		keysBytes, err := stub.GetState("PaperKeys")
-		if err != nil {
-			fmt.Println("Error retrieving paper keys")
-			return nil, errors.New("Error retrieving paper keys")
-		}
-		var keys []string
-		err = json.Unmarshal(keysBytes, &keys)
-		if err != nil {
-			fmt.Println("Error unmarshel keys")
-			return nil, errors.New("Error unmarshalling paper keys ")
-		}
-		
-		fmt.Println("Appending the new key to Paper Keys")
-		foundKey := false
-		for _, key := range keys {
-			if key == cpPrefix+cp.CUSIP {
-				foundKey = true
-			}
-		}
-		if foundKey == false {
-			keys = append(keys, cpPrefix+cp.CUSIP)
-			keysBytesToWrite, err := json.Marshal(&keys)
-			if err != nil {
-				fmt.Println("Error marshalling keys")
-				return nil, errors.New("Error marshalling the keys")
-			}
-			fmt.Println("Put state on PaperKeys")
-			err = stub.PutState("PaperKeys", keysBytesToWrite)
-			if err != nil {
-				fmt.Println("Error writting keys back")
-				return nil, errors.New("Error writing the keys back")
-			}
-		}
-		
-		fmt.Println("Issue commercial paper %+v\n", cp)
-		return nil, nil
-	} else {
-		fmt.Println("CUSIP exists")
-		
-		var cprx CP
-		fmt.Println("Unmarshalling CP " + cp.CUSIP)
-		err = json.Unmarshal(cpRxBytes, &cprx)
-		if err != nil {
-			fmt.Println("Error unmarshalling cp " + cp.CUSIP)
-			return nil, errors.New("Error unmarshalling cp " + cp.CUSIP)
-		}
-		
-		cprx.Qty = cprx.Qty + cp.Qty
-		
-		for key, val := range cprx.Owners {
-			if val.Company == cp.Issuer {
-				cprx.Owners[key].Quantity += cp.Qty
-				break
-			}
-		}
-				
-		cpWriteBytes, err := json.Marshal(&cprx)
-		if err != nil {
-			fmt.Println("Error marshalling cp")
-			return nil, errors.New("Error issuing commercial paper")
-		}
-		err = stub.PutState(cpPrefix+cp.CUSIP, cpWriteBytes)
-		if err != nil {
-			fmt.Println("Error issuing paper")
-			return nil, errors.New("Error issuing commercial paper")
+			return nil, errors.New("Error issuing topic")
 		}
 
-		fmt.Println("Updated commercial paper %+v\n", cprx)
+		fmt.Println("Getting Vote Topics")
+		voteTopicsBytes, err := stub.GetState("VoteTopics")
+		if (err != nil) {
+			fmt.Println("Error retrieving Vote Topics")
+			return nil, errors.New("Error retrieving Vote Topics")
+		}
+		var voteTopics []string
+		err = json.Unmarshal(voteTopicsBytes, &voteTopics)
+		if (err != nil) {
+			fmt.Println("Error unmarshalling Vote Topics")
+			return nil, errors.New("Error unmarshalling Vote Topics")
+		}
+
+		fmt.Println("Appending the new topic to Vote Topics")
+		foundTopic := false;
+		for _, tmp := range voteTopics {
+			if (tmp == topic.ID) {
+				foundTopic = true
+			}
+		}
+		if (foundTopic == false) {
+			voteTopics = append(voteTopics, topic.ID)
+			voteTopicBytesToWrite, err := json.Marshal(&voteTopics)
+			if (err != nil) {
+				fmt.Println("Error marshalling vote topics")
+				return nil, errors.New("Error marshalling vote topics")
+			}
+			fmt.Println("Put state on Vote Topics")
+			err = stub.PutState("VoteTopics", voteTopicBytesToWrite)
+			if (err != nil) {
+				fmt.Println("Error writting vote topics back")
+				return nil, errors.New("Error writing vote topics back")
+			}
+		}
+
+		fmt.Println("Issued topic " + topic.ID)
 		return nil, nil
 	}
-}
 
-
-func GetAllCPs(stub *shim.ChaincodeStub) ([]CP, error){
-	
-	var allCPs []CP
-	
-	// Get list of all the keys
-	keysBytes, err := stub.GetState("PaperKeys")
-	if err != nil {
-		fmt.Println("Error retrieving paper keys")
-		return nil, errors.New("Error retrieving paper keys")
-	}
-	var keys []string
-	err = json.Unmarshal(keysBytes, &keys)
-	if err != nil {
-		fmt.Println("Error unmarshalling paper keys")
-		return nil, errors.New("Error unmarshalling paper keys")
-	}
-
-	// Get all the cps
-	for _, value := range keys {
-		cpBytes, err := stub.GetState(value)
-		
-		var cp CP
-		err = json.Unmarshal(cpBytes, &cp)
-		if err != nil {
-			fmt.Println("Error retrieving cp " + value)
-			return nil, errors.New("Error retrieving cp " + value)
-		}
-		
-		fmt.Println("Appending CP" + value)
-		allCPs = append(allCPs, cp)
-	}	
-	
-	return allCPs, nil
-}
-
-func GetCP(cpid string, stub *shim.ChaincodeStub) (CP, error){
-	var cp CP
-
-	cpBytes, err := stub.GetState(cpid)
-	if err != nil {
-		fmt.Println("Error retrieving cp " + cpid)
-		return cp, errors.New("Error retrieving cp " + cpid)
-	}
-		
-	err = json.Unmarshal(cpBytes, &cp)
-	if err != nil {
-		fmt.Println("Error unmarshalling cp " + cpid)
-		return cp, errors.New("Error unmarshalling cp " + cpid)
-	}
-		
-	return cp, nil
-}
-
-
-func GetCompany(companyID string, stub *shim.ChaincodeStub) (Account, error){
-	var company Account
-	companyBytes, err := stub.GetState(accountPrefix+companyID)
-	if err != nil {
-		fmt.Println("Account not found " + companyID)
-		return company, errors.New("Account not found " + companyID)
-	}
-
-	err = json.Unmarshal(companyBytes, &company)
-	if err != nil {
-		fmt.Println("Error unmarshalling account " + companyID + "\n err:" + err.Error())
-		return company, errors.New("Error unmarshalling account " + companyID)
-	}
-	
-	return company, nil
-}
-
-
-// Still working on this one
-func (t *SimpleChaincode) transferPaper(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	/*		0
-		json
-	  	{
-			  "CUSIP": "",
-			  "fromCompany":"",
-			  "toCompany":"",
-			  "quantity": 1
-		}
-	*/
-	//need one arg
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting commercial paper record")
-	}
-	
-	var tr Transaction
-
-	fmt.Println("Unmarshalling Transaction")
-	err := json.Unmarshal([]byte(args[0]), &tr)
-	if err != nil {
-		fmt.Println("Error Unmarshalling Transaction")
-		return nil, errors.New("Invalid commercial paper issue")
-	}
-
-	fmt.Println("Getting State on CP " + tr.CUSIP)
-	cpBytes, err := stub.GetState(cpPrefix+tr.CUSIP)
-	if err != nil {
-		fmt.Println("CUSIP not found")
-		return nil, errors.New("CUSIP not found " + tr.CUSIP)
-	}
-
-	var cp CP
-	fmt.Println("Unmarshalling CP " + tr.CUSIP)
-	err = json.Unmarshal(cpBytes, &cp)
-	if err != nil {
-		fmt.Println("Error unmarshalling cp " + tr.CUSIP)
-		return nil, errors.New("Error unmarshalling cp " + tr.CUSIP)
-	}
-
-	var fromCompany Account
-	fmt.Println("Getting State on fromCompany " + tr.FromCompany)	
-	fromCompanyBytes, err := stub.GetState(accountPrefix+tr.FromCompany)
-	if err != nil {
-		fmt.Println("Account not found " + tr.FromCompany)
-		return nil, errors.New("Account not found " + tr.FromCompany)
-	}
-
-	fmt.Println("Unmarshalling FromCompany ")
-	err = json.Unmarshal(fromCompanyBytes, &fromCompany)
-	if err != nil {
-		fmt.Println("Error unmarshalling account " + tr.FromCompany)
-		return nil, errors.New("Error unmarshalling account " + tr.FromCompany)
-	}
-
-	var toCompany Account
-	fmt.Println("Getting State on ToCompany " + tr.ToCompany)
-	toCompanyBytes, err := stub.GetState(accountPrefix+tr.ToCompany)
-	if err != nil {
-		fmt.Println("Account not found " + tr.ToCompany)
-		return nil, errors.New("Account not found " + tr.ToCompany)
-	}
-
-	fmt.Println("Unmarshalling tocompany")
-	err = json.Unmarshal(toCompanyBytes, &toCompany)
-	if err != nil {
-		fmt.Println("Error unmarshalling account " + tr.ToCompany)
-		return nil, errors.New("Error unmarshalling account " + tr.ToCompany)
-	}
-
-	// Check for all the possible errors
-	ownerFound := false 
-	quantity := 0
-	for _, owner := range cp.Owners {
-		if owner.Company == tr.FromCompany {
-			ownerFound = true
-			quantity = owner.Quantity
-		}
-	}
-	
-	// If fromCompany doesn't own this paper
-	if ownerFound == false {
-		fmt.Println("The company " + tr.FromCompany + "doesn't own any of this paper")
-		return nil, errors.New("The company " + tr.FromCompany + "doesn't own any of this paper")	
-	} else {
-		fmt.Println("The FromCompany does own this paper")
-	}
-	
-	// If fromCompany doesn't own enough quantity of this paper
-	if quantity < tr.Quantity {
-		fmt.Println("The company " + tr.FromCompany + "doesn't own enough of this paper")		
-		return nil, errors.New("The company " + tr.FromCompany + "doesn't own enough of this paper")			
-	} else {
-		fmt.Println("The FromCompany owns enough of this paper")
-	}
-	
-	amountToBeTransferred := float64(tr.Quantity) * cp.Par
-	amountToBeTransferred -= (amountToBeTransferred) * (cp.Discount / 100.0) * (float64(cp.Maturity) / 360.0)
-	
-	// If toCompany doesn't have enough cash to buy the papers
-	if toCompany.VoteCount < amountToBeTransferred {
-		fmt.Println("The company " + tr.ToCompany + "doesn't have enough cash to purchase the papers")		
-		return nil, errors.New("The company " + tr.ToCompany + "doesn't have enough cash to purchase the papers")	
-	} else {
-		fmt.Println("The ToCompany has enough money to be transferred for this paper")
-	}
-	
-	toCompany.VoteCount -= amountToBeTransferred
-	fromCompany.VoteCount += amountToBeTransferred
-
-	toOwnerFound := false
-	for key, owner := range cp.Owners {
-		if owner.Company == tr.FromCompany {
-			fmt.Println("Reducing Quantity from the FromCompany")
-			cp.Owners[key].Quantity -= tr.Quantity
-//			owner.Quantity -= tr.Quantity
-		}
-		if owner.Company == tr.ToCompany {
-			fmt.Println("Increasing Quantity from the ToCompany")
-			toOwnerFound = true
-			cp.Owners[key].Quantity += tr.Quantity
-//			owner.Quantity += tr.Quantity
-		}
-	}
-	
-	if toOwnerFound == false {
-		var newOwner Owner
-		fmt.Println("As ToOwner was not found, appending the owner to the CP")
-		newOwner.Quantity = tr.Quantity
-		newOwner.Company = tr.ToCompany
-		cp.Owners = append(cp.Owners, newOwner)
-	}
-	
-	//fromCompany.AssetsIds = append(fromCompany.AssetsIds, tr.CUSIP)
-
-	// Write everything back
-	// To Company
-	toCompanyBytesToWrite, err := json.Marshal(&toCompany)
-	if err != nil {
-		fmt.Println("Error marshalling the toCompany")
-		return nil, errors.New("Error marshalling the toCompany")
-	}
-	fmt.Println("Put state on toCompany")
-	err = stub.PutState(accountPrefix+tr.ToCompany, toCompanyBytesToWrite)
-	if err != nil {
-		fmt.Println("Error writing the toCompany back")
-		return nil, errors.New("Error writing the toCompany back")
-	}
-		
-	// From company
-	fromCompanyBytesToWrite, err := json.Marshal(&fromCompany)
-	if err != nil {
-		fmt.Println("Error marshalling the fromCompany")
-		return nil, errors.New("Error marshalling the fromCompany")
-	}
-	fmt.Println("Put state on fromCompany")
-	err = stub.PutState(accountPrefix+tr.FromCompany, fromCompanyBytesToWrite)
-	if err != nil {
-		fmt.Println("Error writing the fromCompany back")
-		return nil, errors.New("Error writing the fromCompany back")
-	}
-	
-	// cp
-	cpBytesToWrite, err := json.Marshal(&cp)
-	if err != nil {
-		fmt.Println("Error marshalling the cp")
-		return nil, errors.New("Error marshalling the cp")
-	}
-	fmt.Println("Put state on CP")
-	err = stub.PutState(cpPrefix+tr.CUSIP, cpBytesToWrite)
-	if err != nil {
-		fmt.Println("Error writing the cp back")
-		return nil, errors.New("Error writing the cp back")
-	}
-	
-	fmt.Println("Successfully completed Invoke")
+	fmt.Println("Topic already exists")
 	return nil, nil
 }
 
-func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	//need one arg
-	if len(args) < 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting ......")
+//GetAllTopics returns an array of all topicIDs
+func GetAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
+	var allTopics []Topic
+
+	topicsBytes, err := stub.GetState("VoteTopics")
+	if (err != nil) {
+		fmt.Println("Error retrieving vote topics")
+		return nil, errors.New("Error retrieving vote topics")
+	}
+	
+	var topics []string
+	err = json.Unmarshal(topicsBytes, &topics)
+	if (err != nil) {
+		fmt.Println("Error unmarshalling vote topics")
+		return nil, errors.New("Error unmarshalling vote topics")
 	}
 
-	if args[0] == "GetAllCPs" {
-		fmt.Println("Getting all CPs")
-		allCPs, err := GetAllCPs(stub)
-		if err != nil {
-			fmt.Println("Error from getallcps")
-			return nil, err
-		} else {
-			allCPsBytes, err1 := json.Marshal(&allCPs)
-			if err1 != nil {
-				fmt.Println("Error marshalling allcps")
-				return nil, err1
-			}	
-			fmt.Println("All success, returning allcps")
-			return allCPsBytes, nil		 
-		}
-	} else if args[0] == "GetCP" {
-		fmt.Println("Getting particular cp")
-		cp, err := GetCP(args[1], stub)
-		if err != nil {
-			fmt.Println("Error Getting particular cp")
-			return nil, err
-		} else {
-			cpBytes, err1 := json.Marshal(&cp)
-			if err1 != nil {
-				fmt.Println("Error marshalling the cp")
-				return nil, err1
-			}	
-			fmt.Println("All success, returning the cp")
-			return cpBytes, nil		 
-		}
-	} else if args[0] == "GetCompany" {
-		fmt.Println("Getting the company")
-		company, err := GetCompany(args[1], stub)
-		if err != nil {
-			fmt.Println("Error from getCompany")
-			return nil, err
-		} else {
-			companyBytes, err1 := json.Marshal(&company)
-			if err1 != nil {
-				fmt.Println("Error marshalling the company")
-				return nil, err1
-			}	
-			fmt.Println("All success, returning the company")
-			return companyBytes, nil		 
-		}
-	} else {
-		fmt.Println("Generic Query call")
-		bytes, err := stub.GetState(args[0])
+	for _, value := range topics {
+		topicBytes, err := stub.GetState(value)
 
-		if err != nil {
-			fmt.Println("Some error happenend")
-			return nil, errors.New("Some Error happened")
+		var topic Topic
+		err = json.Unmarshal(topicBytes, &topic)
+		if (err != nil) {
+			fmt.Println("Error retrieving topic " + value)
+			return nil, errors.New("Error retrieving topic " + value)
 		}
 
-		fmt.Println("All success, returning from generic")
-		return bytes, nil		
+		fmt.Println("Appending topic " + value)
+		allTopics = append(allTopics, topic)
 	}
+
+	return allTopics, nil
 }
 
-func (t *SimpleChaincode) Run(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	fmt.Println("run is running " + function)
-	return t.Invoke(stub, function, args)
-}
+// func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([]byte, err) {
+// 	/*		0
+// 		json
+// 		{
+// 			"topic": "string"
+// 			"choice": 0, //index of choice
+// 			"qty": 10, //quantity of votes
+// 			"voter": "username",
+// 			"castDate": "1466618183166" //current time in milliseconds as a string
+// 		}
+// 	*/
 
+// 	if (len(args) != 1) {
+// 		fmt.Println("Incorrect number of arguments. Expecting 1: json object of vote being cast")
+// 		return nil, errors.New("Incorrect number of arguments. Expecting 1: json object of vote being cast")
+// 	}
+
+// 	var vote Vote
+// 	var err error
+// 	var account Account
+
+// 	fmt.Println("Unmarshalling vote")
+// 	err = json.Unmarshal([]byte(args[0], &vote))
+// 	if (err != nil) {
+// 		fmt.Println("Invalid vote cast")
+// 		return nil, errors.New("Invalid vote cast");
+// 	}
+
+// 	fmt.Println("Getting state of - " + vote.Voter)
+// 	accountBytes, err := stub.GetState(vote.Voter)
+// 	if (err != nil) {
+// 		fmt.Println("Error getting state of - " + vote.Voter)
+// 		return nil, errors.New("Error retrieving account " + vote.Voter)
+// 	}
+// 	err = json.Unmarshal(accountBytes, &account)
+// 	if (err != nil) {
+// 		fmt.Println("Error unmarshalling accountBytes")
+// 		return nil, errors.New("Error retrieving account " + vote.Voter)
+// 	}
+
+// 	fmt.Println("Getting state on vote topic " + vote.Topic + " from user " + vote.Voter)
+// 	existingVoteBytes, err := stub.GetState(vote.Topic + ":" + vote.Voter)
+// 	if (existingVoteBytes == nil) {
+// 		fmt.Println("Vote does not exist, creating new vote...")
+// 		voteBytes, err := json.Marshal(&vote)
+// 		if (err != nil) {
+// 			fmt.Println("Error marshalling vote")
+// 			return nil, errors.New("Error casting vote")
+// 		}
+
+// 		err = stub.PutState(vote.Topic + ":" + vote.Voter, voteBytes)
+// 		if (err != nil) {
+// 			fmt.Println("Error casting vote")
+// 			return nil, errors.New("Error casting vote")
+// 		}
+
+// 		fmt.Println("Marshalling account bytes to write")
+// 		accountBytesToWrite, err := json.Marshal(&account)
+// 		if (err != nil) {
+// 			fmt.Println("Error marshalling account")
+// 			return nil, errors.New("Error casting vote")
+// 		}
+
+// 		err = stub.PutState(vote.Voter, accountBytesToWrite)
+// 		if (err != nill) {
+// 			fmt.Println("Error putting state on accountBytesToWrite")
+// 			return nil, errors.New("Error issuing commercial paper")
+// 		}
+
+// 		fmt.Println("Getting vote topics")
+// 		voteTopicsBytes, err := stub.GetState("VoteTopics")
+// 		if (err != nil) {
+// 			fmt.Println("Error retrieving vote topics")
+// 			return nil, errors.New("Error retrieving vote topics")
+// 		}
+// 		var voteTopics []string
+// 		err = json.Unmarshal(voteTopicsBytes, &voteTopics)
+// 		if (err != nil) {
+// 			fmt.Println("Error unmarshalling vote topics")
+// 			return nil, errors.New("Error unmarshalling vote topics")
+// 		}
+
+// 		fmt.Println("Appending the new vote ")
+// 	}
+// }
+
+// Invoke is our entry point to invoke a chaincode function
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
-	
-	if function == "issueCommercialPaper" {
-		fmt.Println("Firing issueCommercialPaper")
-		//Create an asset with some value
-		return t.issueCommercialPaper(stub, args)
-	} else if function == "transferPaper" {
-		fmt.Println("Firing cretransferPaperateAccounts")
-		return t.transferPaper(stub, args)
-	/*} else if function == "createAccounts" {
-		fmt.Println("Firing createAccounts")
-		return t.createAccounts(stub, args)*/
-	} else if function == "createAccount" {
-        fmt.Println("Firing createAccount")
-        return t.createAccount(stub, args)
-    } else if function == "init" {
-        fmt.Println("Firing init")
-        return t.Init(stub, "init", args)
-    }
+
+	// Handle different functions
+	if function == "init" {													//initialize the chaincode state, used as reset
+		return t.Init(stub, "init", args)
+	} else if function == "write" {
+		return t.write(stub, args)
+	}
+	fmt.Println("invoke did not find func: " + function)					//error
 
 	return nil, errors.New("Received unknown function invocation")
 }
 
-func main() {
-	err := shim.Start(new(SimpleChaincode))
-	if err != nil {
-		fmt.Println("Error starting Simple chaincode: %s", err)
+func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var name, jsonResp string
+	var err error
+
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1: name of the var to query")
 	}
+
+	name = args[0]
+	valAsbytes, err := stub.GetState(name)
+	if err != nil {
+		jsonResp = "{\"Error\":\"Failed to get state for " + name + "\"}"
+		return nil, errors.New(jsonResp)
+	}
+
+	return valAsbytes, nil
 }
 
-//lookup tables for last two digits of CUSIP
-var seventhDigit = map[int]string{
-	1:  "A",
-	2:  "B",
-	3:  "C",
-	4:  "D",
-	5:  "E",
-	6:  "F",
-	7:  "G",
-	8:  "H",
-	9:  "J",
-	10: "K",
-	11: "L",
-	12: "M",
-	13: "N",
-	14: "P",
-	15: "Q",
-	16: "R",
-	17: "S",
-	18: "T",
-	19: "U",
-	20: "V",
-	21: "W",
-	22: "X",
-	23: "Y",
-	24: "Z",
-}
+// Query is our entry point for queries
+func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	fmt.Println("query is running " + function)
 
-var eigthDigit = map[int]string{
-	1:  "1",
-	2:  "2",
-	3:  "3",
-	4:  "4",
-	5:  "5",
-	6:  "6",
-	7:  "7",
-	8:  "8",
-	9:  "9",
-	10: "A",
-	11: "B",
-	12: "C",
-	13: "D",
-	14: "E",
-	15: "F",
-	16: "G",
-	17: "H",
-	18: "J",
-	19: "K",
-	20: "L",
-	21: "M",
-	22: "N",
-	23: "P",
-	24: "Q",
-	25: "R",
-	26: "S",
-	27: "T",
-	28: "U",
-	29: "V",
-	30: "W",
-	31: "X",
+	// Handle different functions
+	if function == "read" {											//read a variable
+		return t.read(stub, args)
+	}
+	fmt.Println("query did not find func: " + function)						//error
+
+	return nil, errors.New("Received unknown function query")
 }

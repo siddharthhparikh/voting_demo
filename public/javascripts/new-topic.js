@@ -1,15 +1,32 @@
 $(document).ready(function() {
-  $('#new-topic-forms').hide();
+  //Hide all hidden elements
   $('.hidden').hide();
-  // Fade in form when user clicks add new topic.
+
+  //Animation for new topic, info bar.
   $('#new-topic').click(function() {  
-    $('#new-topic-forms').fadeIn();
+    $('#user-info').hide();
+    $('#topic-creation').toggle("fast", function(){});
   });
-  // When form is submited, create a new topic.1
-  $('#topic-submit').click(function() {
-    var html = '<input type="submit" class="button" value="' + $("#form-name").val() + '"/>';
-    $("#content-block").append(html);
-    // Hide add topic form.
-    $('#new-topic-forms').fadeOut();
+
+  //Animation for user info, info bar.
+  $('#user-button').click(function() {  
+    $('#topic-creation').hide();
+    $('#user-info').toggle("fast", function(){});
   });
+
+  // Handles new topic creation.
+  $('#topic-submit').click(function( e ) {
+    e.preventDefault();
+    
+    var htmlbutton = '<input type="submit" class="button" value="' + $("#topic-name").val() + '"/>';
+
+  
+   // var htmlcontent = '<input type="text" name="topicid" class="hidden value="t-' + $("#topic-name").val() + '"/>';
+    $("#topics").append(htmlbutton);
+   // $("#topics").append(htmlcontent);
+
+    $('topic-creation').fadeOut();
+  });
+
+
 });

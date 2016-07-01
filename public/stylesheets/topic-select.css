@@ -1,0 +1,78 @@
+#content-block .button {
+  height: 100px;
+}
+
+.info-box{
+  float: right;
+
+  width: 300px;
+  height: 400px; 
+
+  padding: 10px;
+
+  background-color: rgba(255, 255, 255, 0.6);
+
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+  border: solid 2px #00C26A;
+  border-radius: 40px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-right: none;
+}
+
+#topic-creation > h1 {
+    margin-bottom: 40px;
+    border-bottom: 1px solid #313131;
+}
+/* New topic button */
+
+#new-topic {
+  float: none;
+
+  margin: 0px;
+  margin-top: 10px;
+  padding: 3px;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+}
+
+#new-topic:hover {
+  border: 2px solid #00C26A;
+}
+
+#new-topic:active {
+  border: 2px solid #00C26A;
+  background-color: #313131;
+  color: #F7F7F7;
+}
+
+/* Topic creation box */
+
+#topic-submit {
+  width: 200px;
+  height: 40px;
+  
+  margin: 75px auto 0px auto;
+}
+
+/* User info box */
+
+#user-button:active {
+  color: #F7F7F7;
+}
+
+#div {
+  height: 35%;
+}
+
+#logout {
+  width: 200px;
+  height: 40px;
+}
+
+.info {
+  font-weight: bold;
+}
