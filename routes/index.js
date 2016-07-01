@@ -61,12 +61,12 @@ router.post('/topics', function (req, res) {
 
 // Generates an new topic object and submits the object to the db.
 router.post('/create-topic', function (req, res) {
-  var topic = [req.body.id]= {
+   /*  var topic = [req.body.id]= {
     'desc': req.body.desc,
     'cand1': req.body.cand1,
     'cand2': req.body.cand2
   }
-  voteTopics.append( topic );
+  voteTopics.append( topic );*/
 
   res.end('Topic created.');
 });
