@@ -3,15 +3,15 @@ extends layout
 block content
 
   link(rel='stylesheet', href='/stylesheets/login.css')
-
+  script(src='/javascripts/login.js')
   #header
     h1(id="title")= title
   
   #content-header
     h1( id='login') Login:
 
-  form#content-block(action='topics' method='post')
+  form#content-block(action='topics' method='GET')
     input(type='text' name='username' placeholder='Username...' id='username')
     p
-    input(type='submit' class='button' id='submit')
+    input(type='submit' class='button' id='submit' value='Submit')
     
