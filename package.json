@@ -14,6 +14,7 @@
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
     "ibm-blockchain-js": "1.2.*",
-    "nano": "6.1.3"
+    "nano": "6.1.3",
+    "hlc": "0.0.12"
   }
 }
