@@ -2,7 +2,7 @@
  * @author Gennaro Cuomo
  * 
  * Handles all animations and hiding for info boxes (and some other elements).
- * Generates new buttons for the topic creation info box.
+ * Handles new topic generation.
  */
 $(document).ready(function() {
   //Hide all hidden elements
@@ -17,15 +17,21 @@ $(document).ready(function() {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function(){});
   });
+
   // Handles new topic generation.
   $('#topic-submit').click(function( e ) {
-   // e.preventDefault();
-    // Create new topic button element.
-    var htmlbutton = '<input type="submit" class="button" value="' + $("#topic-name").val() + '"/>';
+    e.preventDefault();
+    
+    // Create new topic object.
 
-   // var htmlcontent = '<input type="text" name="topicid" class="hidden value="t-' + $("#topic-name").val() + '"/>';
-    $("#topics").append(htmlbutton);
-   // $("#topics").append(htmlcontent);
+    $.post('/api/create', function(data, status){
+      // Handle res.
+      if(status == success) {
+        // Create new topic button element
+      } else {
+        console.log(status);
+      }
+    })
     $('topic-creation').fadeOut();
   });
 });

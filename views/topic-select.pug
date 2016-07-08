@@ -36,12 +36,8 @@ block content
       
   #content-block 
     #topics
-      form(action='/topic/t1' method='post')
-        input(type='text' name='topicid' value='t1' class='hidden')
-        input(type='submit' name='topicid' class='button' class='topic' value='Who should be the next CEO?')
-      form(action='/topic/t2' method='post')
-        input(type='text' value='t2' name='topicid' class='hidden')
-        input(type='submit' name='topicid' class='button' class='topic' value='Should we fire Robert after the fire hydrant incident?')
+      button(type='submit' name='topicid' class='button' class='topic' value='Who should be the next CEO?')
+      button(type='submit' name='topicid' class='button' class='topic' value='Should we fire Robert after the fire hydrant incident?')
     #add
       i(class="material-icons md-48" id='new-topic') playlist_add
 
