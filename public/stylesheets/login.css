@@ -1,3 +1,5 @@
+/* Login header */
+
 #content-header {
   width: 25%;
   height: auto;
@@ -7,6 +9,8 @@
   text-align: left; 
 }
 
+/* Sizing for content block */
+
 #content-block {
   width: 21%;
   height: auto;
@@ -14,6 +18,8 @@
   margin-top: 15px;
   padding: 25px;
 }
+
+/* Submit button sizing */
 
 #submit {
   display: block;

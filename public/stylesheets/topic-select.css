@@ -1,11 +1,16 @@
+/* Special button size for topics */
+
 #content-block .button {
   height: 100px;
+  word-wrap: normal;
 }
+
+/* Popout information box sizing and styling */
 
 .info-box{
   float: right;
 
-  width: 300px;
+  width: 18%;
   height: 400px; 
 
   padding: 10px;
@@ -21,11 +26,18 @@
   border-right: none;
 }
 
-#topic-creation > h1 {
-    margin-bottom: 40px;
-    border-bottom: 1px solid #313131;
+.info-box .button {
+  height: 50px;
 }
-/* New topic button */
+
+.info-box p {
+  text-align: left;
+  margin: 0px 0px 0px 8%;
+}
+
+/* New topic button 
+   - Opens a info box to create a new topic
+*/
 
 #new-topic {
   float: none;
@@ -49,16 +61,19 @@
   color: #F7F7F7;
 }
 
-/* Topic creation box */
+/* Special header for topic creation*/
 
-#topic-submit {
-  width: 200px;
-  height: 40px;
-  
-  margin: 75px auto 0px auto;
+#topic-creation > h1 {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #313131;
 }
 
-/* User info box */
+#topic-creation .button {
+  margin-top: 30px;
+}
+
+
+/* Special styling for user information box  */
 
 #user-button:active {
   color: #F7F7F7;
@@ -66,11 +81,6 @@
 
 #div {
   height: 35%;
-}
-
-#logout {
-  width: 200px;
-  height: 40px;
 }
 
 .info {

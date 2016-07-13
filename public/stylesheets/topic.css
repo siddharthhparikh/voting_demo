@@ -1,7 +1,11 @@
+/* Remaining votes display on header bar */
+
 #remaining-votes {
   margin-right: 50px;
   margin-left: 5px;
 }
+
+/* Vote topic title */
 
 .vote-header {
   float: right;
@@ -10,6 +14,8 @@
 
   font-size: 32px;
 }
+
+/* Styling for vote input feild */
 
 .votes {
   width: 35px;
@@ -27,6 +33,8 @@
 
   font-size: 24px;
 }
+
+/* Sizing for submit button */
 
 #submit {
   width: 200px;
