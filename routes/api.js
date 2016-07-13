@@ -14,24 +14,19 @@ var DEFAULT_VOTES = 5
 router.post('/login', function(req, res, next) {
   // Set up the user object for the chaincode.
   var user = req.body;
-  user.vote_count = DEFAULT_VOTES;
   // TODO check if the user already exsits in db.
   
   // TODO Create user in chaincode.
 
   // Create user session
-  req.session.name = user;
+  //req.session.name = user;
   // TODO other session stuff
   
   console.log('Loging in as.....');
   console.log(user.account_id);
 
   // Send response.
-  if(user.account_id != null) {
-    res.json('{"status" : "success"}');
-  } else {
-    res.json('{"status" : "Need a user name."}');
-  }
+  res.json('{"status" : "success"}');
 });
 
 /* Load voting topic request */
