@@ -20,6 +20,7 @@ $(document).ready(function() {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function(){});
   });
+
   //
   // Topic generation for in the 'create' info-box
   //
@@ -29,23 +30,18 @@ $(document).ready(function() {
     var topic = {
       'topic_id' : $('#topic-name').val(),
       'issuer' : '',
-      'choices' : [
-        'cand1' : $('#topic-cand1').val(),
-        'cand2' : $('#topic-cand2').val()
-      ],
-      'votes' : [
-        'cand1' : 0,
-        'cand2' : 0
-      ]  
+      'choices' : [ $('#topic-cand1').val(), $('#topic-cand2').val() ],
+      'votes' : [ 0, 0 ]  
     }
-    // Submit new topic
+    // Submit the new topic
     $.post('/api/create', function(data, status){
       // Handle res.
-      if(status == success) {
+      if(status == 'success') {
         // Create new topic button element
-        var topicButton = '<button class="topic" class="button" value="' + $('#topic-name').val() + '"></button>'
+        var html = '<button class="topic button">' + $('#topic-name').val() + '</button>';
+        console.log(html);
         // Append to the html
-        $('topics').append(topicButton);
+        $('#topics').append(html);
       } else {
         // ERROR
         console.log(status);
@@ -56,9 +52,9 @@ $(document).ready(function() {
 
   // Topic selection.
   $('.topic').click(function(e) {
-    $.post('/api/topic/' + $(this).attr(value) , $(this).attr(value), function(data, status) {
+    $.post('/api/topic/' + $(this).html(), $(this).html(), function(data, status) {
       // Handle res.
-      if(status == success) {
+      if(status == 'success') {
         cosnole.log('Loading topic.....');
       } else {
         // ERROR
