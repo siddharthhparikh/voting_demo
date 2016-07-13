@@ -32,7 +32,8 @@ router.post('/login', function(req, res, next) {
 });
 
 router.get('/get-topics', function(res, next) {
-  chaincode.query('get_all_topics', [], function (err, results) {
+  var args = [];
+  chaincode.query('get_all_topics', args, function (err, results) {
     if (err) console.log(err);
     else if (results.result) res.json(results.result);
   });
