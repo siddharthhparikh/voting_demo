@@ -5,17 +5,7 @@
  * Handles new topic generation.
  */
 $(document).ready(function() {
-  
-  $.get('/api/get-topics', function(data, status) {
-    console.log('adding topics');
-    data = JSON.parse(data);
-    // Create a shit load of buttons from the topic list.
-    for(var topic in data ){
-      var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
-      console.log(data[topic].topic_id);
-      $('#topics').append(html);
-    }
-  });
+
 
   // 
   // Element hiding and animations for the info-box
@@ -34,6 +24,20 @@ $(document).ready(function() {
   });
 
   //
+  // Generate topic buttons
+  //
+  $.get('/api/get-topics', function(data) {
+    console.log('adding topics');
+    data = JSON.parse(data);
+    // Create a shit load of buttons from the topic list.
+    for(var topic in data ){
+      var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
+      console.log(data[topic].topic_id);
+      $('#topics').append(html);
+    }
+  });
+
+  //
   // Topic generation for in the 'create' info-box
   //
   $('#topic-submit').click(function( e ) {
@@ -42,15 +46,10 @@ $(document).ready(function() {
     var topic = {
       'topic_id' : $('#topic-name').val(),
       'issuer' : '',
-<<<<<<< HEAD
-      'choices' : [ $('#topic-cand1').val(), $('#topic-cand2').val() ],
-      'votes' : [ 0, 0 ]  
-=======
       'choices' : [
         $('#topic-cand1').val(),
         $('#topic-cand2').val()
       ]
->>>>>>> 7b6c0d5ae45dcb74c462a467d7713da8e11a2d47
     }
     // Submit the new topic
     $.post('/api/create', topic, function(data, status){
