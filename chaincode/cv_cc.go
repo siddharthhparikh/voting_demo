@@ -80,29 +80,6 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 	return nil, nil
 }
 
-// Init resets all the things
-func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	fmt.Println("Initializing vote topics")
-	var blank []string
-	blankBytes, _ := json.Marshal(&blank)
-	err := stub.PutState("VoteTopics", blankBytes)
-	if err != nil {
-		fmt.Println("Failed to initialize vote topics")
-	} else {
-		fmt.Println("Successfully initialized vote topics")
-	}
-
-	blankBytes2, _ := json.Marshal(&blank)
-	err2 := stub.PutState("CastVotes", blankBytes2)
-	if err2 != nil {
-		fmt.Println("Failed to initialize cast votes")
-	} else {
-		fmt.Println("Successfully initialized cast votes")
-	}
-
-	return nil, nil
-}
-
 func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	if len(args) != 1 {
 		fmt.Println("Could not obtain username passed to createAcount")
@@ -156,6 +133,39 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 
 	fmt.Println("Account already exists for " + account.ID)
 	return nil, errors.New("Can't reinitialize existing user " + account.ID)
+}
+
+// Init resets all the things
+func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	fmt.Println("Initializing vote topics...")
+	var blank []string
+	blankBytes, _ := json.Marshal(&blank)
+	err := stub.PutState("VoteTopics", blankBytes)
+	if err != nil {
+		fmt.Println("Failed to initialize vote topics")
+	} else {
+		fmt.Println("Successfully initialized vote topics")
+	}
+
+	fmt.Println("Initializing cast votes...")
+	blankBytes2, _ := json.Marshal(&blank)
+	err2 := stub.PutState("CastVotes", blankBytes2)
+	if err2 != nil {
+		fmt.Println("Failed to initialize cast votes")
+	} else {
+		fmt.Println("Successfully initialized cast votes")
+	}
+
+	//for testing: enroll first user "ethan!"
+	fmt.Println("Registering first user \"ethan!\"")
+	username := []string{"ethan!"}
+	//username[0] = "ethan!"
+	_, err3 := t.createAccount(stub, username)
+	if err3 != nil {
+		fmt.Println("Failed to enrolled first user")
+	}
+
+	return nil, nil
 }
 
 //GetAccount returns the account matching the given username

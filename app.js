@@ -111,6 +111,7 @@ module.exports = app;
 //
 // ASCII art from http://chris.com/ascii/index.php?art=objects/chains
 
+var io = require('socket.io')();
 var hlc = require('hlc');
 
 // Create a client chain
@@ -158,14 +159,53 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
   registrar = user;
 
+  deploy('github.com/voting_demo/chaincode', ['99'], cb_deployed);
+});
+
+function cb_deployed() {
+  io.on('connection', function connection(ws) {
+    scoket.on('message', function incoming(msg) {
+      console.log(msg);
+      try {
+        var data = JSON.parse(msg);
+      }
+      catch (e) {
+        console.log('socket.io message error', e);
+      }
+    });
+
+    io.on('error', function (e) { console.log('socket.io error', e); });
+    io.on('close', function () { console.log('socket.io closed'); });
+  });
+
+  // invoke('issue_topic', JSON.stringify({
+  //   'topic_id': 'where to go for lunch?',
+  //   'issuer': 'ethan!',
+  //   'choices': ['chipotle', 'ruckus', 'other']
+  // }), function(err, results) {
+  //   console.log(err);
+  //   console.log(results);
+  // });
+
+  query('get_all_topics', [], function (err, results) {
+    console.log(results.result.toString('ascii'));
+  });
+}
+
+function deploy(path, args, cb) {
+  if (registrar == null) {
+    console.log('ERROR: attempted to deploy chaincode without initializing registrar...');
+    return;
+  }
+
   var deployRequest = {
-    args: ['99'],
+    args: args,
     chaincodeID: chaincodeName,
     fcn: 'init',
-    chaincodePath: 'github.com/voting_demo/chaincode'
+    chaincodePath: path
   }
   console.log('deploying chaincode from path %s', deployRequest.chaincodePath)
-  var transactionContext = user.deploy(deployRequest);
+  var transactionContext = registrar.deploy(deployRequest);
 
   transactionContext.on('complete', function (results) {
     console.log('chaincode deployed successfully!');
@@ -173,28 +213,13 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
     chaincodeID = results.chaincodeID;
 
-    cb_deployed();
+    cb();
   });
 
   transactionContext.on('error', function (err) {
     console.log('Error deploying chaincode: %s', err.msg);
     console.log('App will fail without chaincode, sorry!');
   });
-});
-
-function cb_deployed() {
-  invoke('issue_topic', JSON.stringify({
-    'topic_id': 'where to go for lunch?',
-    'issuer': 'ethan!',
-    'choices': ['chipotle', 'ruckus', 'other']
-  }), function(err, results) {
-    console.log(err);
-    console.log(results);
-  });
-
-  // query('get_all_topics', [], function(err, results) {
-  //   console.log(results);
-  // });
 }
 
 function invoke(fcn, args, cb) {
@@ -206,11 +231,11 @@ function invoke(fcn, args, cb) {
 
   var transactionContext = registrar.invoke(invokeRequest);
 
-  transactionContext.on('complete', function(results) {
+  transactionContext.on('complete', function (results) {
     cb(null, results);
   });
 
-  transactionContext.on('error', function(err) {
+  transactionContext.on('error', function (err) {
     cb(err, null);
   });
 }
@@ -224,11 +249,11 @@ function query(fcn, args, cb) {
 
   var transactionContext = registrar.query(queryRequest);
 
-  transactionContext.on('complete', function(results) {
+  transactionContext.on('complete', function (results) {
     cb(null, results);
   });
 
-  transactionContext.on('error', function(err) {
+  transactionContext.on('error', function (err) {
     cb(err, null);
   });
 }
