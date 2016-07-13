@@ -5,7 +5,7 @@
  * Handles new topic generation.
  */
 
-var socket = io.connect();
+var socket = io();
 
 $(document).ready(function() {
   // 
@@ -14,11 +14,7 @@ $(document).ready(function() {
   // Hide all hidden elements
   $('.hidden').hide();
   //Animation for new topic, info box.
-  $('#new-topic').click(function() {  
-
-    console.log('heyyyyoooooo');
-//    socket.emit('msg', { msg: 'heyyoo' });
-
+  $('#new-topic').click(function() {
     $('#user-info').hide();
     $('#topic-creation').toggle("fast", function(){});
   });
@@ -65,7 +61,7 @@ $(document).ready(function() {
     $.post('/api/topic/' + $(this).html(), $(this).html(), function(data, status) {
       // Handle res.
       if(status == 'success') {
-        cosnole.log('Loading topic.....');
+        console.log('Loading topic.....');
       } else {
         // ERROR
         console.log(status);
