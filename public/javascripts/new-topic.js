@@ -1,4 +1,3 @@
-
 var socket = io();
 
 $(document).ready(function () {
@@ -21,10 +20,7 @@ $(document).ready(function () {
   $('#topic-submit').click(function (e) {
     e.preventDefault();
 
-    socket.emit('msg', { msg: 'heyyoo' });
-
     var htmlbutton = '<input type="submit" class="button" value="' + $("#topic-name").val() + '"/>';
-
 
     // var htmlcontent = '<input type="text" name="topicid" class="hidden value="t-' + $("#topic-name").val() + '"/>';
     $("#topics").append(htmlbutton);

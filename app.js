@@ -113,7 +113,7 @@ module.exports = app;
 //
 // ASCII art from http://chris.com/ascii/index.php?art=objects/chains
 
-var io = require('socket.io')();
+var io = require('socket.io')(require('http'));
 var hlc = require('hlc');
 
 // Create a client chain
@@ -190,7 +190,7 @@ function cb_deployed() {
   // });
 
   query('get_all_topics', [], function (err, results) {
-    console.log(results.result.toString('ascii'));
+    if (results && results.result) console.log(results.result.toString('ascii'));
   });
 }
 
