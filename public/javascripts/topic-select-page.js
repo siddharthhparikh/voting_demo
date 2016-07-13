@@ -5,8 +5,6 @@
  * Handles new topic generation.
  */
 
-var socket = io();
-
 $(document).ready(function() {
   // 
   // Element hiding and animations for the info-box
@@ -36,11 +34,10 @@ $(document).ready(function() {
       'choices' : [
         $('#topic-cand1').val(),
         $('#topic-cand2').val()
-      ],
-      'votes' : [0, 0]
+      ]
     }
     // Submit the new topic
-    $.post('/api/create', function(data, status){
+    $.post('/api/create', topic, function(data, status){
       // Handle res.
       if(status == 'success') {
         // Create new topic button element
