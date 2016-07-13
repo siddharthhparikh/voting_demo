@@ -30,6 +30,18 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/api', api);
 
+// Setting up sessions
+app.use(require('morgan')('dev'));
+var session = require('express-session');
+var FileStore = require('session-file-store')(session);
+app.use(session({
+  name: 'server-session-cookie-id',
+  secret: 'my express secret',
+  saveUninitialized: true,
+  resave: true,
+  store: new FileStore()
+}));
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -60,16 +72,6 @@ app.use(function (err, req, res, next) {
     message: err.message,
     error: {}
   });
-});
-
-// Topic getter for routing.
-app.get('/topic/:id', function (req, res) {
-  var topic = req.params.id;
-  if (voteTopic.exits(topic)) {
-    res.json(voteTopic.topic);
-  } else {
-    res.json({ error: "Page does not exists" });
-  }
 });
 
 module.exports = app;
