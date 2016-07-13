@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var dbusers = require('../libs/dbusers');
 
 // Loads login page.
 router.get('/', function(req, res, next) {

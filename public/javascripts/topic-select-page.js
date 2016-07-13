@@ -1,10 +1,11 @@
 /**
- * @Gennaro Cuomo
+ * @author Gennaro Cuomo
  * 
  * Handles all animations and hiding for info boxes (and some other elements).
  * Handles new topic generation.
  */
 $(document).ready(function() {
+
   // 
   // Element hiding and animations for the info-box
   // 
@@ -50,7 +51,9 @@ $(document).ready(function() {
     $('topic-creation').fadeOut();
   });
 
-  // Topic selection.
+  //
+  // Routes user to the selected topic.
+  //
   $('.topic').click(function(e) {
     $.post('/api/topic/' + $(this).html(), $(this).html(), function(data, status) {
       // Handle res.
