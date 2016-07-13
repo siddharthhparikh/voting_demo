@@ -42,11 +42,18 @@ $(document).ready(function() {
     var topic = {
       'topic_id' : $('#topic-name').val(),
       'issuer' : '',
+<<<<<<< HEAD
       'choices' : [ $('#topic-cand1').val(), $('#topic-cand2').val() ],
       'votes' : [ 0, 0 ]  
+=======
+      'choices' : [
+        $('#topic-cand1').val(),
+        $('#topic-cand2').val()
+      ]
+>>>>>>> 7b6c0d5ae45dcb74c462a467d7713da8e11a2d47
     }
     // Submit the new topic
-    $.post('/api/create', function(data, status){
+    $.post('/api/create', topic, function(data, status){
       // Handle res.
       if(status == 'success') {
         // Create new topic button element

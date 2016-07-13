@@ -7,6 +7,7 @@
 var express = require('express');
 var router = express.Router();
 var session = require('express-session');
+var chaincode = require('../libs/blockchainSDK');
 
 var DEFAULT_VOTES = 5
 
@@ -21,16 +22,22 @@ router.post('/login', function(req, res, next) {
   // Create user session
   //req.session.name = user;
   // TODO other session stuff
-  
+
   console.log('Loging in as.....');
-  console.log(user.account_id);
+  console.log(user);
 
   // Send response.
   res.json('{"status" : "success"}');
 });
 
-/* Load voting topic request */
-router.post('/topic/:id', function(req, res, next) {
+router.get('/get-topics', function(res, next) {
+  chaincode.query('get_all_topics', [], function (err, results) {
+    if (err) console.log(err);
+    else if (results.result) res.json(results.result);
+  });
+});
+
+router.post('/topic/:id', function (req, res, next) {
   // Get the topic id from the post
   var topicId = req.body;
   // TODO Get the topic object from the db.
@@ -39,19 +46,24 @@ router.post('/topic/:id', function(req, res, next) {
   res.json('{"status" : "success"}');
 });
 
-/* Create topic request */
-router.post('/create', function(req, res, next) {
-  // Grab the new topic from the req.
+router.post('/create', function (req, res, next) {
   var newTopic = req.body;
-  console.log('New topic: \n ' + newTopic );
+
+  //TODO DELETE THIS ADD SOME POINT
+  newTopic.issuer = 'ethan!'; //TODO TEMPORARY UNTIL ISSUER IS ADDED
+  //TODO TODO TODO TODO
+
+  console.log('New topic: \n ' + JSON.stringify(newTopic));
   // Add topic object to database.
 
-  // Send response.
-  res.json('{"status" : "success"}');
+  var args = [JSON.stringify(newTopic)];
+  chaincode.invoke('issue_topic', args, function (err, results) {
+    if (err) console.log(err);
+    else res.json('{"status" : "success"}');
+  });
 });
 
-/* Vote submiting request */
-router.post('/votesubmit', function(req, res, next) {
+router.post('/votesubmit', function (req, res, next) {
   // Get voting data 
   console.log();
   // Submit voting data to database or blockchain or whatever
