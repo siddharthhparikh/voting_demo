@@ -16,7 +16,7 @@ block content
   #topic-creation(class='info-box' class='hidden')
     h1 Create a Vote Topic
     form(action='create-topic' method='get')
-      p Vote Description:v
+      p Vote Description:
       input(type='text' class='new-topic-input' id='topic-name' name='desc' placeholder='Topic Description')
       p First Candidate:
       input(type='text' class='new-topic-input' id='topic-cand1' name='cand1' placeholder='Candidate')
@@ -36,8 +36,8 @@ block content
       
   #content-block 
     #topics
-      button(class='button' class='topic' value='Who should be the next CEO?')
-      button(class='button' class='topic' value='Should we fire Robert after the fire hydrant incident?')
+      button(class='button' class='topic') Who should be the next CEO?
+      button(class='button' class='topic') Should we fire Robert after the fire hydrant incident?
     #add
       i(class="material-icons md-48" id='new-topic') playlist_add
 
