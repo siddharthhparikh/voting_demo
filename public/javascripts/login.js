@@ -8,16 +8,17 @@ $(document).ready(function() {
   // When submit button is clicked make post with user info.
   $('#submit').click(function(e) {
     e.preventDefault();
-    var user = { 'account_id' : $('#username').val(), 'vote_count' : 0 };
+    var user = { 'account_id' : $('#username').val() };
     $.post('/api/login', user, function(data, status){
+      data = JSON.parse(data);
       // Handle response.
-      if(status == 'success') {
-        console.log('Success!');
+      if(data.status === 'success') {
+        console.log('login success');
         // Redirect user.
         window.location.replace("../topics");
       } else {
-        // ERROR
-        connsoe.log('Error of some sort, not sure what');
+        console.log('Error: ' + data.status);
+        $('#error-msg').html('Error: ' + data.status);
       }
     });
   });

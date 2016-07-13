@@ -15,27 +15,27 @@ var DEFAULT_VOTES = 5
 router.post('/login', function(req, res, next) {
   // Set up the user object for the chaincode.
   var user = req.body;
-  user.vote_count = DEFAULT_VOTES;
   // TODO check if the user already exsits in db.
   
   // TODO Create user in chaincode.
+
+  // Create user session
+  //req.session.name = user;
+  // TODO other session stuff
 
   console.log('Loging in as.....');
   console.log(user);
 
   // Send response.
-  if(user.account_id != null) {
-    res.json('{"status" : "success"}');
-  } else {
-    res.json('{"status" : "Need a user name."}');
-  }
+  res.json('{"status" : "success"}');
 });
 
+/* Get all voting topics from blockchain */
 router.get('/get-topics', function(res, next) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, results) {
     if (err) console.log(err);
-    else if (results.result) res.json(results.result);
+    else if (results.result) res.json(null, results.result);
   });
 });
 
