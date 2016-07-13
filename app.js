@@ -115,8 +115,24 @@ module.exports = app;
 //
 // ASCII art from http://chris.com/ascii/index.php?art=objects/chains
 
-var io = require('socket.io')();
 var hlc = require('hlc');
+
+app.init = function (server) {
+  var io = require('socket.io')(server);
+
+  io.on('connection', function connection(socket) {
+    console.log('new connection!');
+    socket.on('message', function incoming(msg) {
+      console.log('new msg', msg);
+      console.log('test', msg.msg2);
+
+
+    });
+
+    io.on('error', function (e) { console.log('socket.io error', e); });
+    io.on('close', function () { console.log('socket.io closed'); });
+  });
+}
 
 // Create a client chain
 var chaincodeName = 'marble_chaincode'
@@ -167,20 +183,6 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 });
 
 function cb_deployed() {
-  io.on('connection', function connection(ws) {
-    scoket.on('message', function incoming(msg) {
-      console.log(msg);
-      try {
-        var data = JSON.parse(msg);
-      }
-      catch (e) {
-        console.log('socket.io message error', e);
-      }
-    });
-
-    io.on('error', function (e) { console.log('socket.io error', e); });
-    io.on('close', function () { console.log('socket.io closed'); });
-  });
 
   // invoke('issue_topic', JSON.stringify({
   //   'topic_id': 'where to go for lunch?',
@@ -191,10 +193,33 @@ function cb_deployed() {
   //   console.log(results);
   // });
 
+  // query('get_all_topics', [], function (err, results) {
+  //   if (results && results.result) console.log(results.result.toString('ascii'));
+  // });
+}
+
+///////////////////////////////
+// CLIENT SIDE HELPER FUNCTIONS
+///////////////////////////////
+
+//cb in form of cb(err, topics)
+function getTopics(cb) {
   query('get_all_topics', [], function (err, results) {
-    console.log(results.result.toString('ascii'));
+    if (cb) {
+      if (err) return cb(err, null);
+
+      if (results.result) {
+        return cb(null, results.result);
+      } else {
+        cb(null, null);
+      }
+    }
   });
 }
+
+///////////////////////////////
+// CHAINCODE SDK HELPER FUNCTIONS
+///////////////////////////////
 
 function deploy(path, args, cb) {
   if (registrar == null) {
@@ -217,7 +242,7 @@ function deploy(path, args, cb) {
 
     chaincodeID = results.chaincodeID;
 
-    cb();
+    if (cb) cb();
   });
 
   transactionContext.on('error', function (err) {

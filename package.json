@@ -19,6 +19,7 @@
     "serve-favicon": "~2.3.0",
     "session-file-store": "^0.2.0",
     "socket.io": "1.4.8",
-    "ws": "1.0.1"
+    "socket.io": "1.4.5",
+    "hlc": "0.0.12"
   }
 }
