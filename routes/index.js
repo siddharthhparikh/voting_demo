@@ -2,23 +2,6 @@ var express = require('express');
 var router = express.Router();
 var dbusers = require('../libs/dbusers');
 
-//Vote Topics
-var voteTopics = {
-  't1' : {
-    'desc': 'Who should be the next CEO?',
-    'cand1': 'Gennaro',
-    'cand2': 'Ethan'
-  },
-  't2' : {
-    'desc': 'Should we fire Robet for the fire hydrant incident?',
-    'cand1': 'Yes.',
-    'cand2': 'Classic!'
-  }
-}
-
-// Constants
-const DEFAULT_VOTES = 5;
-
 // Loads login page.
 router.get('/', function(req, res, next) {
   res.render('login', { title: 'Chain Vote' });

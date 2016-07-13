@@ -2,12 +2,16 @@ $(document).ready(function() {
   // When submit button is clicked make post with user info.
   $('#submit').click(function(e) {
     e.preventDefault();
-    var username = $('#username').val();
-    $.post('/api/login', username, function(data, status){
+    var user = { 'ID' : $('#username').val(), 'VoteCount' : 0 };
+    $.post('/api/login', user, function(data, status){
+      // Handle response.
       if(status == 'success') {
-        // Redirect to topics page.
+        console.log('Success!');
+        // Redirect user.
+        window.location.replace("../topics");
       } else {
-        // Handel error.
+        // ERROR
+        connsoe.log('Error of some sort, not sure what');
       }
     });
   });

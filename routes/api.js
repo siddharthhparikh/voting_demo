@@ -5,9 +5,17 @@ var dbusers = require('../libs/dbusers');
 
 /* GET users listing. */
 router.post('/login', function(req, res, next) {
+  // Set up the user object for the chaincode.
+  var user = req.body;
+  user.VoteCount = 5;
+  // TODO check if the user already exsits in db.
 
-  console.log('Loging in as.....');
-  
+  // TODO Create user in chaincode.
+
+    console.log('Loging in as.....');
+  console.log(user);
+
+
   res.json('{"status" : "success"}');
 });
 
@@ -22,10 +30,8 @@ router.post('/topic/:id', function(req, res, next) {
 });
 
 router.post('/create', function(req, res, next) {
-  // Get topic details from post.
-
-  // Create topic object.
-  var newTopic = {};
+  var newTopic = req.body;
+  
   console.log('New topic: \n ' + newTopic );
   // Add topic object to database.
 
