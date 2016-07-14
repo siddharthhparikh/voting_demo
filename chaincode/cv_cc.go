@@ -45,10 +45,10 @@ type Topic struct {
 
 //Vote vote cast for a given topic
 type Vote struct {
-	Topic    string `json:"topic"`  //topic being voted upon
-	Choice   int    `json:"choice"` //index of choice
-	Qty      int    `json:"qty"`    //quantity of votes
-	Voter    string `json:"voter"`
+	Topic    string `json:"topic"`    //topic being voted upon
+	Choice   int    `json:"choice"`   //index of choice
+	Quantity int    `json:"quantity"` //quantity of votes
+	Issuer   string `json:"issuer"`
 	CastDate string `json:"castDate"` //current time in milliseconds as a string
 }
 
@@ -156,10 +156,9 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Successfully initialized cast votes")
 	}
 
-	//for testing: enroll first user "ethan!"
-	fmt.Println("Registering first user \"ethan!\"")
-	username := []string{"ethan!"}
-	//username[0] = "ethan!"
+	//for testing: enroll first user "Ethan!"
+	fmt.Println("Registering first user \"Ethan!\"")
+	username := []string{"Ethan!"}
 	_, err3 := t.createAccount(stub, username)
 	if err3 != nil {
 		fmt.Println("Failed to enrolled first user")
@@ -294,6 +293,19 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 
 	fmt.Println("Topic already exists")
 	return nil, nil
+}
+
+//ClearTopics is for debugging to clear all topics on ledger
+func ClearTopics(stub *shim.ChaincodeStub) error {
+	var blank []string
+	blankBytes, _ := json.Marshal(&blank)
+	err := stub.PutState("VoteTopics", blankBytes)
+	if err != nil {
+		fmt.Println("Failed to clear vote topics")
+		return err
+	}
+	fmt.Println("Successfully cleared vote topics")
+	return nil
 }
 
 //GetAllTopics returns an array of all topicIDs

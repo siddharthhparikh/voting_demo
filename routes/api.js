@@ -17,13 +17,15 @@ router.post('/login', function(req, res, next) {
   var user = req.body;
   // TODO check if the user already exsits in db.
   
+  //
+
   // TODO Create user in chaincode.
 
   // Create user session
   //req.session.name = user;
   // TODO other session stuff
 
-  console.log('Loging in as.....');
+  console.log('Logging in as.....');
   console.log(user);
 
   // Send response.
@@ -31,11 +33,12 @@ router.post('/login', function(req, res, next) {
 });
 
 /* Get all voting topics from blockchain */
-router.get('/get-topics', function(res, next) {
+router.get('/get-topics', function(req, res) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, results) {
     if (err) console.log(err);
-    else if (results.result) res.json(null, results.result);
+    else if (results.result) res.json(JSON.parse(String.fromCharCode.apply(String, results.result)));
+    else res.json(null);
   });
 });
 
@@ -52,7 +55,7 @@ router.post('/create', function (req, res, next) {
   var newTopic = req.body;
 
   //TODO DELETE THIS ADD SOME POINT
-  newTopic.issuer = 'ethan!'; //TODO TEMPORARY UNTIL ISSUER IS ADDED
+  newTopic.issuer = 'Ethan!'; //TODO TEMPORARY UNTIL ISSUER IS ADDED
   //TODO TODO TODO TODO
 
   console.log('New topic: \n ' + JSON.stringify(newTopic));
