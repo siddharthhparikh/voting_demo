@@ -1,7 +1,9 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'start' ]
-2 info using npm@2.15.8
-3 info using node@v4.4.7
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'start' ]
+2 info using npm@2.15.5
+3 info using node@v4.4.5
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
 5 info prestart voting_demo@0.0.0
 6 info start voting_demo@0.0.0
@@ -9,20 +11,20 @@
 8 info voting_demo@0.0.0 Failed to exec start script
 9 verbose stack Error: voting_demo@0.0.0 start: `node ./bin/www`
 9 verbose stack Exit status 1
-9 verbose stack     at EventEmitter.<anonymous> (/usr/lib/node_modules/npm/lib/utils/lifecycle.js:217:16)
+9 verbose stack     at EventEmitter.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\lifecycle.js:217:16)
 9 verbose stack     at emitTwo (events.js:87:13)
 9 verbose stack     at EventEmitter.emit (events.js:172:7)
-9 verbose stack     at ChildProcess.<anonymous> (/usr/lib/node_modules/npm/lib/utils/spawn.js:24:14)
+9 verbose stack     at ChildProcess.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\spawn.js:24:14)
 9 verbose stack     at emitTwo (events.js:87:13)
 9 verbose stack     at ChildProcess.emit (events.js:172:7)
 9 verbose stack     at maybeClose (internal/child_process.js:827:16)
 9 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
 10 verbose pkgid voting_demo@0.0.0
-11 verbose cwd /home/gennaro/Documents/workspace/voting_demo
-12 error Linux 4.4.0-21-generic
-13 error argv "/usr/bin/nodejs" "/usr/bin/npm" "start"
-14 error node v4.4.7
-15 error npm  v2.15.8
+11 verbose cwd C:\work\src\github.com\voting_demo
+12 error Windows_NT 6.1.7601
+13 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "start"
+14 error node v4.4.5
+15 error npm  v2.15.5
 16 error code ELIFECYCLE
 17 error voting_demo@0.0.0 start: `node ./bin/www`
 17 error Exit status 1
