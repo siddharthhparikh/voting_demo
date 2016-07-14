@@ -116,11 +116,21 @@ exports.invoke = function (fcn, args, cb) {
     var transactionContext = registrar.invoke(invokeRequest);
 
     transactionContext.on('complete', function (results) {
-        cb(null, results);
+        if (cb) {
+            if (results.result) {
+                var data = String.fromCharCode.apply(String, results.result);
+                if (data.length > 0) cb(null, JSON.parse(data));
+                else cb(null, null);
+            } else {
+                cb(null, null);
+            }
+        }
     });
 
     transactionContext.on('error', function (err) {
-        cb(err, null);
+        if (cb) {
+            cb(err, null);
+        }
     });
 }
 
@@ -134,10 +144,20 @@ exports.query = function (fcn, args, cb) {
     var transactionContext = registrar.query(queryRequest);
 
     transactionContext.on('complete', function (results) {
-        cb(null, results);
+        if (cb) {
+            if (results.result) {
+                var data = String.fromCharCode.apply(String, results.result);
+                if (data.length > 0) cb(null, JSON.parse(data));
+                else cb(null, null);
+            } else {
+                cb(null, null);
+            }
+        }
     });
 
     transactionContext.on('error', function (err) {
-        cb(err, null);
+        if (cb) {
+            cb(err, null);
+        }
     });
 }

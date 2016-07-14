@@ -13,36 +13,38 @@ var chaincode = require('../libs/blockchainSDK');
 var DEFAULT_VOTES = 5
 
 /* Login in request. */
-router.post('/login', function(req, res, next) {
+router.post('/login', function (req, res, next) {
   // Set up the user object for the chaincode.
   var user = req.body;
   // TODO check if the user already exsits in db.
-  
-  //
+
+  console.log(user);
+  var args = [user.account_id];
+  chaincode.query('read', args, function (err, data) {
+    if (err) {
+      console.log('ERROR: ' + err);
+    } else if (data) {
+      // Create user session
+      req.session.name = user.account_id;
+      console.log('Logging in as.....');
+      console.log(req.session.name);
+      // Send response.
+      res.json('{"status" : "success"}');
+    } else {
+      res.json('{"status" : "Invalid login."}');
+    }
+  });
 
   // TODO Create user in chaincode.
-  
-  // Create user session
-  req.session.name = user.account_id;
-  console.log('Loging in as.....');
-  console.log(req.session.name);
-  // Send response.
-  if(user.account_id.length <= 3) {
-    res.json('{"status" : "Name too short."}');
-  } else if(user.account_id.length > 11){
-    res.json('{"status" : "Name too long."}');
-  } else {
-    res.json('{"status" : "success"}');
-  }
+
 });
 
 /* Get all voting topics from blockchain */
-router.get('/get-topics', function(req, res) {
+router.get('/get-topics', function (req, res) {
   var args = [];
-  chaincode.query('get_all_topics', args, function (err, results) {
+  chaincode.query('get_all_topics', args, function (err, data) {
     if (err) console.log(err);
-    else if (results.result) res.json(JSON.parse(String.fromCharCode.apply(String, results.result)));
-    else res.json(null);
+    else res.json(data);
   });
 });
 
@@ -86,8 +88,8 @@ router.post('/votesubmit', function (req, res, next) {
 router.get('/user', function (req, res) {
   var user = req.session.name;
   console.log('Fetching current user: ' + user);
-  var response = { 'user' : user };
-  res.json( response );
+  var response = { 'user': user };
+  res.json(response);
 });
 
 module.exports = router;
