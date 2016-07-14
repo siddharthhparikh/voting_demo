@@ -59,10 +59,9 @@ router.post('/topic/:id', function (req, res, next) {
 
 router.post('/create', function (req, res, next) {
   var newTopic = req.body;
-
-  //TODO DELETE THIS ADD SOME POINT
-  newTopic.issuer = 'Ethan!'; //TODO TEMPORARY UNTIL ISSUER IS ADDED
-  //TODO TODO TODO TODO
+  
+  // Set the issuer to the current active user,
+  newTopic.issuer = req.session.name;
 
   console.log('New topic: \n ' + JSON.stringify(newTopic));
   // Add topic object to database.

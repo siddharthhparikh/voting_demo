@@ -6,12 +6,11 @@
  */
 
 $(document).ready(function () {
-
   //
   // Generate topic buttons
   //
   $.get('/api/get-topics', function (data, status) {
-    console.log('adding topics');
+    $('#loading-msg').remove();
     if (data) {
       // Create a lot of buttons from the topic list.
       for (var topic in data) {
@@ -21,17 +20,20 @@ $(document).ready(function () {
         $('#topics').append(html);
       }
     } else {
-      console.log('no topics found');
+      var html = '<p>No topics found.</p>'
+      $('#topics').append(html);
     }
   });
 
   // 
   // Page setup.
   // 
-  // Display welcome msg.
+  // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     console.log(data.user);
     $('.welcome').append('Welcome ' + data.user)
+    $('#username').append(data.user);
+    // TODO append votes to #user-votes
   });
   // Hide all hidden elements
   $('.hidden').hide();

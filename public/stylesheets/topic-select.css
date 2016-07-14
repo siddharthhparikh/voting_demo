@@ -28,6 +28,24 @@
 
 .info-box .button {
   height: 50px;
+  background-color: #313131;
+  color: #F7F7F7;
+  border-radius: 15px;
+}
+
+.info-box .button:hover {
+  background-color: #141414;
+}
+
+.info-box .button:active {
+  background-color: #FFFFFF;
+}
+.info-box input[type='text']{
+  height: 35px;
+}
+
+#user-button:active {
+  color: #F7F7F7;
 }
 
 /* New topic button 
@@ -58,33 +76,29 @@
 
 /* Special header for topic creation*/
 
-#topic-creation > h1 {
-  margin-bottom: 10px;
-  border-bottom: 1px solid #313131;
+.form-label {
+  margin: 5px;
 }
 
-#topic-creation .button {
-  margin-top: 30px;
+#topic-submit {
+  margin: 5px;
 }
 
-
-/* Special styling for user information box  */
-
-#user-button:active {
-  color: #F7F7F7;
-}
-
-#div {
-  height: 35%;
-}
+/* Special user info-box styling */
 
 .info-header {
   margin: 10px;
   font-size: 28px;
+  line-height: 30px;
   font-weight: bold;
   text-decoration: underline;
 }
 
 .user-info {
- margin: 10px;
+ margin: 30px;
+ font-size : 24px;
+}
+
+#logout {
+  margin-top: 50px;
 }
