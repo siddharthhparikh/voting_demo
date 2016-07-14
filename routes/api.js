@@ -1,5 +1,6 @@
 /**
  * @author Gennaro Cuomo
+ * @author Ethan Allen Coeytaux
  * 
  * Handles all api calls from the client.
  * Interfaces with the chaincode to get client requested information.
@@ -20,16 +21,19 @@ router.post('/login', function(req, res, next) {
   //
 
   // TODO Create user in chaincode.
-
+  
   // Create user session
-  //req.session.name = user;
-  // TODO other session stuff
-
-  console.log('Logging in as.....');
-  console.log(user);
-
+  req.session.name = user.account_id;
+  console.log('Loging in as.....');
+  console.log(req.session.name);
   // Send response.
-  res.json('{"status" : "success"}');
+  if(user.account_id.length <= 3) {
+    res.json('{"status" : "Name too short."}');
+  } else if(user.account_id.length > 11){
+    res.json('{"status" : "Name too long."}');
+  } else {
+    res.json('{"status" : "success"}');
+  }
 });
 
 /* Get all voting topics from blockchain */
@@ -70,9 +74,20 @@ router.post('/create', function (req, res, next) {
 
 router.post('/votesubmit', function (req, res, next) {
   // Get voting data 
-  console.log();
+  var vote1 = req.body[0];
+  vote1.issuer = req.session.name;
+  var vote2 = req.body[1];
+  vote2.issuer = req.session.name;
   // Submit voting data to database or blockchain or whatever
   res.json('{"status" : "success"}');
+});
+
+/* Get request for current user */
+router.get('/user', function (req, res) {
+  var user = req.session.name;
+  console.log('Fetching current user: ' + user);
+  var response = { 'user' : user };
+  res.json( response );
 });
 
 module.exports = router;

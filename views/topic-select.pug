@@ -7,7 +7,7 @@ block content
 
   #header
     h1(id='title')= title
-    h1(class='welcome' ) Welcome #{username.username}
+    h1(class='welcome')
     i(class="material-icons md-48" id='user-button') account_circle
 
   #content-header
@@ -25,12 +25,12 @@ block content
       input(type='submit' class='button' id='topic-submit' value='Submit' )
 
   #user-info(class='info-box' class='hidden')
-    #div
-      p You are logged in as:
-      p(class='info')=username.username
-    #div
-      p Available votes per topic: 
-      p(class='info')=votes
+    p(class='info-header') You are logged in as:
+    p(class='user-info')
+    p
+    p(class='info-header') Available votes per topic: 
+    p(class='user-info')
+    p
     form(action='/logout' method='get')
       input(type='submit' class='button' id='logout' value='Logout')
       

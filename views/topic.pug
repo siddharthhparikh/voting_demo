@@ -7,13 +7,13 @@ block content
  
   #header
     h1(id="title")= title   
-    h1( class='vote-header' id='remaining-votes')=votes
+    h1( class='vote-header' id='remaining-votes')
     h1( class='vote-header') Remaining Votes: 
 
   #content-header
-    h1(id="topic-description")=topicDesc
+    h1(id="topic-description")
    
-  form#content-block(action='/submit-votes' method='post' )
+  form#content-block(action='/submit-votes' method='post')
     p #{firstCand} : 
       input(type='number' name='votes1' id='votes1' class='votes' min='0' max=votes)
     p #{secCand} : 
