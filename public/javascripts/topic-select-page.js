@@ -10,7 +10,7 @@ $(document).ready(function () {
   // Generate topic buttons
   //
   $.get('/api/get-topics', function (data, status) {
-    console.log('adding topics');
+    $('#loading-msg').remove();
     if (data) {
       // Create a lot of buttons from the topic list.
       for (var topic in data) {
@@ -20,7 +20,8 @@ $(document).ready(function () {
         $('#topics').append(html);
       }
     } else {
-      console.log('no topics found');
+      var html = '<p>No topics found.</p>'
+      $('#topics').append(html);
     }
   });
 
