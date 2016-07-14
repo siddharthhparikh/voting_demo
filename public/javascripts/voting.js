@@ -4,13 +4,22 @@
  * Handels voting events including the remaining vote count.
  */
 $(document).ready(function() {
-    // Disables manual form input.
+    //
+    // Disables manual form input to votes.
+    //
     $('.votes').keypress(function(e){
       e.preventDefault();
     });
-    // Set form values(to 0).
+
+    //
+    // Set values.
+    //
     var totalVotes = $("#remaining-votes").text();
     $(".votes").val( 0 );
+
+    //
+    // Update the remaining number of votes based on the current issued votes.
+    //
     $(".votes").change(function() {
        // Update the number of remaining votes.
        var votes1 = $("#votes1").val();
@@ -21,11 +30,33 @@ $(document).ready(function() {
        $("#votes1").attr( "max", ( Number(totalVotes) - Number(votes2)));
        $("#votes2").attr( "max", ( Number(totalVotes) - Number(votes1)));
     });
+
+    //
     // Submit user votes
+    //
     $('#submit').click(function(e){ 
       e.preventDefault();
-      $.post('/api/votesubmit', $("#votes1").val(), $("#votes2").val(), function(data, status) {
+      var votes = [{
+        "topic" : $('#topic-description').val(),
+        "choice" : 0,
+        "quantity" : $('#votes1').val(),
+        "voter" : null,
+        "castDate" : null
+      },
+        "topic" : $('#topic-description').val(),
+        "choice" : 1,
+        "quantity" : $('#votes2').val(),
+        "voter" : null,
+        "castDate" : null
+      }];
+      $.post('/api/votesubmit', votes, function(data, status) {
         // Handle response
+        data = JSON.parse(data);
+        if( data.status == 'success') {
+          console.log('Votes Submitted');
+        } else {
+          console.log('Error: ' + data.status);
+        }
       });
     });
 });

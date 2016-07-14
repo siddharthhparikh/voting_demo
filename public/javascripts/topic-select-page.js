@@ -5,19 +5,22 @@
  * Handles new topic generation.
  */
 $(document).ready(function() {
-
-
+ 
   // 
-  // Element hiding and animations for the info-box
+  // Page setup.
   // 
+  // Display welcome msg.
+  $.get('/api/user', function (data, status) {
+    console.log(data.user);
+    $('.welcome').append('Welcome ' + data.user)
+  });
   // Hide all hidden elements
   $('.hidden').hide();
-  //Animation for new topic, info box.
+  // Set up animations for info box
   $('#new-topic').click(function() {  
     $('#user-info').hide();
     $('#topic-creation').toggle("fast", function(){});
   });
-  //Animation for user info, info box.
   $('#user-button').click(function() {  
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function(){});
@@ -42,7 +45,7 @@ $(document).ready(function() {
   //
   $('#topic-submit').click(function( e ) {
     e.preventDefault();
-    // Create new topic object.
+    // Create a new topic object.
     var topic = {
       'topic_id' : $('#topic-name').val(),
       'issuer' : '',
@@ -54,7 +57,8 @@ $(document).ready(function() {
     // Submit the new topic
     $.post('/api/create', topic, function(data, status){
       // Handle res.
-      if(status == 'success') {
+      data = JSON.parse(data);
+      if(data.status == 'success') {
         // Create new topic button element
         var html = '<button class="topic button">' + $('#topic-name').val() + '</button>';
         console.log(html);
@@ -62,7 +66,7 @@ $(document).ready(function() {
         $('#topics').append(html);
       } else {
         // ERROR
-        console.log(status);
+        console.log(data.status);
       }
     })
     $('topic-creation').fadeOut();
@@ -74,11 +78,12 @@ $(document).ready(function() {
   $('.topic').click(function(e) {
     $.post('/api/topic/' + $(this).html(), $(this).html(), function(data, status) {
       // Handle res.
-      if(status == 'success') {
+      data = JSON.parse(data);
+      if(data.status == 'success') {
         cosnole.log('Loading topic.....');
       } else {
         // ERROR
-        console.log(status);
+        console.log(data.status);
       }
     });
   });

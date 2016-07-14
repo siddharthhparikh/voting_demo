@@ -26,10 +26,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
-app.use('/api', api);
-
 // Setting up sessions
 app.use(require('morgan')('dev'));
 var session = require('express-session');
@@ -42,6 +38,9 @@ app.use(session({
   store: new FileStore()
 }));
 
+app.use('/', routes);
+app.use('/users', users);
+app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
