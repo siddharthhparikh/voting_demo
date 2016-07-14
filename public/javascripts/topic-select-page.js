@@ -6,7 +6,6 @@
  */
 
 $(document).ready(function () {
-
   //
   // Generate topic buttons
   //
@@ -28,10 +27,12 @@ $(document).ready(function () {
   // 
   // Page setup.
   // 
-  // Display welcome msg.
+  // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     console.log(data.user);
     $('.welcome').append('Welcome ' + data.user)
+    $('#username').append(data.user);
+    // TODO append votes to #user-votes
   });
   // Hide all hidden elements
   $('.hidden').hide();
