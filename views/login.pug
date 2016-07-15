@@ -10,9 +10,22 @@ block content
   #content-header
     h1( id='login') Login:
 
+  #register(class='info-box')
+    p(id='register') Register
+    p Full Name: 
+    input(type='text' id='name' placeholder='First Last')
+    p Email Address: 
+    input(type='text' id='email' placeholder='Email')
+    p SSN: 
+    input(type='text' id='SSN' placeholder='XXX-XX-XXXX')
+    button(class='button' id='register-user') Submit 
+
+
   form#content-block(action='topics' method='GET')
     input(type='text' name='username' placeholder='Username...' id='username')
     p
     input(type='submit' class='button' id='submit' value='Submit')
     p(id='error-msg')
-    
+
+
+  

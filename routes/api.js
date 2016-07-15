@@ -57,7 +57,7 @@ router.post('/topic/:id', function (req, res, next) {
 
 router.post('/create', function (req, res, next) {
   var newTopic = req.body;
-  
+
   // Set the issuer to the current active user,
   newTopic.issuer = req.session.name;
 
