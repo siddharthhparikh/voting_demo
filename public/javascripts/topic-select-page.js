@@ -13,10 +13,15 @@ $(document).ready(function () {
     $('#loading-msg').remove();
     if (data) {
       // Create a lot of buttons from the topic list.
+      var count = 0;
       for (var topic in data) {
         console.log('found topic \"' + data[topic].topic_id + '\"');
         var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
         $('#topics').append(html);
+        count++;
+      }
+      if (count == 0) {
+        console.log('no topics found');
       }
     } else {
       var html = '<p>No topics found.</p>'
