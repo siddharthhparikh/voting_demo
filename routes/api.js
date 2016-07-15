@@ -39,6 +39,22 @@ router.post('/login', function (req, res, next) {
 
 });
 
+//clears all topics on blockchain
+//TODO this is just for debugging!
+router.get('/o', function (req, res) {
+  console.log('deleting all topics...');
+  console.log('hope you know what you\'re doing...');
+  chaincode.invoke('clear_all_topics', [], function(err, data) {
+    if (err) {
+      console.log('ERROR: ' + err);
+      res.json('{"status" : "failure"}');
+    } else {
+      console.log('delete of all topics successful!');
+      res.json('{"status" : "success"}');
+    }
+  });
+});
+
 /* Get all voting topics from blockchain */
 router.get('/get-topics', function (req, res) {
   var args = [];
