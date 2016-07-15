@@ -167,8 +167,8 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	return nil, nil
 }
 
-//GetAccount returns the account matching the given username
-func GetAccount(accountID string, stub *shim.ChaincodeStub) (Account, error) {
+// getAccount returns the account matching the given username
+func (t *SimpleChaincode) getAccount(accountID string, stub *shim.ChaincodeStub) (Account, error) {
 	var account Account
 	accountBytes, err := stub.GetState(accountID)
 	if err != nil {
@@ -296,20 +296,22 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 }
 
 //ClearTopics is for debugging to clear all topics on ledger
-func ClearTopics(stub *shim.ChaincodeStub) error {
+func (t *SimpleChaincode) clearTopics(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	fmt.Println("Clearing all topics...")
+
 	var blank []string
 	blankBytes, _ := json.Marshal(&blank)
 	err := stub.PutState("VoteTopics", blankBytes)
 	if err != nil {
 		fmt.Println("Failed to clear vote topics")
-		return err
+		return nil, err
 	}
 	fmt.Println("Successfully cleared vote topics")
-	return nil
+	return nil, nil
 }
 
-//GetAllTopics returns an array of all topicIDs
-func GetAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
+//getAllTopics returns an array of all topicIDs
+func (t *SimpleChaincode) getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 	var allTopics []Topic
 
 	topicsBytes, err := stub.GetState("VoteTopics")
@@ -353,6 +355,8 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.write(stub, args)
 	} else if function == "issue_topic" {
 		return t.issueTopic(stub, args)
+	} else if function == "clear_all_topics" {
+		return t.clearTopics(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function) //error
 
@@ -385,7 +389,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		return t.read(stub, args)
 	} else if function == "get_all_topics" {
 		fmt.Println("Getting all topics")
-		allTopics, err := GetAllTopics(stub)
+		allTopics, err := t.getAllTopics(stub)
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
