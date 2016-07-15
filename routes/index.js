@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
 
 // Submits username and routes user to main topic page.
 router.get('/topics', function (req, res) {
-  res.render('topic-select', {title: 'Chain Votes', username : 'placeholder'});
+  res.render('topic-select', {title: 'Chain Vote'});
 });
 
 // Routes user to selected topic page.
