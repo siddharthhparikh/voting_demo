@@ -100,6 +100,11 @@ router.post('/votesubmit', function (req, res, next) {
   res.json('{"status" : "success"}');
 });
 
+router.get('/load-chain', function (req, res) {
+  console.log('Block chain loaded');
+  res.json('{"status" : "success"}');
+});
+
 /* Get request for current user */
 router.get('/user', function (req, res) {
   var user = req.session.name;

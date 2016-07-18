@@ -10,7 +10,7 @@ $(document).ready(function () {
   // Generate topic buttons
   //
   $.get('/api/get-topics', function (data, status) {
-    $('#loading-msg').remove();
+    $('#loader').remove();    
     if (data) {
       // Create a lot of buttons from the topic list.
       var count = 0;

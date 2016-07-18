@@ -4,6 +4,7 @@ block content
 
   script(src='/javascripts/topic-select-page.js')
   link(rel='stylesheet', href='/stylesheets/topic-select.css')
+  link(rel='stylesheet', href='/stylesheets/loader.css')
 
   #header
     h1(id='title')= title
@@ -30,7 +31,7 @@ block content
 
   #user-info(class='info-box' class='hidden')
     p(class='info-header') You are logged in as:
-    p(class='user-info' id='username') Ethan!
+    p(class='user-info' id='username')
     p
     p(class='info-header') Available votes per topic: 
     p(class='user-info' id='user-votes') 5
@@ -40,7 +41,7 @@ block content
       
   #content-block 
     #topics
-      p(id='loading-msg') Loading topics...
+      #loader
     #add
       i(class="material-icons md-48" id='new-topic') playlist_add
 
