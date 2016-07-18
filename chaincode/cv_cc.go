@@ -31,8 +31,8 @@ type SimpleChaincode struct {
 
 //Account account of user who can vote
 type Account struct {
-	ID        string  `json:"account_id"`
-	VoteCount float64 `json:"vote_count"`
+	ID        string `json:"account_id"`
+	VoteCount uint64 `json:"vote_count"`
 }
 
 var accountHeader = "account::"
@@ -280,6 +280,21 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			}
 		}
 
+		//getting here means success so far
+		//create table associated with topic
+		errCreateTable := stub.CreateTable("table::"+topic.ID, []*shim.ColumnDefinition{
+			&shim.ColumnDefinition{Name: "TransactionID", Type: shim.ColumnDefinition_UINT64, Key: true},
+			&shim.ColumnDefinition{Name: "Voter", Type: shim.ColumnDefinition_STRING, Key: true},
+			&shim.ColumnDefinition{Name: "Votes", Type: shim.ColumnDefinition_UINT64, Key: false},
+			&shim.ColumnDefinition{Name: "Time", Type: shim.ColumnDefinition_UINT64, Key: false},
+		})
+
+		if errCreateTable != nil {
+			fmt.Println("Error creating topic "+topic.ID+" table: ", errCreateTable)
+			return nil, errCreateTable
+		}
+
+		//all success
 		fmt.Println("Issued topic " + topic.ID)
 		return nil, nil
 	}
@@ -354,6 +369,19 @@ func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 	}
 
 	return allTopics, nil
+}
+
+func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	/*		0
+			json
+			{
+				"topic_id": "string",
+				"voter": "username",
+				"votes": ["option1", "option2", ...]
+			}
+	*/
+
+	return nil, nil
 }
 
 // Invoke is our entry point to invoke a chaincode function

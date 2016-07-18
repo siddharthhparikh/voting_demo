@@ -21,9 +21,7 @@ router.post('/login', function (req, res, next) {
   console.log(user);
   var args = user.account_id;
   chaincode.query('get_account', args, function (err, data) {
-    if (err) {
-      console.log('ERROR: ' + err);
-    } else if (data) {
+    if (data) {
       // Create user session
       req.session.name = user.account_id;
       console.log('Logging in as.....');
