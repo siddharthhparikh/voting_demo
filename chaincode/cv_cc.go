@@ -21,7 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-
+    "strconv"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -69,7 +69,7 @@ func main() {
 	}
 }
 
-func (t *ChainchatChaincode) readStringSafe(col *shim.Column) string {
+func (t *SimpleChaincode) readStringSafe(col *shim.Column) string {
 	if col == nil {
 		return ""
 	}
@@ -77,7 +77,7 @@ func (t *ChainchatChaincode) readStringSafe(col *shim.Column) string {
 	return col.GetString_()
 }
 
-func (t *ChainchatChaincode) readInt64Safe(col *shim.Column) int64 {
+func (t *SimpleChaincode) readInt64Safe(col *shim.Column) int64 {
 	if col == nil {
 		return 0
 	}
@@ -85,7 +85,7 @@ func (t *ChainchatChaincode) readInt64Safe(col *shim.Column) int64 {
 	return col.GetInt64()
 }
 
-func (t *ChainchatChaincode) readUint64Safe(col *shim.Column) uint64 {
+func (t *SimpleChaincode) readUint64Safe(col *shim.Column) uint64 {
 	if col == nil {
 		return 0
 	}
@@ -93,7 +93,7 @@ func (t *ChainchatChaincode) readUint64Safe(col *shim.Column) uint64 {
 	return col.GetUint64()
 }
 
-func (t *ChainchatChaincode) readBoolSafe(col *shim.Column) bool {
+func (t *SimpleChaincode) readBoolSafe(col *shim.Column) bool {
 	if col == nil {
 		return false
 	}
@@ -141,10 +141,15 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 		fmt.Println("Could not obtain username passed to createAcount")
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: username of account")
 	}
+	//msgID, err = strconv.ParseUint(strID, 10, 64)
 
 	username := args[0]
-	votes := args[1]
-	var account = Account{ID: username, Votes: votes}
+	votes, e := strconv.ParseInt(args[2], 10, 64)
+	if e != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not parse the votes to a number: %s", e))
+	}
+	email := args[1]
+	var account = Account{ID: username, Email: email, VoteCount: votes}
 	accountBytes, err := json.Marshal(&account)
 	if err != nil {
 		fmt.Println("Error creating account " + account.ID)
@@ -201,8 +206,9 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 	username := args[0]
 	email := args[1]
-	var account = Account{ID: username, Email: email, Votes: 0}
+	var account = Account{ID: username, Email: email, VoteCount: 0}
 	accountBytes, err := json.Marshal(&account)
+	fmt.Println(accountBytes);
 	if err != nil {
 		fmt.Println("Error creating account " + account.ID)
 		return nil, err
@@ -280,7 +286,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 }
 
 // getAccount returns the account matching the given username
-/*
+
 func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string) (Account, error) {
 	var account Account
 	accountBytes, err := stub.GetState(accountHeader + accountID)
@@ -297,8 +303,8 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string)
 
 	return account, nil
 }
-*/
-func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) (account_ids []string, error) {
+
+func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, error) {
 
 	// Retrieve all the rows that are messages for the specified user
 	
@@ -310,16 +316,17 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) (account_ids
 	}
 
 	// Extract the rows
+	var account_ids []string
 	for row := range rowChan {
 		if len(row.Columns) != 0 {
 			account_ids = append(account_ids, t.readStringSafe(row.Columns[1]));
 			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
 		}
 	}
-	return account_ids, null	
+	return account_ids, nil	
 }
 
-func (t *SimpleChaincode) ChangeRequestStatus(stub *shim.ChaincodeStub, acc Account, status string) (err) {
+func (t *SimpleChaincode) ChangeStatus(stub *shim.ChaincodeStub, acc Account, status string) (err error) {
 	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: "open"}}})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
@@ -329,12 +336,12 @@ func (t *SimpleChaincode) ChangeRequestStatus(stub *shim.ChaincodeStub, acc Acco
 	// Extract the rows
 	for row := range rowChan {
 		if len(row.Columns) != 0 {
-			if(t.readStringSafe(row.Columns[1])==Account.ID) {
+			if(t.readStringSafe(row.Columns[1])==acc.ID) {
 				rowAdded, rowErr := stub.ReplaceRow("AccountRequests", shim.Row{
 					Columns: []*shim.Column{
 						{&shim.Column_String_{String_: status}},
-						{&shim.Column_String_{String_: Account.ID}},
-						{&shim.Column_String_{String_: Account.Email}},
+						{&shim.Column_String_{String_: acc.ID}},
+						{&shim.Column_String_{String_: acc.Email}},
 					},
 				})
 
@@ -346,9 +353,9 @@ func (t *SimpleChaincode) ChangeRequestStatus(stub *shim.ChaincodeStub, acc Acco
 				if(status == "approved") {
 					rowAdded, rowErr = stub.ReplaceRow("AccountRequests", shim.Row{
 						Columns: []*shim.Column{	
-							{&shim.Column_String_{String_: Account.id}},
-							{&shim.Column_Uint64{Uint64: Account.VoteCount}},
-							{&shim.Column_String_{String_: Account.Email}},
+							{&shim.Column_String_{String_: acc.ID}},
+							{&shim.Column_Uint64{Uint64: uint64(acc.VoteCount)}},
+							{&shim.Column_String_{String_: acc.Email}},
 						},
 					})
 
@@ -360,7 +367,7 @@ func (t *SimpleChaincode) ChangeRequestStatus(stub *shim.ChaincodeStub, acc Acco
 			}
 		}
 	}
-	return null
+	return nil
 }
 
 func (t *SimpleChaincode) getAllRequests(stub *shim.ChaincodeStub, accountID string) (Account, error) {
@@ -611,7 +618,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 		accountID := string([]byte(args[0]))
 
-		account, err1 := getAccount(stub, accountID)
+		account, err1 := t.getAccount(stub, accountID)
 		if err1 != nil {
 			fmt.Println("Error from get_account: ", err1)
 			return nil, err1
@@ -674,7 +681,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	//create table to store all the user account requests
 	errApprovedAccount := stub.CreateTable("ApprovedAccounts", []*shim.ColumnDefinition{
 			&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
-			&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_STRING, Key: false},
+			&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_INT64, Key: false},
 			&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},			
 	})
 	// Handle table creation errors
