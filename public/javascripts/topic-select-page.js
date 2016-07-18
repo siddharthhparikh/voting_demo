@@ -102,6 +102,7 @@ $(document).ready(function () {
     //     console.log(data.status);
     //   }
     // });
-    window.location.replace("../topic/?id=" + $(this).html());
+    // window.location.replace("../topic/?id=" + $(this).html());
+    window.location.replace("../topic");
   });
 });
