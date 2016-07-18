@@ -1,6 +1,6 @@
 /**
  * @author Gennaro Cuomo
- * @author Ethan Allen Coeytaux
+ * @author Ethan Coeytaux
  * 
  * Handles all api calls from the client.
  * Interfaces with the chaincode to get client requested information.
@@ -20,6 +20,8 @@ router.post('/login', function (req, res, next) {
 
   console.log(user);
   var args = [user.account_id];
+  res.json('{"status" : "success"}');
+  
   chaincode.query('read', args, function (err, data) {
     if (err) {
       console.log('ERROR: ' + err);
@@ -34,9 +36,7 @@ router.post('/login', function (req, res, next) {
       res.json('{"status" : "Invalid login."}');
     }
   });
-
   // TODO Create user in chaincode.
-
 });
 
 /* Get all voting topics from blockchain */
@@ -48,15 +48,16 @@ router.get('/get-topics', function (req, res) {
   });
 });
 
-router.post('/topic/:id', function (req, res, next) {
+router.post('/topic-check/', function (req, res, next) {
   // Get the topic id from the post
   var topicId = req.body;
-  // TODO Get the topic object from the db.
-  console.log('Getting topic from database.')
+  // TODO See if the topic is valid
+
   // Send response
   res.json('{"status" : "success"}');
 });
 
+/* Create a new voting topic */
 router.post('/create', function (req, res, next) {
   var newTopic = req.body;
 
@@ -73,6 +74,7 @@ router.post('/create', function (req, res, next) {
   });
 });
 
+/* Submit votes from a user */
 router.post('/votesubmit', function (req, res, next) {
   // Get voting data 
   var vote1 = req.body[0];
@@ -89,6 +91,11 @@ router.get('/user', function (req, res) {
   console.log('Fetching current user: ' + user);
   var response = { 'user': user };
   res.json(response);
+});
+
+/* Regiister a user */
+router.get('/register', function (req, res) {
+  res.json('{"status" : "success"}');
 });
 
 module.exports = router;

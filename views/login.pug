@@ -5,20 +5,20 @@ block content
   link(rel='stylesheet', href='/stylesheets/login.css')
   script(src='/javascripts/login.js')
   #header
-    h1(id="title")= title
-    h1(id="open-register") Register as new user
+    h1(id='title')= title
+    button(class='button' id='open-register') Register as new user
   
   #content-header
     h1( id='login') Login:
 
-  #register(class='info-box')
+  #register-box(class='info-box' class='hidden')
     p(id='register') Register
     p Full Name: 
     input(type='text' id='name' placeholder='First Last')
     p Email Address: 
     input(type='text' id='email' placeholder='Email')
     p SSN: 
-    input(type='text' id='SSN' placeholder='XXX-XX-XXXX')
+    input(type='text' id='orginization' placeholder='XXX-XX-XXXX')
     button(class='button' id='register-user') Submit 
 
 

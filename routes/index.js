@@ -12,11 +12,9 @@ router.get('/topics', function (req, res) {
 });
 
 // Routes user to selected topic page.
-router.post('/topic/:id', function(req, res) {
-  //db get topics
-  var topic = req.body['topicid'][0];
-  // Render page
-  res.render('topic', { title: 'Chain Vote', votes : DEFAULT_VOTES, topicDesc : voteTopics[topic].desc, firstCand : voteTopics[topic].cand1, secCand : voteTopics[topic].cand2 });
+router.get('/topic/:id', function(req, res) {
+  // TODO test if this work
+  res.render('topic', {title: 'Chain Vote', topicid: req.param.id});
 });
 
 router.get('/logout', function(req, res) {

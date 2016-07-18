@@ -52,14 +52,29 @@
 .info-box .button:active {
   background-color: #FFFFFF;
 }
+
 .info-box input[type='text']{
-  height: 35px;
+  height: 50px;
+  margin: 0px 0px 15px 0px;
+}
+
+.info-box p {
+  margin: 10px 0px 0px 0px
 }
 
 #register {
+  margin: 0px 0px 35px 0px;
   text-decoration: underline;
   font-size: 28px;
   font-weight: bold;
+}
+
+#open-register {
+  width: 200px;
+  height: 50px;
+
+  margin: 10px 10px 0px 0px;
+  float: right;
 }
 
 
@@ -78,7 +93,7 @@
 }
 
 #register-user {
-  margin-top: 15px;
+  margin-top: 45px;
   width: 150px;
 }
 
