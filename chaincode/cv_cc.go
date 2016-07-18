@@ -32,7 +32,7 @@ type SimpleChaincode struct {
 //Account account of user who can vote
 type Account struct {
 	ID        string  `json:"account_id"`
-	VoteCount float64 `json:"vote_count"`
+	VoteCount int64 `json:"vote_count"`
 }
 
 var accountHeader = "account::"
