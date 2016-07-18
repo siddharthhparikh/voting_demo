@@ -110,8 +110,8 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 	}
 
 	username := args[0]
-
-	var account = Account{ID: username, VoteCount: 10}
+	votes := args[1]
+	var account = Account{ID: username, Votes: votes}
 	accountBytes, err := json.Marshal(&account)
 	if err != nil {
 		fmt.Println("Error creating account " + account.ID)
@@ -123,7 +123,7 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 	if err != nil {
 		fmt.Println("No existing account found for " + account.ID + ", initializing account")
 		err = stub.PutState(accountHeader+account.ID, accountBytes)
-
+		//errRequestAccount, Account := requestAccount(account_id) 
 		if err == nil {
 			fmt.Println("Created account " + account.ID)
 			return nil, nil
@@ -141,7 +141,88 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 		if strings.Contains(err.Error(), "unexpected end") {
 			fmt.Println("No data means existing account found for " + account.ID + ", initializing account.")
 			err = stub.PutState(accountHeader+account.ID, accountBytes)
+			//err, account = t.requestAccount(account.ID)
+			if err == nil {
+				fmt.Println("Created account " + account.ID)
+				return nil, nil
+			}
 
+			fmt.Println("Failed to create initialize account for " + account.ID)
+			return nil, err
+		}
+
+		return nil, errors.New("Error unmarshalling existing account " + account.ID)
+	}
+
+	fmt.Println("existing account bytes: " + string([]byte(existingBytes)))
+
+	fmt.Println("Account already exists for " + account.ID)
+	return nil, errors.New("Can't reinitialize existing user " + account.ID)
+}
+
+func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	if len(args) != 1 {
+		fmt.Println("Could not obtain username passed to createAcount")
+		return nil, errors.New("Incorrect number of arguments. Expecting 1: username of account")
+	}
+
+	username := args[0]
+	var account = Account{ID: username, Votes: 0}
+	accountBytes, err := json.Marshal(&account)
+	if err != nil {
+		fmt.Println("Error creating account " + account.ID)
+		return nil, err
+	}
+
+	fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
+	existingBytes, err := stub.GetState(accountHeader + account.ID)
+	if err != nil {
+		fmt.Println("No existing account found for " + account.ID + ", initializing account")
+		//err = stub.PutState(accountHeader+account.ID, accountBytes)
+		//errRequestAccount, Account := requestAccount(account_id) 
+		
+		//write to the Account request table
+		rowAdded, rowErr := stub.InsertRow("messages", shim.Row{
+			Columns: []*shim.Column{
+				{&shim.Column_String_{String_: username}},
+			},
+		})
+
+		if rowErr != nil || !rowAdded {
+			fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger: %s", rowErr))
+			return nil, rowErr
+		}
+		if err == nil {
+			fmt.Println("Created account " + account.ID)
+			return nil, nil
+		}
+
+		fmt.Println("Failed to initialize an account for " + account.ID)
+		return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
+	}
+
+	var existingAccount Account
+	err = json.Unmarshal(existingBytes, &existingAccount)
+	if err != nil {
+		fmt.Println("Error unmarshalling account " + account.ID + "\n--->: " + err.Error())
+
+		if strings.Contains(err.Error(), "unexpected end") {
+			fmt.Println("No data means existing account found for " + account.ID + ", initializing account.")
+			//err = stub.PutState(accountHeader+account.ID, accountBytes)
+			//err, account = t.requestAccount(account.ID)
+
+			//add row to the table
+			rowAdded, rowErr := stub.InsertRow("messages", shim.Row{
+				Columns: []*shim.Column{
+					{&shim.Column_String_{String_: username}},
+				},
+			})
+
+			if rowErr != nil || !rowAdded {
+				fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger: %s", rowErr))
+				return nil, rowErr
+			}
+			
 			if err == nil {
 				fmt.Println("Created account " + account.ID)
 				return nil, nil
@@ -457,5 +538,26 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Failed to enrolled first user")
 	}
 
+	//create table to store all the user account requests
+	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
+			&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
+	})
+	// Handle table creation errors
+	if errAccountRequest != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not create account request table: %s", errAccountRequest))
+		return nil, errAccountRequest
+	}
+
+	//create table to store all the user account requests
+	errApprovedAccount := stub.CreateTable("ApprovedAccounts", []*shim.ColumnDefinition{
+			&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
+			&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_STRING, Key: fales},
+			&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: true},			
+	})
+	// Handle table creation errors
+	if errApprovedAccount != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not create account request table: %s", errApprovedAccount))
+		return nil, errApprovedAccount
+	}
 	return nil, nil
 }
