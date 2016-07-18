@@ -16,7 +16,7 @@ block content
     h1 Current Voting Topics
 
   #topic-creation(class='info-box' class='hidden')
-    h1(class='info-header') Create A Topic
+    h1(id='create-header') Create A Topic
     form(action='create-topic' method='get')
       p(class='form-label') Vote Description:
       input(type='text' class='new-topic-input' id='topic-name' placeholder='Topic Description')
@@ -30,7 +30,7 @@ block content
 
   #user-info(class='info-box' class='hidden')
     p(class='info-header') You are logged in as:
-    p(class='user-info' id='username')
+    p(class='user-info' id='username') Ethan!
     p
     p(class='info-header') Available votes per topic: 
     p(class='user-info' id='user-votes') 5
