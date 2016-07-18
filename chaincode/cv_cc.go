@@ -280,6 +280,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 }
 
 // getAccount returns the account matching the given username
+/*
 func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string) (Account, error) {
 	var account Account
 	accountBytes, err := stub.GetState(accountHeader + accountID)
@@ -296,8 +297,8 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string)
 
 	return account, nil
 }
-
-func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string account_ids, error) {
+*/
+func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) (account_ids []string, error) {
 
 	// Retrieve all the rows that are messages for the specified user
 	
