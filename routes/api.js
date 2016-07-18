@@ -19,10 +19,9 @@ router.post('/login', function (req, res, next) {
   // TODO check if the user already exsits in db.
 
   console.log(user);
-  var args = [user.account_id];
-  res.json('{"status" : "success"}');
-  
-  chaincode.query('read', args, function (err, data) {
+
+  var args = user.account_id;
+  chaincode.query('get_account', args, function (err, data) {
     if (err) {
       console.log('ERROR: ' + err);
     } else if (data) {
@@ -37,6 +36,22 @@ router.post('/login', function (req, res, next) {
     }
   });
   // TODO Create user in chaincode.
+});
+
+//clears all topics on blockchain
+//TODO this is just for debugging!
+router.get('/o', function (req, res) {
+  console.log('deleting all topics...');
+  console.log('hope you know what you\'re doing...');
+  chaincode.invoke('clear_all_topics', [], function(err, data) {
+    if (err) {
+      console.log('ERROR: ' + err);
+      res.json('{"status" : "failure"}');
+    } else {
+      console.log('delete of all topics successful!');
+      res.json('{"status" : "success"}');
+    }
+  });
 });
 
 /* Get all voting topics from blockchain */

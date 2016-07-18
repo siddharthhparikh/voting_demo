@@ -76,6 +76,7 @@ function cb_deployed() {
 // CHAINCODE SDK HELPER FUNCTIONS
 ///////////////////////////////
 
+//deploys chaincode (cb in form of cb(err))
 exports.deploy = function (path, args, cb) {
     if (registrar == null) {
         console.log('ERROR: attempted to deploy chaincode without initializing registrar...');
@@ -97,15 +98,17 @@ exports.deploy = function (path, args, cb) {
 
         chaincodeID = results.chaincodeID;
 
-        if (cb) cb();
+        if (cb) cb(null);
     });
 
     transactionContext.on('error', function (err) {
         console.log('Error deploying chaincode: %s', err.msg);
         console.log('App will fail without chaincode, sorry!');
+        cb(err);
     });
 }
 
+//invokes function on chaincode (cb in form of cb(err, result))
 exports.invoke = function (fcn, args, cb) {
     var invokeRequest = {
         fcn: fcn,
@@ -118,9 +121,7 @@ exports.invoke = function (fcn, args, cb) {
     transactionContext.on('complete', function (results) {
         if (cb) {
             if (results.result) {
-                var data = String.fromCharCode.apply(String, results.result);
-                if (data.length > 0) cb(null, JSON.parse(data));
-                else cb(null, null);
+                cb(null, results.result)
             } else {
                 cb(null, null);
             }
@@ -134,6 +135,7 @@ exports.invoke = function (fcn, args, cb) {
     });
 }
 
+//queries on chaincode (cb in form of cb(err, result))
 exports.query = function (fcn, args, cb) {
     var queryRequest = {
         fcn: fcn,
@@ -145,7 +147,8 @@ exports.query = function (fcn, args, cb) {
 
     transactionContext.on('complete', function (results) {
         if (cb) {
-            if (results.result) {
+            if (results.result) { //is result is not null
+                //parse data from buffer to json
                 var data = String.fromCharCode.apply(String, results.result);
                 if (data.length > 0) cb(null, JSON.parse(data));
                 else cb(null, null);

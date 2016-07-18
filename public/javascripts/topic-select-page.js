@@ -13,11 +13,15 @@ $(document).ready(function () {
     $('#loading-msg').remove();
     if (data) {
       // Create a lot of buttons from the topic list.
+      var count = 0;
       for (var topic in data) {
-        console.log('adding topic \"' + data[topic].topic_id) + '\"';
+        console.log('found topic \"' + data[topic].topic_id + '\"');
         var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
-        console.log(data[topic].topic_id);
         $('#topics').append(html);
+        count++;
+      }
+      if (count == 0) {
+        console.log('no topics found');
       }
     } else {
       var html = '<p>No topics found.</p>'
@@ -30,10 +34,12 @@ $(document).ready(function () {
   // 
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
-    console.log(data.user);
-    $('.welcome').append('Welcome ' + data.user)
+    $('#welcome-end').append(', ' + data.user);
     $('#username').append(data.user);
     // TODO append votes to #user-votes
+  });
+  $('.welcome-o').click(function () {
+    $.get('/api/o', function (data, status) { });
   });
   // Hide all hidden elements
   $('.hidden').hide();
@@ -66,7 +72,7 @@ $(document).ready(function () {
     $.post('/api/create', topic, function (data, status) {
       // Handle res.
       data = JSON.parse(data);
-      if(data.status == 'success') {
+      if (data.status == 'success') {
         // Create new topic button element
         var html = '<button class="topic button">' + $('#topic-name').val() + '</button>';
         console.log(html);
@@ -87,7 +93,7 @@ $(document).ready(function () {
     $.post('/api/topic-check/', $(this).html(), function (data, status) {
       // Handle res.
       data = JSON.parse(data);
-      if(data.status == 'success') {
+      if (data.status == 'success') {
         cosnole.log('Loading topic.....');
         // Redirect user.
         window.location.replace("../topic/?id=" + $(this).html() );

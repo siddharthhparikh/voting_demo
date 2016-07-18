@@ -35,6 +35,8 @@ type Account struct {
 	VoteCount float64 `json:"vote_count"`
 }
 
+var accountHeader = "account::"
+
 //Topic voting topic and choices
 type Topic struct {
 	ID      string   `json:"topic_id"`
@@ -42,6 +44,8 @@ type Topic struct {
 	Choices []string `json:"choices"`
 	Votes   []int    `json:"votes"`
 }
+
+var topicHeader = "topic::"
 
 //Vote vote cast for a given topic
 type Vote struct {
@@ -51,6 +55,8 @@ type Vote struct {
 	Issuer   string `json:"issuer"`
 	CastDate string `json:"castDate"` //current time in milliseconds as a string
 }
+
+var voteHeader = "vote::"
 
 // ============================================================================================================================
 // Main
@@ -62,10 +68,27 @@ func main() {
 	}
 }
 
+func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var name string
+	var err error
+
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1: name of the var to query")
+	}
+
+	name = args[0]
+	valAsbytes, err := stub.GetState(name)
+	if err != nil {
+		return nil, errors.New("Error: failed to get state for " + name)
+	}
+
+	return valAsbytes, nil
+}
+
 func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var name, value string
 	var err error
-	fmt.Println("running write()")
+	fmt.Println("running write")
 
 	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 2: name of the variable and value to set")
@@ -96,10 +119,10 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 	}
 
 	fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
-	existingBytes, err := stub.GetState(account.ID)
+	existingBytes, err := stub.GetState(accountHeader + account.ID)
 	if err != nil {
 		fmt.Println("No existing account found for " + account.ID + ", initializing account")
-		err = stub.PutState(account.ID, accountBytes)
+		err = stub.PutState(accountHeader+account.ID, accountBytes)
 
 		if err == nil {
 			fmt.Println("Created account " + account.ID)
@@ -117,7 +140,7 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 
 		if strings.Contains(err.Error(), "unexpected end") {
 			fmt.Println("No data means existing account found for " + account.ID + ", initializing account.")
-			err = stub.PutState(account.ID, accountBytes)
+			err = stub.PutState(accountHeader+account.ID, accountBytes)
 
 			if err == nil {
 				fmt.Println("Created account " + account.ID)
@@ -131,46 +154,16 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 		return nil, errors.New("Error unmarshalling existing account " + account.ID)
 	}
 
+	fmt.Println("existing account bytes: " + string([]byte(existingBytes)))
+
 	fmt.Println("Account already exists for " + account.ID)
 	return nil, errors.New("Can't reinitialize existing user " + account.ID)
 }
 
-// Init resets all the things
-func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	fmt.Println("Initializing vote topics...")
-	var blank []string
-	blankBytes, _ := json.Marshal(&blank)
-	err := stub.PutState("VoteTopics", blankBytes)
-	if err != nil {
-		fmt.Println("Failed to initialize vote topics")
-	} else {
-		fmt.Println("Successfully initialized vote topics")
-	}
-
-	fmt.Println("Initializing cast votes...")
-	blankBytes2, _ := json.Marshal(&blank)
-	err2 := stub.PutState("CastVotes", blankBytes2)
-	if err2 != nil {
-		fmt.Println("Failed to initialize cast votes")
-	} else {
-		fmt.Println("Successfully initialized cast votes")
-	}
-
-	//for testing: enroll first user "Ethan!"
-	fmt.Println("Registering first user \"Ethan!\"")
-	username := []string{"Ethan!"}
-	_, err3 := t.createAccount(stub, username)
-	if err3 != nil {
-		fmt.Println("Failed to enrolled first user")
-	}
-
-	return nil, nil
-}
-
-//GetAccount returns the account matching the given username
-func GetAccount(accountID string, stub *shim.ChaincodeStub) (Account, error) {
+// getAccount returns the account matching the given username
+func getAccount(stub *shim.ChaincodeStub, accountID string) (Account, error) {
 	var account Account
-	accountBytes, err := stub.GetState(accountID)
+	accountBytes, err := stub.GetState(accountHeader + accountID)
 	if err != nil {
 		fmt.Println("Could not find account " + accountID)
 		return account, err
@@ -212,7 +205,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 	}
 
 	fmt.Println("Getting state of issuer " + topic.Issuer)
-	accountBytes, err := stub.GetState(topic.Issuer)
+	accountBytes, err := stub.GetState(accountHeader + topic.Issuer)
 	if err != nil {
 		fmt.Println("Error getting state of - " + topic.Issuer)
 		return nil, err
@@ -224,7 +217,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 	}
 
 	fmt.Println("Getting state on topic " + topic.ID)
-	existingTopicBytes, err := stub.GetState(topic.ID)
+	existingTopicBytes, err := stub.GetState(topicHeader + topic.ID)
 	if existingTopicBytes == nil {
 		fmt.Println("Vote does not exist, creating new vote...")
 		topicBytes, err := json.Marshal(&topic)
@@ -233,7 +226,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			return nil, err
 		}
 
-		err = stub.PutState(topic.ID, topicBytes)
+		err = stub.PutState(topicHeader+topic.ID, topicBytes)
 		if err != nil {
 			fmt.Println("Error issuing topic")
 			return nil, err
@@ -246,7 +239,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			return nil, err
 		}
 
-		err = stub.PutState(topic.Issuer, accountBytesToWrite)
+		err = stub.PutState(topicHeader+topic.Issuer, accountBytesToWrite)
 		if err != nil {
 			fmt.Println("Error putting state on accountBytesToWrite")
 			return nil, err
@@ -296,20 +289,41 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 }
 
 //ClearTopics is for debugging to clear all topics on ledger
-func ClearTopics(stub *shim.ChaincodeStub) error {
+func (t *SimpleChaincode) clearTopics(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	fmt.Println("Clearing all topics...")
+
+	topics, err := getAllTopics(stub)
+	if err != nil {
+		fmt.Println("Error: Could not retrieve voting topics: ", err)
+		return nil, err
+	}
+
+	for _, topic := range topics {
+		fmt.Println("Clearing topic ID \"" + topic.ID + "\"...")
+
+		err2 := stub.DelState(topicHeader + topic.ID)
+		if err2 != nil {
+			fmt.Println("Error: Failed to clear vote topic \""+topic.ID+"\": ", err2)
+			return nil, err2
+		}
+		fmt.Println("Successfully cleared vote topic ID " + topic.ID)
+	}
+
 	var blank []string
 	blankBytes, _ := json.Marshal(&blank)
-	err := stub.PutState("VoteTopics", blankBytes)
-	if err != nil {
-		fmt.Println("Failed to clear vote topics")
-		return err
+	err2 := stub.PutState("VoteTopics", blankBytes)
+	if err2 != nil {
+		fmt.Println("Error: Failed to clear vote topics: ", err2)
+		return nil, err2
 	}
 	fmt.Println("Successfully cleared vote topics")
-	return nil
+	return nil, nil
 }
 
-//GetAllTopics returns an array of all topicIDs
-func GetAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
+//getAllTopics returns an array of all topicIDs
+func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
+	fmt.Println("Retrieving all topics...")
+
 	var allTopics []Topic
 
 	topicsBytes, err := stub.GetState("VoteTopics")
@@ -321,17 +335,17 @@ func GetAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 	var topics []string
 	err = json.Unmarshal(topicsBytes, &topics)
 	if err != nil {
-		fmt.Println("Error unmarshalling vote topics")
+		fmt.Println("Error unmarshalling vote topics: ", err)
 		return nil, err
 	}
 
 	for _, value := range topics {
-		topicBytes, err := stub.GetState(value)
+		topicBytes, err := stub.GetState(topicHeader + value)
 
 		var topic Topic
 		err = json.Unmarshal(topicBytes, &topic)
 		if err != nil {
-			fmt.Println("Error retrieving topic " + value)
+			fmt.Println("Error retrieving topic "+value+": ", err)
 			return nil, err
 		}
 
@@ -347,33 +361,20 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "init" { //initialize the chaincode state, used as reset
+	switch function {
+	case "init": //initialize the chaincode state, used as reset
 		return t.Init(stub, "init", args)
-	} else if function == "write" {
+	case "write":
 		return t.write(stub, args)
-	} else if function == "issue_topic" {
+	case "issue_topic":
 		return t.issueTopic(stub, args)
+	case "clear_all_topics":
+		return t.clearTopics(stub, args)
 	}
+
 	fmt.Println("invoke did not find func: " + function) //error
 
 	return nil, errors.New("Received unknown function invocation")
-}
-
-func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var name string
-	var err error
-
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1: name of the var to query")
-	}
-
-	name = args[0]
-	valAsbytes, err := stub.GetState(name)
-	if err != nil {
-		return nil, errors.New("Error: failed to get state for " + name)
-	}
-
-	return valAsbytes, nil
 }
 
 // Query is our entry point for queries
@@ -381,11 +382,12 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	fmt.Println("query is running " + function)
 
 	// Handle different functions
-	if function == "read" { //read a variable
+	switch function {
+	case "read": //read a variable
 		return t.read(stub, args)
-	} else if function == "get_all_topics" {
-		fmt.Println("Getting all topics")
-		allTopics, err := GetAllTopics(stub)
+
+	case "get_all_topics":
+		allTopics, err := getAllTopics(stub)
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
@@ -398,8 +400,62 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		}
 		fmt.Println("All success, returning allTopics")
 		return allTopicsBytes, nil
+
+	case "get_account":
+		if len(args) != 1 {
+			fmt.Println("Incorrect number of arguments. Expecting 1: string of account ID being queried")
+			return nil, nil
+		}
+
+		accountID := string([]byte(args[0]))
+
+		account, err1 := getAccount(stub, accountID)
+		if err1 != nil {
+			fmt.Println("Error from get_account: ", err1)
+			return nil, err1
+		}
+
+		accountBytes, err2 := json.Marshal(&account)
+		if err2 != nil {
+			fmt.Println("Error marshalling account: ", err2)
+			return nil, err2
+		}
+		fmt.Println("All success, returning account")
+		return accountBytes, nil
 	}
 	fmt.Println("query did not find func: " + function) //error
 
 	return nil, errors.New("Received unknown function query")
+}
+
+// Init resets all the things
+func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	fmt.Println("Initializing vote topics...")
+	var blank []string
+	blankBytes, _ := json.Marshal(&blank)
+	err := stub.PutState("VoteTopics", blankBytes)
+	if err != nil {
+		fmt.Println("Failed to initialize vote topics")
+	} else {
+		fmt.Println("Successfully initialized vote topics")
+	}
+
+	fmt.Println("Initializing cast votes...")
+	blankBytes2, _ := json.Marshal(&blank)
+	err2 := stub.PutState("CastVotes", blankBytes2)
+	if err2 != nil {
+		fmt.Println("Failed to initialize cast votes")
+	} else {
+		fmt.Println("Successfully initialized cast votes")
+	}
+
+	//for testing: enroll first user "Ethan!"
+	fmt.Println("Registering first user \"Ethan!\"")
+	username := []string{"Ethan!"}
+	_, err3 := t.createAccount(stub, username)
+	if err3 != nil {
+		fmt.Println("Failed to enrolled first user")
+	}
+
+	return nil, nil
 }

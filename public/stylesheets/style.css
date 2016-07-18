@@ -65,6 +65,9 @@ h1 {
 .welcome {
   display: inline-block;
   margin-top: 22px;
+}
+
+#welcome-end {
   margin-right: 150px;
 }
 
