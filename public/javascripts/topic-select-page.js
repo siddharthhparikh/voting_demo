@@ -46,12 +46,12 @@ $(document).ready(function () {
   //Animation for new topic, info box.
   $('#new-topic').click(function () {
     $('#user-info').hide();
-    $('#topic-creation').toggle("fast", function () {});
+    $('#topic-creation').toggle("fast", function () { });
   });
-    //Animation for new topic, info box.
+  //Animation for new topic, info box.
   $('#user-button').click(function () {
     $('#topic-creation').hide();
-    $('#user-info').toggle("fast", function () {});
+    $('#user-info').toggle("fast", function () { });
   });
 
   //
@@ -90,17 +90,18 @@ $(document).ready(function () {
   // Routes user to the selected topic.
   //
   $('.topic').click(function (e) {
-    $.post('/api/topic-check/', $(this).html(), function (data, status) {
-      // Handle res.
-      data = JSON.parse(data);
-      if (data.status == 'success') {
-        cosnole.log('Loading topic.....');
-        // Redirect user.
-        window.location.replace("../topic/?id=" + $(this).html() );
-      } else {
-        // ERROR
-        console.log(data.status);
-      }
-    });
+    // $.post('/api/topic-check/', $(this).html(), function (data, status) {
+    //   // Handle res.
+    //   data = JSON.parse(data);
+    //   if (data.status == 'success') {
+    //     cosnole.log('Loading topic.....');
+    //     // Redirect user.
+    //     window.location.replace("../topic/?id=" + $(this).html() );
+    //   } else {
+    //     // ERROR
+    //     console.log(data.status);
+    //   }
+    // });
+    window.location.replace("../topic/?id=" + $(this).html());
   });
 });

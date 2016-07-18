@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -31,8 +32,8 @@ type SimpleChaincode struct {
 
 //Account account of user who can vote
 type Account struct {
-	ID        string  `json:"account_id"`
-	VoteCount float64 `json:"vote_count"`
+	ID        string `json:"account_id"`
+	VoteCount uint64 `json:"vote_count"`
 }
 
 var accountHeader = "account::"
@@ -49,11 +50,11 @@ var topicHeader = "topic::"
 
 //Vote vote cast for a given topic
 type Vote struct {
-	Topic    string `json:"topic"`    //topic being voted upon
-	Choice   int    `json:"choice"`   //index of choice
-	Quantity int    `json:"quantity"` //quantity of votes
-	Issuer   string `json:"issuer"`
-	CastDate string `json:"castDate"` //current time in milliseconds as a string
+	Topic    string   `json:"topic"` //topic being voted upon
+	Issuer   string   `json:"issuer"`
+	CastDate string   `json:"castDate"` //current time in milliseconds as a string
+	Choices  []string `json:"choices"`
+	Votes    []int    `json:"votes"`
 }
 
 var voteHeader = "vote::"
@@ -280,6 +281,22 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			}
 		}
 
+		//getting here means success so far
+		//create table associated with topic
+		errCreateTable := stub.CreateTable(topicHeader+topic.ID, []*shim.ColumnDefinition{
+			&shim.ColumnDefinition{Name: "TransactionID", Type: shim.ColumnDefinition_UINT64, Key: true},
+			&shim.ColumnDefinition{Name: "Voter", Type: shim.ColumnDefinition_STRING, Key: true},
+			&shim.ColumnDefinition{Name: "Choice", Type: shim.ColumnDefinition_STRING, Key: true},
+			&shim.ColumnDefinition{Name: "Votes", Type: shim.ColumnDefinition_UINT64, Key: false},
+			&shim.ColumnDefinition{Name: "Time", Type: shim.ColumnDefinition_STRING, Key: false},
+		})
+
+		if errCreateTable != nil {
+			fmt.Println("Error creating topic "+topic.ID+" table: ", errCreateTable)
+			return nil, errCreateTable
+		}
+
+		//all success
 		fmt.Println("Issued topic " + topic.ID)
 		return nil, nil
 	}
@@ -341,11 +358,15 @@ func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 
 	for _, value := range topics {
 		topicBytes, err := stub.GetState(topicHeader + value)
+		if err != nil {
+			fmt.Println("Error retrieving topic "+value+": ", err)
+			return nil, err
+		}
 
 		var topic Topic
 		err = json.Unmarshal(topicBytes, &topic)
 		if err != nil {
-			fmt.Println("Error retrieving topic "+value+": ", err)
+			fmt.Println("Error unmarshalling topic "+value+": ", err)
 			return nil, err
 		}
 
@@ -354,6 +375,100 @@ func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 	}
 
 	return allTopics, nil
+}
+
+var transactionID uint64
+
+func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	/*		0
+			json
+			{
+				"topic_id": "string",
+				"voter": "username",
+				"votes": [option1, option2, ...]
+			}
+	*/
+
+	if len(args) != 1 {
+		fmt.Println("Incorrect number of arguments. Expecting 1: json object of vote being cast")
+		return nil, errors.New("Incorrect number of arguments. Expecting 1: json object of vote being cast")
+	}
+
+	var vote Vote
+
+	fmt.Println("Unmarshalling vote")
+	err := json.Unmarshal([]byte(args[0]), &vote)
+	if err != nil {
+		fmt.Println("Invalid vote cast")
+		return nil, err
+	}
+
+	account, errGetAccount := getAccount(stub, vote.Issuer)
+
+	if errGetAccount != nil {
+		fmt.Println("Error retrieving account: ", errGetAccount)
+		return nil, errGetAccount
+	}
+
+	topicBytes, errTopic := stub.GetState(topicHeader + vote.Topic)
+	if errTopic != nil {
+		fmt.Println("Error retrieving topic "+vote.Topic+": ", errTopic)
+		return nil, errTopic
+	}
+
+	var topic Topic
+	errJSON := json.Unmarshal(topicBytes, &topic)
+	if errJSON != nil {
+		fmt.Println("Error unmarshalling topic "+vote.Topic+": ", errJSON)
+		return nil, errJSON
+	}
+
+	//check votes are valid
+
+	//make sure all votes are >=0
+	var count uint64
+	for _, quantity := range vote.Votes {
+		if quantity < 0 {
+			fmt.Println("Error: attempted to cast vote of negative value")
+			return nil, errors.New("Attempted to cast vote of negative value")
+		}
+		count += uint64(quantity)
+	}
+
+	//make sure voter has not cast more votes than allowed
+	if count > account.VoteCount {
+		fmt.Println("Error: attempted to cast more votes than voter has")
+		return nil, errors.New("Attempted to cast more votes than voter has")
+	}
+
+	//make sure voter has cast correct number of votes
+	if len(vote.Votes) != len(topic.Choices) {
+		fmt.Println("Error: number of vote quantities does not match choices count")
+		return nil, errors.New("Number of vote quantities does not match choices count")
+	}
+
+	for i := 0; i < len(topic.Choices); i++ {
+		if vote.Votes[i] > 0 {
+			addedRow, errRow := stub.InsertRow(topicHeader+vote.Topic, shim.Row{
+				Columns: []*shim.Column{
+					{&shim.Column_Uint64{Uint64: transactionID}},
+					{&shim.Column_String_{String_: vote.Issuer}},
+					{&shim.Column_String_{String_: topic.Choices[i]}},
+					{&shim.Column_Uint64{Uint64: uint64(vote.Votes[i])}},
+					{&shim.Column_String_{String_: time.Now().String()}},
+				},
+			})
+
+			if errRow != nil || !addedRow {
+				fmt.Println("Error creating row in table "+vote.Topic+": ", errRow)
+				return nil, errRow
+			}
+
+			transactionID++
+		}
+	}
+
+	return nil, nil
 }
 
 // Invoke is our entry point to invoke a chaincode function
