@@ -22,8 +22,6 @@ router.get('/topic', function(req, res) {
   res.render('topic', {title: 'Chain Vote'});
 });
 
-
-
 router.get('/logout', function(req, res) {
   res.redirect('/');
 });
