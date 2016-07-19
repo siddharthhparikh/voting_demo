@@ -326,7 +326,12 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, e
 	return account_ids, nil	
 }
 
-func (t *SimpleChaincode) ChangeStatus(stub *shim.ChaincodeStub, acc Account, status string) (err error) {
+func (t *SimpleChaincode) ChangeStatus(stub *shim.ChaincodeStub, args []string) (err error) {
+	acc Account
+	status := args[0]
+	acc.ID = args[1]
+	acc.Email = args[3]
+	acc.VoteCount = args[2]
 	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: "open"}}})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
@@ -579,6 +584,12 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.issueTopic(stub, args)
 	case "clear_all_topics":
 		return t.clearTopics(stub, args)
+	case "createAccount":
+		return t.createAccount(stub,args)
+	case "requestAccount":
+		return t.requestAccount(stub,args)
+	case "ChangeStatus":
+		return t.ChangeStatus()
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error
