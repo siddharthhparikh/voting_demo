@@ -10,7 +10,7 @@ var exports = module.exports;
 
 // Create a client chain
 var chaincodeName = 'marble_chaincode'
-var chain = hlc.newChain(chaincodeName);
+var chain = hlc.newChain("voting");
 var chaincodeID = null;
 
 // Configure the KeyValStore which is used to store sensitive keys
@@ -50,7 +50,7 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
     registrar = user;
 
-    exports.deploy('github.com/voting_demo/chaincode', ['99'], cb_deployed);
+    exports.deploy('github.com/voting_demo/chaincode/', ['99'], cb_deployed);
 });
 
 function cb_deployed() {

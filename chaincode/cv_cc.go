@@ -2,7 +2,7 @@
 Copyright IBM Corp 2016 All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
+ou may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
 		 http://www.apache.org/licenses/LICENSE-2.0
@@ -137,9 +137,9 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 }
 
 func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	if len(args) != 1 {
+	if len(args) != 3 {
 		fmt.Println("Could not obtain username passed to createAcount")
-		return nil, errors.New("Incorrect number of arguments. Expecting 1: username of account")
+		return nil, errors.New("Incorrect number of arguments. Expecting 3")
 	}
 	//msgID, err = strconv.ParseUint(strID, 10, 64)
 
@@ -910,21 +910,23 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 
 	//for testing: enroll first user "Ethan!"
 	fmt.Println("Registering first user \"Ethan!\"")
-	username := []string{"Ethan!"}
+	username := []string{"Ethan", "ecoeyta@us.ibm.com", "16"}
 	_, err3 := t.createAccount(stub, username)
 	if err3 != nil {
 		fmt.Println("Failed to enrolled first user")
 	}
 
+
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
 			&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: true},
-			&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
+			&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: false},
 			&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	// Handle table creation errors
 	if errAccountRequest != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not create account request table: %s", errAccountRequest))
+		//console.log(fmt.Sprintf("[ERROR] Could not create account request table: %s", errAccountRequest))
 		return nil, errAccountRequest
 	}
 
@@ -937,6 +939,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	// Handle table creation errors
 	if errApprovedAccount != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not create account request table: %s", errApprovedAccount))
+		//console.log(fmt.Sprintf("[ERROR] Could not create account request table: %s", errApprovedAccount))
 		return nil, errApprovedAccount
 	}
 	return nil, nil
