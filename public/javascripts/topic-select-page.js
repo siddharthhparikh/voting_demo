@@ -6,28 +6,29 @@
  * Handles new topic generation.
  */
 $(document).ready(function () {
+
   //
   // Generate topic buttons
   //
-  $.get('/api/get-topics', function (data, status) {
-    $('#loader').remove();    
-    if (data) {
-      // Create a lot of buttons from the topic list.
-      var count = 0;
-      for (var topic in data) {
-        console.log('found topic \"' + data[topic].topic_id + '\"');
-        var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
-        $('#topics').append(html);
-        count++;
-      }
-      if (count == 0) {
-        console.log('no topics found');
-      }
-    } else {
-      var html = '<p>No topics found.</p>'
-      $('#topics').append(html);
-    }
-  });
+  // $.get('/api/get-topics', function (data, status) {
+  //   $('#loader').remove();    
+  //   if (data) {
+  //     // Create a lot of buttons from the topic list.
+  //     var count = 0;
+  //     for (var topic in data) {
+  //       console.log('found topic \"' + data[topic].topic_id + '\"');
+  //       var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
+  //       $('#topics').append(html);
+  //       count++;
+  //     }
+  //     if (count == 0) {
+  //       console.log('no topics found');
+  //     }
+  //   } else {
+  //     var html = '<p>No topics found.</p>'
+  //     $('#topics').append(html);
+  //   }
+  // });
 
   // 
   // Page setup.
@@ -103,6 +104,6 @@ $(document).ready(function () {
     //   }
     // });
     // window.location.replace("../topic/?id=" + $(this).html());
-    window.location.replace("../topic");
+    window.location.replace("../topic/" + $(this.html()));
   });
 });
