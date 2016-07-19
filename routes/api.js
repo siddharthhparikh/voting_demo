@@ -65,8 +65,8 @@ router.get('/o', function (req, res) {
 router.get('/get-topics', function (req, res) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, data) {
-    chaincode.query('tally_votes', 'Who will be the next CEO?', function () { });
-    console.log("[INFO] All topics: ", data);
+    //chaincode.query('tally_votes', 'Who will be the next CEO?', function () { });
+    //console.log("[INFO] All topics: ", data);
 
     if (err) console.log('ERROR: ', err);
     else res.json(data);
