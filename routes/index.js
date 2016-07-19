@@ -13,7 +13,6 @@ router.get('/topics', function (req, res) {
 
 // Routes user to selected topic page.
 router.get('/topic/:id', function(req, res) {
-  console.log(req.param.id);
   res.render('topic', {title: 'Chain Vote', topicid: req.param.id});
 });
 

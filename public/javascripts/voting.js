@@ -15,6 +15,8 @@ $(document).ready(function () {
   //   // $('#cand1').append(data.topic.choices[0]);
   //   // $('#cand2').append(data.topic.choices[1]);
   // });
+  if (!url) url = window.location.href;
+  console.log(url);
 
   //
   // Disables manual form input to votes and set values.
