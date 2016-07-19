@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-    "strconv"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -33,7 +32,7 @@ type SimpleChaincode struct {
 //Account account of user who can vote
 type Account struct {
 	ID        string  `json:"account_id"`
-	VoteCount int64 `json:"vote_count"`
+	VoteCount uint64 `json:"vote_count"`
 	Email	  string `json:"email"`
 }
 
@@ -145,7 +144,7 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 	//msgID, err = strconv.ParseUint(strID, 10, 64)
 
 	username := args[0]
-	votes, e := strconv.ParseInt(args[2], 10, 64)
+	votes, e := strconv.ParseUint(args[2], 10, 64)
 	if e != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not parse the votes to a number: %s", e))
 	}
@@ -288,8 +287,9 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 // getAccount returns the account matching the given username
 
-func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string) (Account, error) {
+func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (Account, error) {
 	var account Account
+	accountID := args[0]
 	accountBytes, err := stub.GetState(accountHeader + accountID)
 	if err != nil {
 		fmt.Println("Could not find account " + accountID)
@@ -327,16 +327,17 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, e
 	return account_ids, nil	
 }
 
-func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) (err error) {
-	acc Account
+func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	status := args[0]
-	acc.ID = args[1]
-	acc.Email = args[3]
-	acc.VoteCount = args[2]
+	//acc.ID := args[1]
+	//acc.Email := args[3]
+	//acc.VoteCount := args[2]
+	votes, _ := strconv.ParseUint(args[2], 10, 64)
+	acc := Account{ID: args[1], VoteCount: votes, Email: args[3]}
 	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: "open"}}})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return rowErr
+		return nil, nil
 	}
 
 	// Extract the rows
@@ -353,7 +354,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 
 				if rowErr != nil || !rowAdded {
 					fmt.Println(fmt.Sprintf("[ERROR] Could not replace a row into the ledger: %s", rowErr))
-					return rowErr
+					return nil, nil
 				}
 				
 				if(status == "approved") {
@@ -367,13 +368,13 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 
 					if rowErr != nil || !rowAdded {
 						fmt.Println(fmt.Sprintf("[ERROR] Could not replace a row into the ledger: %s", rowErr))
-						return rowErr
+						return nil, nil
 					}
 				}
 			}
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 func (t *SimpleChaincode) getAllRequests(stub *shim.ChaincodeStub, accountID string) (Account, error) {
@@ -643,7 +644,7 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 		return nil, err
 	}
 
-	account, errGetAccount := getAccount(stub, vote.Voter)
+	account, errGetAccount := t.getAccount(stub, []string{vote.Voter})
 
 	if errGetAccount != nil {
 		fmt.Println("Error retrieving account: ", errGetAccount)
@@ -700,7 +701,7 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 		}
 		if voteQty > 0 {
 			//add to array in Topic
-			topicVoteTally, err := strconv.Atoi(topic.Votes[i])
+			topicVoteTally, _ := strconv.Atoi(topic.Votes[i])
 			topic.Votes[i] = strconv.Itoa(topicVoteTally + voteQty) //convery to int, add vote, then convert back to string
 
 			//add to table
@@ -733,8 +734,8 @@ func (t *SimpleChaincode) tallyVotes(stub *shim.ChaincodeStub, args []string) ([
 		fmt.Println("Incorrect number of arguments. Expecting 1: string of topic ID to be queried")
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: string of topic ID to be queried")
 	}
-
-	topic, errGetAccount := getTopic(stub, args[0])
+	/*
+	_, errGetAccount := getTopic(stub, args[0])
 	if errGetAccount != nil {
 		fmt.Println("Could not retrieve vote topic to be tallied")
 		return nil, errGetAccount
@@ -752,13 +753,10 @@ func (t *SimpleChaincode) tallyVotes(stub *shim.ChaincodeStub, args []string) ([
 			for _, col := range row.GetColumns() {
 				fmt.Println("[INFO] Column: ", col)
 			}
-
-			tally.p
-
 			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
 		}
 	}
-
+	*/
 	return nil, nil
 }
 
@@ -777,11 +775,11 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 	case "clear_all_topics":
 		return t.clearTopics(stub, args)
 	case "create_account":
-		return t.createAccount(stub,args)
+		return t.createAccount(stub, args)
 	case "request_account":
-		return t.requestAccount(stub,args)
+		return t.requestAccount(stub, args)
 	case "change_status":
-		return t.changeStatus()
+		return t.changeStatus(stub, args)
 	case "cast_vote":
 		return t.castVote(stub, args)
 	}
@@ -842,9 +840,10 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 			return nil, nil
 		}
 
-		accountID := string([]byte(args[0]))
+		accountID := args[0]
 
-		account, err1 := t.getAccount(stub, accountID)
+		account, err1 := t.getAccount(stub, []string{accountID})
+
 		if err1 != nil {
 			fmt.Println("Error from get_account: ", err1)
 			return nil, err1
