@@ -33,9 +33,6 @@ $(document).ready(function () {
     e.preventDefault(e);
     $.get('/api/get-topic', {"topicID":$('#topic-description').html()}, function (data, status) {
       if (data) {
-        console.log(data);
-        console.log(data.choices);
-
         var votesArray = []
 
         //TODO this should be made a for loop to handle variable number of candidates

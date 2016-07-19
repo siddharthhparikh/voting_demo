@@ -485,6 +485,11 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 			return nil, err
 		}
 		if voteQty > 0 {
+			//add to array in Topic
+			topicVoteTally, err := strconv.Atoi(topic.Votes[i])
+			topic.Votes[i] = strconv.Itoa(topicVoteTally + voteQty) //convery to int, add vote, then convert back to string
+
+			//add to table
 			addedRow, errRow := stub.InsertRow(topicHeader+vote.Topic, shim.Row{
 				Columns: []*shim.Column{
 					{&shim.Column_Uint64{Uint64: transactionID}},
@@ -515,7 +520,11 @@ func (t *SimpleChaincode) tallyVotes(stub *shim.ChaincodeStub, args []string) ([
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: string of topic ID to be queried")
 	}
 
-	//var choices []
+	topic, errGetAccount := getTopic(stub, args[0])
+	if errGetAccount != nil {
+		fmt.Println("Could not retrieve vote topic to be tallied")
+		return nil, errGetAccount
+	}
 
 	rowChan, rowErr := stub.GetRows(topicHeader+args[0], []shim.Column{})
 	if rowErr != nil {
@@ -525,6 +534,13 @@ func (t *SimpleChaincode) tallyVotes(stub *shim.ChaincodeStub, args []string) ([
 
 	for row := range rowChan {
 		if len(row.Columns) != 0 {
+
+			for _, col := range row.GetColumns() {
+				fmt.Println("[INFO] Column: ", col)
+			}
+
+			tally.p
+
 			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
 		}
 	}
@@ -627,7 +643,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 			fmt.Println("Incorrect number of arguments. Expecting 1: string of topic ID being tallied")
 			return nil, nil
 		}
-		
+
 		topicID := string([]byte(args[0]))
 
 		strArgs := []string{topicID}

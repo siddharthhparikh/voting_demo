@@ -18,8 +18,6 @@ router.post('/login', function (req, res, next) {
   var user = req.body;
   // TODO check if the user already exsits in db.
 
-  console.log(user);
-
   var args = user.account_id;
   chaincode.query('get_account', args, function (err, data) {
     if (data) {
@@ -35,6 +33,17 @@ router.post('/login', function (req, res, next) {
   });
   // TODO Create user in chaincode.
 });
+
+router.get('/get-account', function (req, res, next) {
+  var args = req.body.account_id;
+  chaincode.query('get_account', args, function (err, data) {
+    if (data) {
+      res.json(data);
+    } else {
+      res.json('{"status" : "could not retrieve user"}');
+    }
+  });
+})
 
 //clears all topics on blockchain
 //TODO this is just for debugging!
@@ -57,6 +66,7 @@ router.get('/get-topics', function (req, res) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, data) {
     chaincode.query('tally_votes', 'Who will be the next CEO?', function () { });
+    console.log("[INFO] All topics: ", data);
 
     if (err) console.log('ERROR: ', err);
     else res.json(data);
