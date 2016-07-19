@@ -10,7 +10,7 @@ var exports = module.exports;
 
 // Create a client chain
 var chaincodeName = 'marble_chaincode'
-var chain = hlc.newChain(chaincodeName);
+var chain = hlc.newChain("voting");
 var chaincodeID = null;
 
 // Configure the KeyValStore which is used to store sensitive keys
@@ -25,8 +25,8 @@ var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
 caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
-peerURLs = 'grpc://test-peer1.rtp.raleigh.ibm.com:30303';
-//peerURLs.push('grpc://test-p2.rtp.raleigh.ibm.com:30303');
+peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
+//peerURLs.push('grpc://ethan-p2.rtp.raleigh.ibm.com:30303');
 //peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
 
 registrar = {
@@ -39,7 +39,10 @@ console.log('adding ca: \'' + caURL + '\'');
 chain.setMemberServicesUrl(caURL);
 
 // Add all peers' URL
-chain.addPeer(peerURLs);
+for (var i in peerURLs) {
+    console.log('adding peer: \'' + peerURLs[i] + '\'');
+    chain.addPeer(peerURLs[i]);
+}
 
 console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
 chain.enroll(registrar.username, registrar.secret, function (err, user) {
@@ -50,7 +53,7 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
     registrar = user;
 
-    exports.deploy('github.com/voting_demo/chaincode', ['99'], cb_deployed);
+    exports.deploy('github.com/voting_demo/chaincode/', ['99'], cb_deployed);
 });
 
 function cb_deployed() {
@@ -82,7 +85,7 @@ exports.deploy = function (path, args, cb) {
 
     var deployRequest = {
         args: args,
-        //chaincodeID: chaincodeName,
+        chaincodeID: chaincodeName,
         fcn: 'init',
         chaincodePath: path
     }
@@ -103,9 +106,9 @@ exports.deploy = function (path, args, cb) {
     transactionContext.on('error', function (err) {
         console.log('Error deploying chaincode: %s', err.msg);
         console.log('App will fail without chaincode, sorry!');
-        
+
         //chaincode has errored
-        
+
         cb(err);
     });
 }
