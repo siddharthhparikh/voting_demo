@@ -327,6 +327,12 @@ func (t *SimpleChaincode) clearTopics(stub *shim.ChaincodeStub, args []string) (
 			return nil, err2
 		}
 		fmt.Println("Successfully cleared vote topic ID " + topic.ID)
+
+		err2 = stub.DeleteTable(topicHeader + topic.ID)
+		if err2 != nil {
+			fmt.Println("Error: Failed to delete table for vote topic \""+topic.ID+"\": ", err2)
+			return nil, err2
+		}
 	}
 
 	var blank []string
@@ -487,6 +493,9 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 		if voteQty > 0 {
 			//add to array in Topic
 			topicVoteTally, err := strconv.Atoi(topic.Votes[i])
+			if err != nil {
+				return nil, err
+			}
 			topic.Votes[i] = strconv.Itoa(topicVoteTally + voteQty) //convery to int, add vote, then convert back to string
 
 			//add to table
@@ -520,30 +529,28 @@ func (t *SimpleChaincode) tallyVotes(stub *shim.ChaincodeStub, args []string) ([
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: string of topic ID to be queried")
 	}
 
-	topic, errGetAccount := getTopic(stub, args[0])
-	if errGetAccount != nil {
-		fmt.Println("Could not retrieve vote topic to be tallied")
-		return nil, errGetAccount
-	}
+	// topic, errGetAccount := getTopic(stub, args[0])
+	// if errGetAccount != nil {
+	// 	fmt.Println("Could not retrieve vote topic to be tallied")
+	// 	return nil, errGetAccount
+	// }
 
-	rowChan, rowErr := stub.GetRows(topicHeader+args[0], []shim.Column{})
-	if rowErr != nil {
-		fmt.Println(fmt.Println("[ERROR] Could not retrieve the rows: ", rowErr))
-		return nil, rowErr
-	}
+	// rowChan, rowErr := stub.GetRows(topicHeader+args[0], []shim.Column{})
+	// if rowErr != nil {
+	// 	fmt.Println(fmt.Println("[ERROR] Could not retrieve the rows: ", rowErr))
+	// 	return nil, rowErr
+	// }
 
-	for row := range rowChan {
-		if len(row.Columns) != 0 {
+	// for row := range rowChan {
+	// 	if len(row.Columns) != 0 {
 
-			for _, col := range row.GetColumns() {
-				fmt.Println("[INFO] Column: ", col)
-			}
+	// 		for _, col := range row.GetColumns() {
+	// 			fmt.Println("[INFO] Column: ", col)
+	// 		}
 
-			tally.p
-
-			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
-		}
-	}
+	// 		fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
+	// 	}
+	// }
 
 	return nil, nil
 }
