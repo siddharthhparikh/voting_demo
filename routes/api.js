@@ -1,6 +1,6 @@
 /**
  * @author Gennaro Cuomo
- * @author Ethan Allen Coeytaux
+ * @author Ethan Coeytaux
  * 
  * Handles all api calls from the client.
  * Interfaces with the chaincode to get client requested information.
@@ -18,12 +18,9 @@ router.post('/login', function (req, res, next) {
   var user = req.body;
   // TODO check if the user already exsits in db.
 
-  console.log(user);
   var args = user.account_id;
   chaincode.query('get_account', args, function (err, data) {
-    if (err) {
-      console.log('ERROR: ' + err);
-    } else if (data) {
+    if (data) {
       // Create user session
       req.session.name = user.account_id;
       console.log('Logging in as.....');
@@ -34,17 +31,26 @@ router.post('/login', function (req, res, next) {
       res.json('{"status" : "Invalid login."}');
     }
   });
-
   // TODO Create user in chaincode.
-
 });
+
+router.get('/get-account', function (req, res, next) {
+  var args = req.body.account_id;
+  chaincode.query('get_account', args, function (err, data) {
+    if (data) {
+      res.json(data);
+    } else {
+      res.json('{"status" : "could not retrieve user"}');
+    }
+  });
+})
 
 //clears all topics on blockchain
 //TODO this is just for debugging!
 router.get('/o', function (req, res) {
   console.log('deleting all topics...');
   console.log('hope you know what you\'re doing...');
-  chaincode.invoke('clear_all_topics', [], function(err, data) {
+  chaincode.invoke('clear_all_topics', [], function (err, data) {
     if (err) {
       console.log('ERROR: ' + err);
       res.json('{"status" : "failure"}');
@@ -59,20 +65,34 @@ router.get('/o', function (req, res) {
 router.get('/get-topics', function (req, res) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, data) {
-    if (err) console.log(err);
+    chaincode.query('tally_votes', 'Who will be the next CEO?', function () { });
+    console.log("[INFO] All topics: ", data);
+
+    if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
 });
 
-router.post('/topic/:id', function (req, res, next) {
+/* Get specific voting topic from blockchain */
+router.get('/get-topic', function (req, res) {
+  var args = req.query.topicID;
+  console.log(args);
+  chaincode.query('get_topic', args, function (err, data) {
+    if (err) console.log('ERROR: ', err);
+    else res.json(data);
+  });
+});
+
+router.post('/topic-check/', function (req, res, next) {
   // Get the topic id from the post
-  var topicId = req.body;
-  // TODO Get the topic object from the db.
-  console.log('Getting topic from database.')
+  var topicID = req.body;
+  // TODO See if the topic is valid
+
   // Send response
   res.json('{"status" : "success"}');
 });
 
+/* Create a new voting topic */
 router.post('/create', function (req, res, next) {
   var newTopic = req.body;
 
@@ -89,13 +109,20 @@ router.post('/create', function (req, res, next) {
   });
 });
 
-router.post('/votesubmit', function (req, res, next) {
-  // Get voting data 
-  var vote1 = req.body[0];
-  vote1.issuer = req.session.name;
-  var vote2 = req.body[1];
-  vote2.issuer = req.session.name;
-  // Submit voting data to database or blockchain or whatever
+/* Submit votes from a user */
+router.post('/vote-submit', function (req, res, next) {
+  req.body.voter = req.session.name;
+
+  console.log(JSON.stringify(req.body));
+  chaincode.invoke('cast_vote', JSON.stringify(req.body), function (err, results) {
+    console.log(results);
+
+    res.json('{"status" : "success"}');
+  })
+});
+
+router.get('/load-chain', function (req, res) {
+  console.log('Block chain loaded');
   res.json('{"status" : "success"}');
 });
 
@@ -105,6 +132,11 @@ router.get('/user', function (req, res) {
   console.log('Fetching current user: ' + user);
   var response = { 'user': user };
   res.json(response);
+});
+
+/* Regiister a user */
+router.get('/register', function (req, res) {
+  res.json('{"status" : "success"}');
 });
 
 module.exports = router;

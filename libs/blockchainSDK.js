@@ -98,12 +98,17 @@ exports.deploy = function (path, args, cb) {
 
         chaincodeID = results.chaincodeID;
 
+        //chaincode has been deployed
+
         if (cb) cb(null);
     });
 
     transactionContext.on('error', function (err) {
         console.log('Error deploying chaincode: %s', err.msg);
         console.log('App will fail without chaincode, sorry!');
+        
+        //chaincode has errored
+        
         cb(err);
     });
 }

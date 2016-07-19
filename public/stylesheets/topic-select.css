@@ -30,6 +30,7 @@
   height: 50px;
   background-color: #313131;
   color: #F7F7F7;
+  width: 150px;
   border-radius: 15px;
 }
 
@@ -76,18 +77,26 @@
 
 /* Special header for topic creation*/
 
+#create-header {
+  margin: 0px 0px 15px 0px;
+  font-size: 28px;
+  line-height: 30px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 .form-label {
   margin: 5px;
 }
 
 #topic-submit {
-  margin: 5px;
+  margin-top: 50px;
 }
 
 /* Special user info-box styling */
 
 .info-header {
-  margin: 10px;
+  margin: 75px 0px 10px 0px;
   font-size: 28px;
   line-height: 30px;
   font-weight: bold;
@@ -100,9 +109,14 @@
 }
 
 #logout {
-  margin-top: 50px;
+  margin-top: 15px;
 }
 
 .welcome-o {
+  margin: 0px;
+
+}
+
+#loading-msg {
   margin: 0px;
 }

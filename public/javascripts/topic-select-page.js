@@ -1,16 +1,16 @@
 /**
  * @author Gennaro Cuomo
+ * @author Ethan Coeytaux
  * 
  * Handles all animations and hiding for info boxes (and some other elements).
  * Handles new topic generation.
  */
-
 $(document).ready(function () {
   //
   // Generate topic buttons
   //
   $.get('/api/get-topics', function (data, status) {
-    $('#loading-msg').remove();
+    $('#loader').remove();    
     if (data) {
       // Create a lot of buttons from the topic list.
       var count = 0;
@@ -48,7 +48,7 @@ $(document).ready(function () {
     $('#user-info').hide();
     $('#topic-creation').toggle("fast", function () { });
   });
-  //Animation for user info, info box.
+  //Animation for new topic, info box.
   $('#user-button').click(function () {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function () { });
@@ -68,13 +68,15 @@ $(document).ready(function () {
         $('#topic-cand2').val()
       ]
     }
+    console.log('topic: ');
+    console.log(topic);
     // Submit the new topic
     $.post('/api/create', topic, function (data, status) {
       // Handle res.
       data = JSON.parse(data);
       if (data.status == 'success') {
         // Create new topic button element
-        var html = '<button class="topic button">' + $('#topic-name').val() + '</button>';
+        var html = '<button class="topic">' + $('#topic-name').val() + '</button>';
         console.log(html);
         // Append to the html
         $('#topics').append(html);
@@ -90,15 +92,19 @@ $(document).ready(function () {
   // Routes user to the selected topic.
   //
   $('.topic').click(function (e) {
-    $.post('/api/topic/' + $(this).html(), $(this).html(), function (data, status) {
-      // Handle res.
-      data = JSON.parse(data);
-      if (data.status == 'success') {
-        cosnole.log('Loading topic.....');
-      } else {
-        // ERROR
-        console.log(data.status);
-      }
-    });
+    // $.post('/api/topic-check/', $(this).html(), function (data, status) {
+    //   // Handle res.
+    //   data = JSON.parse(data);
+    //   if (data.status == 'success') {
+    //     cosnole.log('Loading topic.....');
+    //     // Redirect user.
+    //     window.location.replace("../topic/?id=" + $(this).html() );
+    //   } else {
+    //     // ERROR
+    //     console.log(data.status);
+    //   }
+    // });
+    // window.location.replace("../topic/?id=" + $(this).html());
+    window.location.replace("../topic");
   });
 });
