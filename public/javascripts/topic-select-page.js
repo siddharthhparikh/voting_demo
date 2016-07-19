@@ -68,6 +68,8 @@ $(document).ready(function () {
         $('#topic-cand2').val()
       ]
     }
+    console.log('topic: ');
+    console.log(topic);
     // Submit the new topic
     $.post('/api/create', topic, function (data, status) {
       // Handle res.

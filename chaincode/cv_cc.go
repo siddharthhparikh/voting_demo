@@ -20,8 +20,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
-	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -42,8 +42,8 @@ var accountHeader = "account::"
 type Topic struct {
 	ID      string   `json:"topic_id"`
 	Issuer  string   `json:"issuer"`
-	Choices []string `json:"choices"`
-	Votes   []int    `json:"votes"`
+	Choices []string `json:"choices[]"`
+	Votes   []string `json:"votes[]"` //ints in string form
 }
 
 var topicHeader = "topic::"
@@ -51,10 +51,10 @@ var topicHeader = "topic::"
 //Vote vote cast for a given topic
 type Vote struct {
 	Topic    string   `json:"topic"` //topic being voted upon
-	Issuer   string   `json:"issuer"`
-	CastDate string   `json:"castDate"` //current time in milliseconds as a string
-	Choices  []string `json:"choices"`
-	Votes    []int    `json:"votes"`
+	Voter    string   `json:"voter"`
+	CastDate string   `json:"castDate"` //current time as a string
+	Choices  []string `json:"choices[]"`
+	Votes    []string `json:"votes[]"`
 }
 
 var voteHeader = "vote::"
@@ -222,6 +222,9 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 	if existingTopicBytes == nil {
 		fmt.Println("Vote does not exist, creating new vote...")
 		topicBytes, err := json.Marshal(&topic)
+
+		fmt.Println(topic)
+
 		if err != nil {
 			fmt.Println("Error marshalling topic")
 			return nil, err
@@ -377,6 +380,29 @@ func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 	return allTopics, nil
 }
 
+func getTopic(stub *shim.ChaincodeStub, topicName string) (Topic, error) {
+	fmt.Println("Retrieving topic " + topicName + "...")
+
+	var emptyTopic Topic
+
+	topicBytes, err := stub.GetState(topicHeader + topicName)
+	if err != nil {
+		fmt.Println("Error retrieving vote topic")
+		return emptyTopic, err
+	}
+
+	fmt.Println(topicBytes)
+
+	var topic Topic
+	err = json.Unmarshal(topicBytes, &topic)
+	if err != nil {
+		fmt.Println("Error unmarshalling vote topics: ", err)
+		return emptyTopic, err
+	}
+
+	return topic, nil
+}
+
 var transactionID uint64
 
 func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -399,11 +425,11 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 	fmt.Println("Unmarshalling vote")
 	err := json.Unmarshal([]byte(args[0]), &vote)
 	if err != nil {
-		fmt.Println("Invalid vote cast")
+		fmt.Println("Invalid vote cast: ", err)
 		return nil, err
 	}
 
-	account, errGetAccount := getAccount(stub, vote.Issuer)
+	account, errGetAccount := getAccount(stub, vote.Voter)
 
 	if errGetAccount != nil {
 		fmt.Println("Error retrieving account: ", errGetAccount)
@@ -427,7 +453,12 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 
 	//make sure all votes are >=0
 	var count uint64
-	for _, quantity := range vote.Votes {
+	for _, quantityStr := range vote.Votes {
+		quantity, err := strconv.Atoi(quantityStr)
+		if err != nil {
+			fmt.Println("Error converting vote from string to int: ", err)
+			return nil, err
+		}
 		if quantity < 0 {
 			fmt.Println("Error: attempted to cast vote of negative value")
 			return nil, errors.New("Attempted to cast vote of negative value")
@@ -448,14 +479,19 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 	}
 
 	for i := 0; i < len(topic.Choices); i++ {
-		if vote.Votes[i] > 0 {
+		voteQty, err := strconv.Atoi(vote.Votes[i])
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		if voteQty > 0 {
 			addedRow, errRow := stub.InsertRow(topicHeader+vote.Topic, shim.Row{
 				Columns: []*shim.Column{
 					{&shim.Column_Uint64{Uint64: transactionID}},
-					{&shim.Column_String_{String_: vote.Issuer}},
+					{&shim.Column_String_{String_: vote.Voter}},
 					{&shim.Column_String_{String_: topic.Choices[i]}},
-					{&shim.Column_Uint64{Uint64: uint64(vote.Votes[i])}},
-					{&shim.Column_String_{String_: time.Now().String()}},
+					{&shim.Column_Uint64{Uint64: uint64(voteQty)}},
+					{&shim.Column_String_{String_: vote.CastDate}},
 				},
 			})
 
@@ -465,6 +501,31 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 			}
 
 			transactionID++
+		}
+	}
+
+	fmt.Println("Vote successfully cast!")
+
+	return nil, nil
+}
+
+func (t *SimpleChaincode) tallyVotes(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	if len(args) != 1 {
+		fmt.Println("Incorrect number of arguments. Expecting 1: string of topic ID to be queried")
+		return nil, errors.New("Incorrect number of arguments. Expecting 1: string of topic ID to be queried")
+	}
+
+	//var choices []
+
+	rowChan, rowErr := stub.GetRows(topicHeader+args[0], []shim.Column{})
+	if rowErr != nil {
+		fmt.Println(fmt.Println("[ERROR] Could not retrieve the rows: ", rowErr))
+		return nil, rowErr
+	}
+
+	for row := range rowChan {
+		if len(row.Columns) != 0 {
+			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
 		}
 	}
 
@@ -485,6 +546,8 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.issueTopic(stub, args)
 	case "clear_all_topics":
 		return t.clearTopics(stub, args)
+	case "cast_vote":
+		return t.castVote(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error
@@ -516,6 +579,27 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		fmt.Println("All success, returning allTopics")
 		return allTopicsBytes, nil
 
+	case "get_topic":
+		if len(args) != 1 {
+			fmt.Println("Incorrect number of arguments. Expecting 1: string of account ID being queried")
+			return nil, nil
+		}
+
+		topicID := string([]byte(args[0]))
+
+		topic, err1 := getTopic(stub, topicID)
+		if err1 != nil {
+			fmt.Println("Error from get_topic: ", err1)
+			return nil, err1
+		}
+
+		topicBytes, err2 := json.Marshal(&topic)
+		if err2 != nil {
+			fmt.Println("Error marshalling topic: ", err2)
+			return nil, err2
+		}
+		return topicBytes, nil
+
 	case "get_account":
 		if len(args) != 1 {
 			fmt.Println("Incorrect number of arguments. Expecting 1: string of account ID being queried")
@@ -537,6 +621,31 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		}
 		fmt.Println("All success, returning account")
 		return accountBytes, nil
+
+	case "tally_votes":
+		if len(args) != 1 {
+			fmt.Println("Incorrect number of arguments. Expecting 1: string of topic ID being tallied")
+			return nil, nil
+		}
+		
+		topicID := string([]byte(args[0]))
+
+		strArgs := []string{topicID}
+
+		topicVotes, err1 := t.tallyVotes(stub, strArgs)
+		if err1 != nil {
+			fmt.Println("Error from tally_votes: ", err1)
+			return nil, err1
+		}
+
+		topicVotesBytes, err2 := json.Marshal(&topicVotes)
+		if err2 != nil {
+			fmt.Println("Error marshalling vote tallies: ", err2)
+			return nil, err2
+		}
+		fmt.Println("All success, returning vote tallies")
+		return topicVotesBytes, nil
+
 	}
 	fmt.Println("query did not find func: " + function) //error
 

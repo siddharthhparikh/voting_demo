@@ -41,7 +41,7 @@ router.post('/login', function (req, res, next) {
 router.get('/o', function (req, res) {
   console.log('deleting all topics...');
   console.log('hope you know what you\'re doing...');
-  chaincode.invoke('clear_all_topics', [], function(err, data) {
+  chaincode.invoke('clear_all_topics', [], function (err, data) {
     if (err) {
       console.log('ERROR: ' + err);
       res.json('{"status" : "failure"}');
@@ -56,14 +56,26 @@ router.get('/o', function (req, res) {
 router.get('/get-topics', function (req, res) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, data) {
-    if (err) console.log(err);
+    chaincode.query('tally_votes', 'Who will be the next CEO?', function () { });
+
+    if (err) console.log('ERROR: ', err);
+    else res.json(data);
+  });
+});
+
+/* Get specific voting topic from blockchain */
+router.get('/get-topic', function (req, res) {
+  var args = req.query.topicID;
+  console.log(args);
+  chaincode.query('get_topic', args, function (err, data) {
+    if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
 });
 
 router.post('/topic-check/', function (req, res, next) {
   // Get the topic id from the post
-  var topicId = req.body;
+  var topicID = req.body;
   // TODO See if the topic is valid
 
   // Send response
@@ -88,14 +100,15 @@ router.post('/create', function (req, res, next) {
 });
 
 /* Submit votes from a user */
-router.post('/votesubmit', function (req, res, next) {
-  // Get voting data 
-  var vote1 = req.body[0];
-  vote1.issuer = req.session.name;
-  var vote2 = req.body[1];
-  vote2.issuer = req.session.name;
-  // Submit voting data to database or blockchain or whatever
-  res.json('{"status" : "success"}');
+router.post('/vote-submit', function (req, res, next) {
+  req.body.voter = req.session.name;
+
+  console.log(JSON.stringify(req.body));
+  chaincode.invoke('cast_vote', JSON.stringify(req.body), function (err, results) {
+    console.log(results);
+
+    res.json('{"status" : "success"}');
+  })
 });
 
 router.get('/load-chain', function (req, res) {
