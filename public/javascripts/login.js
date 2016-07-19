@@ -7,6 +7,19 @@
 $(document).ready(function() { 
   $('.hidden').hide();
 
+  $.get('/api/load-chain', function (data, status) {
+    console.log('testing loading');
+    data = JSON.parse(data);
+    if(data.status == "success") {
+      console.log('im in......');
+      $('#loading-screen').remove();
+      $('#content-header').fadeIn();
+      $('#content-block').fadeIn();
+    } else {
+      //TODO display err
+    }
+  });
+
   //Animation for register info box.
   $('#open-register').click(function () {
     $('#register-box').toggle("fast", function () { });

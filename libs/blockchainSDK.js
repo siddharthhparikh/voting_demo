@@ -24,10 +24,10 @@ var users = null;
 var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
-caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
-peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
-peerURLs.push('grpc://ethan-p2.rtp.raleigh.ibm.com:30303');
-peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
+caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
+peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
+//peerURLs.push('grpc://test-p2.rtp.raleigh.ibm.com:30303');
+//peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
 
 registrar = {
     'username': 'ethanicus',
@@ -98,12 +98,17 @@ exports.deploy = function (path, args, cb) {
 
         chaincodeID = results.chaincodeID;
 
+        //chaincode has been deployed
+
         if (cb) cb(null);
     });
 
     transactionContext.on('error', function (err) {
         console.log('Error deploying chaincode: %s', err.msg);
         console.log('App will fail without chaincode, sorry!');
+        
+        //chaincode has errored
+        
         cb(err);
     });
 }

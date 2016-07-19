@@ -12,9 +12,14 @@ router.get('/topics', function (req, res) {
 });
 
 // Routes user to selected topic page.
-router.get('/topic/:id', function(req, res) {
-  // TODO test if this work
-  res.render('topic', {title: 'Chain Vote', topicid: req.param.id});
+// router.get('/topic/:id', function(req, res) {
+//   // TODO test if this work
+//   res.render('topic', {title: 'Chain Vote', topicid: req.param.id});
+// });
+
+//TEMP routing to topic
+router.get('/topic', function(req, res) {
+  res.render('topic', {title: 'Chain Vote'});
 });
 
 router.get('/logout', function(req, res) {

@@ -7,17 +7,19 @@ block content
  
   #header
     h1(id="title")= title   
-    h1(class='vote-header' id='remaining-votes')
-    h1(class='vote-header') Remaining Votes: 
+    h1(class='vote-header' id='remaining-votes') 5
+    h1(class='vote-header') Remaining Votes:
 
   #content-header
-    h1(id="topic-description")
+    h1(id="topic-description") Who will be the next CEO?
    
-  form#content-block(action='/submit-votes' method='post')
-    p(id='cand1') 
-      input(type='number' name='votes1' id='votes1' class='votes' min='0' max=5)
-    p(id='cand2') : 
-      input(type='number' name='votes2' id='votes2' class='votes' min='0' max=5)
+  #content-block
+    p(id='cand1') Sid :
+      input(type='number' id='votes1' class='votes' min='0' max=5)
+    p(id='cand2') Ethan :
+      input(type='number' id='votes2' class='votes' min='0' max=5)
+    p(id='cand2') Gennaro :
+      input(type='number' id='votes2' class='votes' min='0' max=5)
     p
-    input(type='submit' name='votes' class='button' id='submit' value='Submit')
+    input(type='submit' class='button' id='submit' value='Submit')
     

@@ -109,10 +109,14 @@
 }
 
 #logout {
-  margin-top: 45px;
+  margin-top: 15px;
 }
 
 .welcome-o {
   margin: 0px;
 
+}
+
+#loading-msg {
+  margin: 0px;
 }
