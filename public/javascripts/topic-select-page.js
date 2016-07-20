@@ -5,34 +5,36 @@
  * Handles all animations and hiding for info boxes (and some other elements).
  * Handles new topic generation.
  */
+
+ /* loadTopics reloads the topic buttons list */
+function loadTopics() {
+  $.get('/api/get-topics', function (data, status) {
+    $('#loader').remove();    
+    if (data) {
+      $('#topics').empty();
+      // Create a lot of buttons from the topic list.
+      var count = 0;
+      for (var topic in data) {
+        console.log('found topic \"' + data[topic].topic_id + '\"');
+        var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
+        $('#topics').append(html);
+        count++;
+      }
+      if (count == 0) {
+        console.log('no topics found');
+      }
+    } else {
+      var html = '<p id="no-topics">No topics found.</p>'
+      $('#topics').append(html);
+    }
+  });
+}
+
 $(document).ready(function () {
-
-  //
-  // Generate topic buttons
-  //
-  // $.get('/api/get-topics', function (data, status) {
-  //   $('#loader').remove();    
-  //   if (data) {
-  //     // Create a lot of buttons from the topic list.
-  //     var count = 0;
-  //     for (var topic in data) {
-  //       console.log('found topic \"' + data[topic].topic_id + '\"');
-  //       var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
-  //       $('#topics').append(html);
-  //       count++;
-  //     }
-  //     if (count == 0) {
-  //       console.log('no topics found');
-  //     }
-  //   } else {
-  //     var html = '<p>No topics found.</p>'
-  //     $('#topics').append(html);
-  //   }
-  // });
-
   // 
   // Page setup.
   // 
+  loadTopics();
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
@@ -77,10 +79,13 @@ $(document).ready(function () {
       data = JSON.parse(data);
       if (data.status == 'success') {
         // Create new topic button element
-        var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
-        console.log(html);
+        //var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
+        //console.log(html);
         // Append to the html
-        $('#topics').append(html);
+        //$('#topics').append(html);
+        // TEST
+        loadTopics();
+        
       } else {
         // ERROR
         console.log(data.status);
