@@ -20,7 +20,7 @@ chain.setKeyValStore(hlc.newFileKeyValStore('/tmp/keyValStore'));
 var peerURLs = [];
 var caURL = null;
 var users = null;
-
+var user_manager = require("./users")
 var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
@@ -54,7 +54,7 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
     registrar = user;
 
     exports.deploy('github.com/voting_demo/chaincode/', ['99'], function(){
-        users.setup(results.chaincodeID, chain, cb_deployed);
+        user_manager.setup(results.chaincodeID, chain, cb_deployed);
     });
 });
 
