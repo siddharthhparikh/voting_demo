@@ -137,6 +137,8 @@ router.get('/user', function (req, res) {
 /* Regiister a user */
 router.get('/register', function (req, res) {
   res.json('{"status" : "success"}');
+  console.log(req)
+  //chaincode.invoke('request_account', [])
 });
 
 module.exports = router;
