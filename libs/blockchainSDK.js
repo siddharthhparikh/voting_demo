@@ -15,7 +15,7 @@ var chaincodeID = null;
 
 // Configure the KeyValStore which is used to store sensitive keys
 // as so it is important to secure this storage
-chain.setKeyValStore(hlc.newFileKeyValStore('./keyValStore'));
+chain.setKeyValStore(hlc.newFileKeyValStore('/tmp/keyValStore'));
 
 var peerURLs = [];
 var caURL = null;
