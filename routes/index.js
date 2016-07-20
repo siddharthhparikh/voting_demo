@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var url = require('url');
 
 // Loads login page.
 router.get('/', function(req, res, next) {
@@ -13,8 +14,16 @@ router.get('/topics', function (req, res) {
 
 // Routes user to selected topic page.
 router.get('/topic/:id', function(req, res) {
-  // TODO test if this work
   res.render('topic', {title: 'Chain Vote', topicid: req.param.id});
+  var url_parts = url.parse(req.url, true);
+  console.log(url_parts.query);
+
+  var id;
+  for (var i in url_parts.query) {
+    id = url_parts.query[i];
+  }
+  
+  res.render('topic', {title: 'Chain Vote', topicID: id});
 });
 
 router.get('/logout', function(req, res) {

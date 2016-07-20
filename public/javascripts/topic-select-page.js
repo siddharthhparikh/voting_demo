@@ -5,14 +5,13 @@
  * Handles all animations and hiding for info boxes (and some other elements).
  * Handles new topic generation.
  */
-$(document).ready(function () {
 
-  //
-  // Generate topic buttons
-  //
+ /* loadTopics reloads the topic buttons list */
+function loadTopics() {
   $.get('/api/get-topics', function (data, status) {
     $('#loader').remove();    
     if (data) {
+      $('#topics').empty();
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var topic in data) {
@@ -29,10 +28,13 @@ $(document).ready(function () {
       $('#topics').append(html);
     }
   });
+}
 
+$(document).ready(function () {
   // 
   // Page setup.
   // 
+  loadTopics();
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
@@ -77,10 +79,13 @@ $(document).ready(function () {
       data = JSON.parse(data);
       if (data.status == 'success') {
         // Create new topic button element
-        var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
-        console.log(html);
+        //var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
+        //console.log(html);
         // Append to the html
-        $('#topics').append(html);
+        //$('#topics').append(html);
+        // TEST
+        loadTopics();
+        
       } else {
         // ERROR
         console.log(data.status);
