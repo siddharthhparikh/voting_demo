@@ -56,10 +56,12 @@
 .info-box input[type='text']{
   height: 50px;
   margin: 0px 0px 15px 0px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);  
 }
 
 .info-box p {
-  margin: 10px 0px 0px 0px
+  text-align: left;
+  margin: 10px 0px 5px 15px
 }
 
 #register {
@@ -72,12 +74,12 @@
 #open-register {
   width: 125px;
   height: 50px;
+  
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 
   margin: 10px 10px 0px 0px;
   float: right;
 }
-
-
 
 /* Submit button sizing */
 
