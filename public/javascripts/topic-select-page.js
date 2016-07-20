@@ -8,10 +8,11 @@
 
  /* loadTopics reloads the topic buttons list */
 function loadTopics() {
+  $('#loader').show();
+  $('#topics').empty();
   $.get('/api/get-topics', function (data, status) {
-    $('#loader').remove();    
+    $('#loader').hide();    
     if (data) {
-      $('#topics').empty();
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var topic in data) {
@@ -56,6 +57,8 @@ $(document).ready(function () {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function () { });
   });
+  // Set click action for refresh button.
+  $('#refresh-topics').click(loadTopics());
 
   //
   // Topic generation for in the 'create' info-box
@@ -78,14 +81,7 @@ $(document).ready(function () {
       // Handle res.
       data = JSON.parse(data);
       if (data.status == 'success') {
-        // Create new topic button element
-        //var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
-        //console.log(html);
-        // Append to the html
-        //$('#topics').append(html);
-        // TEST
-        loadTopics();
-        
+        loadTopics(); 
       } else {
         // ERROR
         console.log(data.status);
@@ -97,8 +93,7 @@ $(document).ready(function () {
   //
   // Routes user to the selected topic.
   //
-   $(document).on('click', '.topic', function(){
-    console.log('testing');
+   $(document).on('click', '.topic', function() {
     // $.post('/api/topic-check/', $(this).html(), function (data, status) {
     //   // Handle res.
     //   data = JSON.parse(data);
@@ -111,7 +106,6 @@ $(document).ready(function () {
     //     console.log(data.status);
     //   }
     // });
-    // window.location.replace("../topic/?id=" + $(this).html());
     window.location.replace("../topic/id?=" + $(this).html());
   });
 });

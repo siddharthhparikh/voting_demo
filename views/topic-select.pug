@@ -15,19 +15,20 @@ block content
 
   #content-header
     h1 Current Voting Topics
+    i(class="material-icons" id='refresh-topics') refresh
 
   #topic-creation(class='info-box' class='hidden')
     h1(id='create-header') Create A Topic
-    form(action='create-topic' method='get')
+    #topic-input
       p(class='form-label') Vote Description:
       input(type='text' class='new-topic-input' id='topic-name' placeholder='Topic Description')
       p(class='form-label') First Candidate:
       input(type='text' class='new-topic-input' id='topic-cand1' placeholder='Candidate')
       p(class='form-label') Second Candidate:
       input(type='text' class='new-topic-input' id='topic-cand2' placeholder='Candidate')
-      p(class='form-label') Third Candidate:
-      input(type='text' class='new-topic-input' id='topic-cand3' placeholder='Candidate')
-      input(type='submit' class='button' id='topic-submit' value='Submit' )
+      p
+      i(class="material-icons" id='add-cand') add
+    input(type='submit' class='button' id='topic-submit' value='Submit' )
 
   #user-info(class='info-box' class='hidden')
     p(class='info-header') You are logged in as:

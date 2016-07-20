@@ -12,7 +12,7 @@ $(document).ready(function () {
   $.post('/api/get-topic',{'id':topicid}, function (data, status) {
     data = JSON.parse(data);
     if(data) {
-      console.log('Topic Found!');
+    // Create candidates
     // TODO get topic data set up.
     // $('#cand1').append(data.topic.choices[0]);
     // $('#cand2').append(data.topic.choices[1]);
