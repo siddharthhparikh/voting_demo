@@ -137,6 +137,7 @@ router.get('/user', function (req, res) {
 /* Regiister a user */
 router.get('/register', function (req, res) {
   res.json('{"status" : "success"}');
+  
 });
 
 module.exports = router;
