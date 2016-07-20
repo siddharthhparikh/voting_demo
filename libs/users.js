@@ -241,8 +241,8 @@ function registerUser(username, role, cb) {
     });
 }
 */
-module.exports.login = login;
-module.exports.registerUser = registerUser;
+//module.exports.login = login;
+//module.exports.registerUser = registerUser;
 
 module.exports.setup = function (ccID, ch, cb) {
     if (chain && ccID) {
