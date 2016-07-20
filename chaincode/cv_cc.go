@@ -41,10 +41,11 @@ var accountHeader = "account::"
 
 //Topic voting topic and choices
 type Topic struct {
-	ID      string   `json:"topic_id"`
-	Issuer  string   `json:"issuer"`
-	Choices []string `json:"choices[]"`
-	Votes   []string `json:"votes[]"` //ints in string form
+	ID         string   `json:"topic_id"`
+	Issuer     string   `json:"issuer"`
+	Choices    []string `json:"choices[]"`
+	Votes      []string `json:"votes[]"` //ints in string form
+	ExpireDate string   `json:"expire_date"`
 }
 
 var topicHeader = "topic::"
