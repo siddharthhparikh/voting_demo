@@ -25,6 +25,7 @@ router.post('/login', function (req, res, next) {
       req.session.name = user.account_id;
       console.log('Logging in as.....');
       console.log(req.session.name);
+
       // Send response.
       res.json('{"status" : "success"}');
     } else {
@@ -65,9 +66,6 @@ router.get('/o', function (req, res) {
 router.get('/get-topics', function (req, res) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, data) {
-    chaincode.query('tally_votes', 'Who will be the next CEO?', function () { });
-    console.log("[INFO] All topics: ", data);
-
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
@@ -94,20 +92,19 @@ router.post('/topic-check/', function (req, res, next) {
 
 /* Create a new voting topic */
 router.post('/create', function (req, res, next) {
-  // var newTopic = req.body;
+  var newTopic = req.body;
 
-  // // Set the issuer to the current active user,
-  // newTopic.issuer = req.session.name;
+  // Set the issuer to the current active user,
+  newTopic.issuer = req.session.name;
 
-  // console.log('New topic: \n ' + JSON.stringify(newTopic));
-  // // Add topic object to database.
+  console.log('New topic: \n ' + JSON.stringify(newTopic));
+  // Add topic object to database.
 
-  // var args = [JSON.stringify(newTopic)];
-  // chaincode.invoke('issue_topic', args, function (err, results) {
-  //   if (err) console.log(err);
-  //   else res.json('{"status" : "success"}');
-  // });
-  res.json('{"status" : "success"}');
+  var args = [JSON.stringify(newTopic)];
+  chaincode.invoke('issue_topic', args, function (err, results) {
+    if (err) console.log(err);
+    else res.json('{"status" : "success"}');
+  });
 });
 
 /* Submit votes from a user */
