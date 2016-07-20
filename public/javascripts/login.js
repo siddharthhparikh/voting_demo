@@ -51,7 +51,6 @@ $(document).ready(function() {
 });
 
 $('#register-user').click(function(e) {
-      preventDefault(e);
       console.log('Sending request');
       // Create request object.
       var newUser = {
