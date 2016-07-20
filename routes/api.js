@@ -140,7 +140,7 @@ router.post('/register', function (req, res) {
   var username = req.body.name;
   var email = req.body.email;
   var votes = "10";
-  chaincode.invoke('request-account', [username, email], function (err, results) {
+  chaincode.invoke('request_account', [username, email], function (err, results) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
@@ -148,7 +148,7 @@ router.post('/register', function (req, res) {
     console.log(results);
     // create account
     //remove this when ui is ready for manager approval
-    chaincode.invoke('create-account', [username, email, votes], function (err, results) {
+    chaincode.invoke('create_account', [username, email, votes], function (err, results) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
