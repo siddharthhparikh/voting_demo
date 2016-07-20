@@ -47,7 +47,7 @@ $(document).ready(function() {
     //
     // Request to register as a new user.
     //
-    $('#register-user').click(function(e) {
+    $('#register-user').click(function() {
       console.log('Sending request');
       // Create request object.
       var newUser = {
