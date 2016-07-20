@@ -53,7 +53,9 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
     registrar = user;
 
-    exports.deploy('github.com/voting_demo/chaincode/', ['99'], cb_deployed);
+    exports.deploy('github.com/voting_demo/chaincode/', ['99'], function(){
+        users.setup(results.chaincodeID, chain, cb_deployed);
+    });
 });
 
 function cb_deployed() {
@@ -97,7 +99,6 @@ exports.deploy = function (path, args, cb) {
         console.log('chaincode-ID: %s', results.chaincodeID);
 
         chaincodeID = results.chaincodeID;
-
         //chaincode has been deployed
 
         if (cb) cb(null);
