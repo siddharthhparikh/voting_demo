@@ -137,9 +137,9 @@ router.get('/user', function (req, res) {
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
-  var username = JSON.stringify(req.body.name);
-  var email = JSON.stringify(req.body.email);
-  var votes = JSON.stringify("10");
+  var username = req.body.name;
+  var email = req.body.email;
+  var votes = "10";
   chaincode.invoke('request-account', [username, email], function (err, results) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
