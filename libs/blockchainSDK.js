@@ -30,8 +30,8 @@ peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
 //peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
 
 registrar = {
-    'username': 'ethanicus',
-    'secret': 'trainisland'
+    'username': 'WebAppAdmin',
+    'secret': 'DJY27pEnl16d'
 }
 
 // Set the URL for member services
