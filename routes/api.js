@@ -94,19 +94,20 @@ router.post('/topic-check/', function (req, res, next) {
 
 /* Create a new voting topic */
 router.post('/create', function (req, res, next) {
-  var newTopic = req.body;
+  // var newTopic = req.body;
 
-  // Set the issuer to the current active user,
-  newTopic.issuer = req.session.name;
+  // // Set the issuer to the current active user,
+  // newTopic.issuer = req.session.name;
 
-  console.log('New topic: \n ' + JSON.stringify(newTopic));
-  // Add topic object to database.
+  // console.log('New topic: \n ' + JSON.stringify(newTopic));
+  // // Add topic object to database.
 
-  var args = [JSON.stringify(newTopic)];
-  chaincode.invoke('issue_topic', args, function (err, results) {
-    if (err) console.log(err);
-    else res.json('{"status" : "success"}');
-  });
+  // var args = [JSON.stringify(newTopic)];
+  // chaincode.invoke('issue_topic', args, function (err, results) {
+  //   if (err) console.log(err);
+  //   else res.json('{"status" : "success"}');
+  // });
+  res.json('{"status" : "success"}');
 });
 
 /* Submit votes from a user */

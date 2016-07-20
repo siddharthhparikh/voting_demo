@@ -77,7 +77,7 @@ $(document).ready(function () {
       data = JSON.parse(data);
       if (data.status == 'success') {
         // Create new topic button element
-        var html = '<button class="topic, button">' + $('#topic-name').val() + '</button>';
+        var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
         console.log(html);
         // Append to the html
         $('#topics').append(html);
@@ -92,7 +92,8 @@ $(document).ready(function () {
   //
   // Routes user to the selected topic.
   //
-  $('.topic').click(function (e) {
+   $(document).on('click', '.topic', function(){
+    console.log('testing');
     // $.post('/api/topic-check/', $(this).html(), function (data, status) {
     //   // Handle res.
     //   data = JSON.parse(data);
