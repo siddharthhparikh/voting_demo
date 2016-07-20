@@ -105,6 +105,6 @@ $(document).ready(function () {
     //   }
     // });
     // window.location.replace("../topic/?id=" + $(this).html());
-    window.location.replace("../topic");
+    window.location.replace("../topic/id?=" + $(this).html());
   });
 });
