@@ -6,6 +6,7 @@
  * Handles new topic generation.
  */
 $(document).ready(function () {
+
   //
   // Generate topic buttons
   //
