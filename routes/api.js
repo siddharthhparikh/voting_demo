@@ -137,7 +137,21 @@ router.get('/user', function (req, res) {
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
-  res.json('{"status" : "success"}');
+  chaincode.invoke('request-account', [req.body.name, req.body.email], function (err, results) {
+    if (err != null) {
+      res.json('{"status" : "failure", "Error": err}');
+    }
+    console.log(results);
+    // create account
+    //remove this when ui is ready for manager approval
+    chaincode.invoke('create-account', [req.body.name, req.body.email, '10'], function (err, results) {
+      if (err != null) {
+        res.json('{"status" : "failure", "Error": err}');
+      }
+      console.log(results);
+      res.json('{"status" : "success"}');
+    });
+  });
   //chaincode.invoke('request_account', [])
 });
 
