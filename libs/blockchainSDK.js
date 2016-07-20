@@ -85,7 +85,7 @@ exports.deploy = function (path, args, cb) {
 
     var deployRequest = {
         args: args,
-        chaincodeID: chaincodeName,
+        //chaincodeID: chaincodeName,
         fcn: 'init',
         chaincodePath: path
     }
