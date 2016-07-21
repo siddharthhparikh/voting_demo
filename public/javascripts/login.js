@@ -45,7 +45,7 @@ $(document).ready(function () {
     });
   });
 
-  $('#register-user').click(function (e) {
+  $('#reg-usr').click(function (e) {
     console.log('Sending request');
     // Create request object.
     var newUser = {
@@ -61,4 +61,5 @@ $(document).ready(function () {
       }
     });
   });
-})
+
+});
