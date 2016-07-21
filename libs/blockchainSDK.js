@@ -24,7 +24,7 @@ var user_manager = require("./users")
 var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
-caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
 
 registrar = {
     'username': 'WebAppAdmin',
@@ -36,7 +36,7 @@ console.log('adding ca: \'' + caURL + '\'');
 chain.setMemberServicesUrl(caURL);
 
 // Add all peers' URL
-chain.addPeer('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
+chain.addPeer('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
 
 console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
 chain.enroll(registrar.username, registrar.secret, function (err, user) {
