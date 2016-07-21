@@ -25,9 +25,6 @@ var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
 caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
-peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
-peerURLs.push('grpc://ethan-p2.rtp.raleigh.ibm.com:30303');
-peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
 
 registrar = {
     'username': 'WebAppAdmin',
@@ -39,10 +36,7 @@ console.log('adding ca: \'' + caURL + '\'');
 chain.setMemberServicesUrl(caURL);
 
 // Add all peers' URL
-for (var i in peerURLs) {
-    console.log('adding peer: \'' + peerURLs[i] + '\'');
-    chain.addPeer(peerURLs[i]);
-}
+chain.addPeer('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
 
 console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
 chain.enroll(registrar.username, registrar.secret, function (err, user) {
