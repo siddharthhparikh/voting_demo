@@ -19,7 +19,7 @@ router.post('/login', function (req, res, next) {
   // TODO check if the user already exsits in db.
 
   var username = user.account_id;
-  var passowrd = user.account_pass;
+  var password = user.account_pass;
   console.log(user);
   console.log("inside /login");
   chaincode.login(username, password, function (err) {
