@@ -18,8 +18,20 @@ router.post('/login', function (req, res, next) {
   var user = req.body;
   // TODO check if the user already exsits in db.
 
-  var args = user.account_id;
-  chaincode.query('get_account', args, function (err, data) {
+  var username = user.account_id;
+  var passowrd = user.account_pass;
+  chaincode.login(username, password, function (err) {
+    if (err != null) {
+      res.json('{"status" : "Invalid login."}');
+    }
+    req.session.name = user.account_id;
+    console.log('Logging in as.....');
+    console.log(req.session.name);
+    // Send response.
+    res.json('{"status" : "success"}');
+
+  });
+  /*chaincode.query('get_account', args, function (err, data) {
     if (data) {
       // Create user session
       req.session.name = user.account_id;
@@ -31,7 +43,7 @@ router.post('/login', function (req, res, next) {
     } else {
       res.json('{"status" : "Invalid login."}');
     }
-  });
+  });*/
   // TODO Create user string queryin chaincode.
 });
 
@@ -73,7 +85,7 @@ router.get('/get-topics', function (req, res) {
 
 /* Get specific voting topic from blockchain */
 router.post('/get-topic', function (req, res) {
-  console.log(req.body)  
+  console.log(req.body)
   var args = req.body.id;
   chaincode.query('get_topic', args, function (err, data) {
     if (err) console.log('ERROR: ', err);
