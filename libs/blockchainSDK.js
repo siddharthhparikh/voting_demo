@@ -166,7 +166,7 @@ exports.query = function (fcn, args, cb) {
 }
 
 exports.registerAndEnroll = function (username, role, cb) {
-    return user_manager.registerUSer(username, role, cb);
+    return user_manager.registerUser(username, role, cb);
 }
 
 exports.Enroll = function (username, secret, cb) {
