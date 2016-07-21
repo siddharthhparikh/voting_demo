@@ -242,7 +242,7 @@ function registerUser(username, role, cb) {
 }
 */
 module.exports.login = Login;
-module.exports.registerUser = registerUser;
+module.exports.registerUser = registerUSer;
 
 module.exports.setup = function (ccID, ch, cb) {
     if (chain && ccID) {
