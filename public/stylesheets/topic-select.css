@@ -78,6 +78,11 @@
 
 /* Special header for topic creation*/
 
+#topic-input {
+  height: 72%;
+  overflow: auto;
+}
+
 #create-header {
   margin: 0px 0px 25px 0px;
   font-size: 28px;
@@ -121,4 +126,24 @@
 
 #loading-msg {
   margin: 0px;
+}
+
+#refresh-topics {
+  float: right;
+  margin-top: -23px;
+  color: #313131;
+}
+
+#refresh-topics:hover{
+  cursor: pointer;
+  border: 2px solid #313131;
+  border-radius: 5px;
+}
+
+#refresh-topics:active{
+  cursor: pointer;
+  color: #F7F7F7;
+  background-color: #313131;
+  border: 2px solid #313131;
+  border-radius: 5px;
 }
