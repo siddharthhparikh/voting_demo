@@ -8,8 +8,8 @@
 
  /* loadTopics reloads the topic buttons list */
 function loadTopics() {
-  $('#loader').show();
   $('#topics').empty();
+  $('#loader').show();
   $.get('/api/get-topics', function (data, status) {
     $('#loader').hide();    
     if (data) {
@@ -31,7 +31,7 @@ function loadTopics() {
   });
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
   // 
   // Page setup.
   // 
@@ -53,7 +53,7 @@ $(document).ready(function () {
     $('#topic-creation').toggle("fast", function () { });
   });
   //Animation for new topic, info box.
-  $('#user-button').click(function () {
+  $('#open-user-info').click(function () {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function () { });
   });
@@ -65,14 +65,19 @@ $(document).ready(function () {
   //
   $('#topic-submit').click(function (e) {
     e.preventDefault();
+    
+    var choices = [];
+    $('.topic-candidate').each(function(){
+      choices.push($(this).val());
+    });
+
+    console.log(choices);
+
     // Create a new topic object.
     var topic = {
       'topic_id': $('#topic-name').val(),
       'issuer': '',
-      'choices': [
-        $('#topic-cand1').val(),
-        $('#topic-cand2').val()
-      ]
+      'choices': choices
     }
     console.log('topic: ');
     console.log(topic);
@@ -86,10 +91,18 @@ $(document).ready(function () {
         // ERROR
         console.log(data.status);
       }
-    })
-    $('topic-creation').fadeOut();
+    });
+    $('#topic-creation').fadeOut();
   });
 
+  //
+  // Add a new candidate form
+  //
+  $('#add-cand').click(function() {
+    var html = '<input type="text" class="topic-candidate" placeholder="Candidate"/>';
+    $('#candidate-append').append(html);
+  });
+  
   //
   // Routes user to the selected topic.
   //

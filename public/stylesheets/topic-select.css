@@ -46,7 +46,7 @@
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
-#user-button:active {
+#open-user-info:active {
   color: #F7F7F7;
 }
 
@@ -100,21 +100,6 @@
   margin-top: 40px;
 }
 
-/* Special user info-box styling */
-
-.info-header {
-  margin: 75px 0px 10px 0px;
-  font-size: 28px;
-  line-height: 30px;
-  font-weight: bold;
-  text-decoration: underline;
-}
-
-.user-info {
- margin: 30px;
- font-size : 24px;
-}
-
 #logout {
   margin-top: 15px;
 }
@@ -122,10 +107,6 @@
 .welcome-o {
   margin: 0px;
 
-}
-
-#loading-msg {
-  margin: 0px;
 }
 
 #refresh-topics {
@@ -146,4 +127,34 @@
   background-color: #313131;
   border: 2px solid #313131;
   border-radius: 5px;
+}
+
+#add-cand {
+  color: #313131;
+}
+
+#add-cand:hover{
+  cursor: pointer;
+  border: 2px solid #313131;
+  border-radius: 5px;
+}
+
+#add-cand:active{
+  cursor: pointer;
+  color: #F7F7F7;
+  background-color: #313131;
+  border: 2px solid #313131;
+  border-radius: 5px;
+}
+
+#loading-msg {
+  margin: 0px;
+}
+
+.user-info-header {
+  text-decoration: underline;
+}
+
+#candidate-append {
+  margin: 0px;
 }
