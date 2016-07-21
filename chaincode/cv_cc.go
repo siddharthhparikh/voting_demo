@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -445,8 +446,15 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			topic.Votes[i] = "0"
 		}
 
-		topicBytes, err := json.Marshal(&topic)
+		//change expire_date to go time format
+		expireDateTime, err := time.Parse("01/02/2006", topic.ExpireDate)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		topic.ExpireDate = expireDateTime.String()
 
+		topicBytes, err := json.Marshal(&topic)
 		if err != nil {
 			fmt.Println("Error marshalling topic")
 			return nil, err
@@ -667,6 +675,17 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 	}
 
 	//check votes are valid
+
+	//make sure topic has not expired
+	expireTime, errTimeParse := time.Parse("2006-07-08 00:00:00 +0000 UTC", topic.ExpireDate)
+	if errTimeParse != nil {
+		fmt.Println(errTimeParse)
+		return nil, errTimeParse
+	}
+	if !(time.Now().Before(expireTime)) {
+		fmt.Println("[ERROR] Attempted to cast vote on expired topic")
+		return nil, errors.New("Attempted to cast vote on expired topic")
+	}
 
 	//make sure all votes are >=0
 	var count uint64
