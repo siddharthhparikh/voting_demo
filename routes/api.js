@@ -159,7 +159,5 @@ router.post('/register', function (req, res) {
   // create account
   //remove this when ui is ready for manager approval
 });
-  //chaincode.invoke('request_account', [])
-});
 
 module.exports = router;
