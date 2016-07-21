@@ -43,26 +43,22 @@ $(document).ready(function () {
         $('#error-msg').html('Error: ' + data.status);
       }
     });
+  });
 
-    //
-    // Request to register as a new user.
-    //
-});
-
-$('#register-user').click(function(e) {
-      console.log('Sending request');
-      // Create request object.
-      var newUser = {
-        'name': $('#name').val(),
-        'email': $('#email').val(),
-        'org': $('#orginization').val()
-      };
-      //Send request object.
-      $.post('/api/register', newUser, function (data, status) {
-        if (status == 'success') {
-          $('#register-box').hide();
-          $('#error-msg').html('New account request has been sent.');
-        }
-      });
+  $('#register-user').click(function (e) {
+    console.log('Sending request');
+    // Create request object.
+    var newUser = {
+      'name': $('#name').val(),
+      'email': $('#email').val(),
+      'org': $('#orginization').val()
+    };
+    //Send request object.
+    $.post('/api/register', newUser, function (data, status) {
+      if (status == 'success') {
+        $('#register-box').hide();
+        $('#error-msg').html('New account request has been sent.');
+      }
     });
-  })
+  });
+})
