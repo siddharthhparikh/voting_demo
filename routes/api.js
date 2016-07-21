@@ -20,8 +20,9 @@ router.post('/login', function (req, res, next) {
 
   var username = user.account_id;
   var passowrd = user.account_pass;
+  console.log(user);
   console.log("inside /login");
-  chaincode.Enroll(username, password, function (err) {
+  chaincode.login(username, password, function (err) {
     console.log("err = ")
     console.log(err);
     if (err != null) {
