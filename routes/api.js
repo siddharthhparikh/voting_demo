@@ -25,13 +25,14 @@ router.post('/login', function (req, res, next) {
       req.session.name = user.account_id;
       console.log('Logging in as.....');
       console.log(req.session.name);
+
       // Send response.
       res.json('{"status" : "success"}');
     } else {
       res.json('{"status" : "Invalid login."}');
     }
   });
-  // TODO Create user in chaincode.
+  // TODO Create user string queryin chaincode.
 });
 
 router.get('/get-account', function (req, res, next) {
@@ -65,25 +66,22 @@ router.get('/o', function (req, res) {
 router.get('/get-topics', function (req, res) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, data) {
-    //chaincode.query('tally_votes', 'Who will be the next CEO?', function () { });
-    //console.log("[INFO] All topics: ", data);
-
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
 });
 
 /* Get specific voting topic from blockchain */
-router.get('/get-topic', function (req, res) {
-  var args = req.query.topicID;
-  console.log(args);
+router.post('/get-topic', function (req, res) {
+  console.log(req.body)  
+  var args = req.body.id;
   chaincode.query('get_topic', args, function (err, data) {
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
 });
 
-router.post('/topic-check/', function (req, res, next) {
+router.post('/topic-check', function (req, res, next) {
   // Get the topic id from the post
   var topicID = req.body;
   // TODO See if the topic is valid

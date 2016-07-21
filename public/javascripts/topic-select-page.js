@@ -5,34 +5,37 @@
  * Handles all animations and hiding for info boxes (and some other elements).
  * Handles new topic generation.
  */
+
+ /* loadTopics reloads the topic buttons list */
+function loadTopics() {
+  $('#loader').show();
+  $('#topics').empty();
+  $.get('/api/get-topics', function (data, status) {
+    $('#loader').hide();    
+    if (data) {
+      // Create a lot of buttons from the topic list.
+      var count = 0;
+      for (var topic in data) {
+        console.log('found topic \"' + data[topic].topic_id + '\"');
+        var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
+        $('#topics').append(html);
+        count++;
+      }
+      if (count == 0) {
+        console.log('no topics found');
+      }
+    } else {
+      var html = '<p>No topics found.</p>'
+      $('#topics').append(html);
+    }
+  });
+}
+
 $(document).ready(function () {
-
-  //
-  // Generate topic buttons
-  //
-  // $.get('/api/get-topics', function (data, status) {
-  //   $('#loader').remove();    
-  //   if (data) {
-  //     // Create a lot of buttons from the topic list.
-  //     var count = 0;
-  //     for (var topic in data) {
-  //       console.log('found topic \"' + data[topic].topic_id + '\"');
-  //       var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
-  //       $('#topics').append(html);
-  //       count++;
-  //     }
-  //     if (count == 0) {
-  //       console.log('no topics found');
-  //     }
-  //   } else {
-  //     var html = '<p>No topics found.</p>'
-  //     $('#topics').append(html);
-  //   }
-  // });
-
   // 
   // Page setup.
   // 
+  loadTopics();
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
@@ -54,6 +57,8 @@ $(document).ready(function () {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function () { });
   });
+  // Set click action for refresh button.
+  $('#refresh-topics').click(loadTopics());
 
   //
   // Topic generation for in the 'create' info-box
@@ -76,11 +81,7 @@ $(document).ready(function () {
       // Handle res.
       data = JSON.parse(data);
       if (data.status == 'success') {
-        // Create new topic button element
-        var html = '<button class="topic, button">' + $('#topic-name').val() + '</button>';
-        console.log(html);
-        // Append to the html
-        $('#topics').append(html);
+        loadTopics(); 
       } else {
         // ERROR
         console.log(data.status);
@@ -92,7 +93,7 @@ $(document).ready(function () {
   //
   // Routes user to the selected topic.
   //
-  $('.topic').click(function (e) {
+   $(document).on('click', '.topic', function() {
     // $.post('/api/topic-check/', $(this).html(), function (data, status) {
     //   // Handle res.
     //   data = JSON.parse(data);
@@ -105,7 +106,6 @@ $(document).ready(function () {
     //     console.log(data.status);
     //   }
     // });
-    // window.location.replace("../topic/?id=" + $(this).html());
     window.location.replace("../topic/id?=" + $(this).html());
   });
 });

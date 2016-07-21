@@ -8,15 +8,16 @@ $(document).ready(function () {
   //
   // Get current topic info
   //
-  // $.get('/api/gettopic', topicid, function ( data, status) {
-  //   data = JSON.parse(data);
-  //   $('#topic-description').append(topicid);
-  //   // TODO get topic data set up.
-  //   // $('#cand1').append(data.topic.choices[0]);
-  //   // $('#cand2').append(data.topic.choices[1]);
-  // });
-  if (!url) url = window.location.href;
-  console.log(url);
+  var topicid = $('#topic-description').html();
+  $.post('/api/get-topic',{'id':topicid}, function (data, status) {
+    data = JSON.parse(data);
+    if(data) {
+    // Create candidates
+    // TODO get topic data set up.
+    // $('#cand1').append(data.topic.choices[0]);
+    // $('#cand2').append(data.topic.choices[1]);
+    }
+  });
 
   //
   // Disables manual form input to votes and set values.

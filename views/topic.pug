@@ -11,15 +11,10 @@ block content
     h1(class='vote-header') Remaining Votes:
 
   #content-header
-    h1(id="topic-description")
+    h1(id="topic-description")=topicID
    
   #content-block
-    p(id='cand1' class='cand') Sid :
-      input(type='number' id='votes1' class='votes' min='0' max=5)
-    p(id='cand2' class='cand') Ethan :
-      input(type='number' id='votes2' class='votes' min='0' max=5)
-    p(id='cand2') Gennaro :
-      input(type='number' id='votes2' class='votes' min='0' max=5)
+    input(type='number' id='votes2' class='votes' min='0' max=5)
     p
     input(type='submit' class='button' id='submit' value='Submit')
     
