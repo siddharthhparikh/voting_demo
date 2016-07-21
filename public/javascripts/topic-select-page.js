@@ -6,17 +6,28 @@
  * Handles new topic generation.
  */
 
- /* loadTopics reloads the topic buttons list */
+function generateID(length) {
+  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+
+  var id = '';
+  for (var i = 0; i < length; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
+/* loadTopics reloads the topic buttons list */
 function loadTopics() {
+  $('#loader').show();
+  $('#topics').empty();
   $.get('/api/get-topics', function (data, status) {
-    $('#loader').remove();    
     if (data) {
-      $('#topics').empty();
+      $('#loader').hide();
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var topic in data) {
-        console.log('found topic \"' + data[topic].topic_id + '\"');
-        var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
+        console.log('found topic \"' + data[topic].topic + '\"');
+        var html = '<button class="topic button" id="' + data[topic].topic_id + '">' + data[topic].topic + '</button>';
         $('#topics').append(html);
         count++;
       }
@@ -62,42 +73,72 @@ $(document).ready(function () {
   //
   $('#topic-submit').click(function (e) {
     e.preventDefault();
-    // Create a new topic object.
-    var topic = {
-      'topic_id': $('#topic-name').val(),
-      'issuer': '',
-      'choices': [
-        $('#topic-cand1').val(),
-        $('#topic-cand2').val()
-      ]
-    }
-    console.log('topic: ');
-    console.log(topic);
-    // Submit the new topic
-    $.post('/api/create', topic, function (data, status) {
-      // Handle res.
-      data = JSON.parse(data);
-      if (data.status == 'success') {
-        // Create new topic button element
-        //var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
-        //console.log(html);
-        // Append to the html
-        //$('#topics').append(html);
-        // TEST
-        loadTopics();
-        
-      } else {
-        // ERROR
-        console.log(data.status);
+    console.log('Expire date: ', $('#datepicker').val());
+
+    issueUniqueID(10); //attempt 10 times to issue unique ID
+
+    function issueUniqueID(countdown) {
+      if (!countdown || (countdown < 0)) {
+        console.log('Could not create unique ID for topic, sorry!')
+        return;
       }
-    })
-    $('topic-creation').fadeOut();
+
+      var id = generateID(Math.max($('#topic-name').val().length, 16));
+      console.log('Topic ID: ' + id);
+
+      $.get('/api/topic-check', { "topic_id": id }, function (data, status) {
+        if (data.status == 'success') {
+          console.log('Topic ID taken!  Issuing new ID...');
+          issueUniqueID(countdown - 1);
+        } else {
+          issueTopic(id);
+        }
+      });
+    }
+
+    function issueTopic(id) {
+      // Create a new topic object.
+      var topic = {
+        'topic_id': id,
+        'topic': $('#topic-name').val(),
+        'issuer': '',
+        'expire_date': $('#datepicker').val(),
+        'choices': [
+          $('#topic-cand1').val(),
+          $('#topic-cand2').val()
+        ]
+      }
+      console.log('topic: ');
+      console.log(topic);
+      // Submit the new topic
+      $.post('/api/create', topic, function (data, status) {
+        // Handle res.
+        data = JSON.parse(data);
+        if (data.status == 'success') {
+          // Create new topic button element
+          //var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
+          //console.log(html);
+          // Append to the html
+          //$('#topics').append(html);
+          // TEST
+          loadTopics();
+
+        } else {
+          // ERROR
+          console.log(data.status);
+        }
+      })
+      $('topic-creation').fadeOut();
+    }
   });
 
+  $('#datepicker').click(function () {
+    $("#datepicker").datepicker();
+  })
   //
   // Routes user to the selected topic.
   //
-   $(document).on('click', '.topic', function(){
+  $(document).on('click', '.topic', function () {
     console.log('testing');
     // $.post('/api/topic-check/', $(this).html(), function (data, status) {
     //   // Handle res.

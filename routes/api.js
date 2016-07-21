@@ -72,22 +72,29 @@ router.get('/get-topics', function (req, res) {
 });
 
 /* Get specific voting topic from blockchain */
-router.post('/get-topic', function (req, res) {
-  console.log(req.body)  
-  var args = req.body.id;
+router.get('/get-topic', function (req, res) {
+  console.log('getting topic...');
+  console.log(req.query);
+  var args = req.query.id;
   chaincode.query('get_topic', args, function (err, data) {
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
 });
 
-router.post('/topic-check', function (req, res, next) {
+router.get('/topic-check', function (req, res, next) {
   // Get the topic id from the post
-  var topicID = req.body;
-  // TODO See if the topic is valid
-
-  // Send response
-  res.json('{"status" : "success"}');
+  var topicID = req.query;
+  console.log("TopicID: ", topicID);
+  var args = [];
+  args.push(topicID.topic_id);
+  chaincode.query('get-topic', args, function (err, data) {
+    if (data) {
+      res.json('{"status" : "success"}');
+    } else {
+      res.json('{"status" : "failure"}');
+    }
+  });
 });
 
 /* Create a new voting topic */
