@@ -30,7 +30,7 @@ $(document).ready(function () {
   //
   $('#submit').click(function (e) {
     e.preventDefault();
-    var user = { 'account_id': $('#username').val() };
+    var user = { 'account_id': $('#username').val(), 'account_pass': $('#password').val() };
     $.post('/api/login', user, function (data, status) {
       data = JSON.parse(data);
       // Handle response.
