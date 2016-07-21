@@ -25,7 +25,7 @@ function loadTopics() {
         console.log('no topics found');
       }
     } else {
-      var html = '<p id="no-topics">No topics found.</p>'
+      var html = '<p>No topics found.</p>'
       $('#topics').append(html);
     }
   });

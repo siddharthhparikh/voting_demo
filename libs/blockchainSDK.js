@@ -24,10 +24,10 @@ var users = null;
 var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
-caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
-peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
-//peerURLs.push('grpc://ethan-p2.rtp.raleigh.ibm.com:30303');
-//peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
+caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
+peerURLs.push('grpc://ethan-p2.rtp.raleigh.ibm.com:30303');
+peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
 
 registrar = {
     'username': 'ethanicus',
