@@ -20,6 +20,7 @@ router.post('/login', function (req, res, next) {
 
   var username = user.account_id;
   var passowrd = user.account_pass;
+  console.log("inside /login");
   chaincode.login(username, password, function (err) {
     if (err != null) {
       res.json('{"status" : "Invalid login."}');
