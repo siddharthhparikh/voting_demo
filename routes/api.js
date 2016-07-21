@@ -21,7 +21,9 @@ router.post('/login', function (req, res, next) {
   var username = user.account_id;
   var passowrd = user.account_pass;
   console.log("inside /login");
-  chaincode.login(username, password, function (err) {
+  chaincode.Enroll(username, password, function (err) {
+    console.log("err = ")
+    console.log(err);
     if (err != null) {
       res.json('{"status" : "Invalid login."}');
     }
@@ -32,20 +34,6 @@ router.post('/login', function (req, res, next) {
     res.json('{"status" : "success"}');
 
   });
-  /*chaincode.query('get_account', args, function (err, data) {
-    if (data) {
-      // Create user session
-      req.session.name = user.account_id;
-      console.log('Logging in as.....');
-      console.log(req.session.name);
-
-      // Send response.
-      res.json('{"status" : "success"}');
-    } else {
-      res.json('{"status" : "Invalid login."}');
-    }
-  });*/
-  // TODO Create user string queryin chaincode.
 });
 
 router.get('/get-account', function (req, res, next) {
