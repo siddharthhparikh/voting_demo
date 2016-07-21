@@ -67,6 +67,8 @@ $(document).ready(function () {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function () { });
   });
+  // Set click action for refresh button.
+  $('#refresh-topics').click(loadTopics());
 
   //
   // Topic generation for in the 'create' info-box
@@ -152,7 +154,6 @@ $(document).ready(function () {
     //     console.log(data.status);
     //   }
     // });
-    // window.location.replace("../topic/?id=" + $(this).html());
     window.location.replace("../topic/id?=" + $(this).html());
   });
 });
