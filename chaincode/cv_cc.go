@@ -422,9 +422,10 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		fmt.Println("Invalid topic issued")
 		return nil, err
 	}
-
+	
+	/*
 	fmt.Println("Getting state of issuer " + topic.Issuer)
-	accountBytes, err := stub.GetState(accountHeader + topic.Issuer)
+	accountBytes, err := stub.GetAccount(accountHeader + topic.Issuer)
 	if err != nil {
 		fmt.Println("Error getting state of - " + topic.Issuer)
 		return nil, err
@@ -434,7 +435,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		fmt.Println("Error unmarshalling accountBytes")
 		return nil, err
 	}
-
+	*/
 	fmt.Println("Getting state on topic " + topic.ID)
 	existingTopicBytes, err := stub.GetState(topicHeader + topic.ID)
 	if existingTopicBytes == nil {
