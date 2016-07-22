@@ -309,6 +309,7 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 	return account, nil
 }
 
+
 func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]byte, error) {
 
 	// Retrieve all the rows that are messages for the specified user
@@ -324,7 +325,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]byte, err
 	var account_ids []byte
 	for row := range rowChan {
 		if len(row.Columns) != 0 {
-			account_ids = append(account_ids, t.readStringSafe(row.Columns[1]))
+			//account_ids = append(account_ids, []byte(t.readStringSafe(row.Columns[1])))
 			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
 		}
 	}
