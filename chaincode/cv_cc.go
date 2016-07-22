@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -41,10 +42,12 @@ var accountHeader = "account::"
 
 //Topic voting topic and choices
 type Topic struct {
-	ID      string   `json:"topic_id"`
-	Issuer  string   `json:"issuer"`
-	Choices []string `json:"choices[]"`
-	Votes   []string `json:"votes[]"` //ints in string form
+	ID         string   `json:"topic_id"`
+	TopicStr   string   `json:"topic"`
+	Issuer     string   `json:"issuer"`
+	Choices    []string `json:"choices[]"`
+	Votes      []string `json:"votes[]"` //ints in string form
+	ExpireDate string   `json:"expire_date"`
 }
 
 var topicHeader = "topic::"
@@ -433,14 +436,26 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		return nil, err
 	}
 
-	fmt.Println("Getting state on topic " + topic.ID)
+	fmt.Println("Getting state on topic " + topic.TopicStr)
 	existingTopicBytes, err := stub.GetState(topicHeader + topic.ID)
 	if existingTopicBytes == nil {
-		fmt.Println("Vote does not exist, creating new vote...")
+		fmt.Println("Topic does not exist, creating new topic...")
+
+		//create empty array of votes in topic length of choices
+		topic.Votes = make([]string, len(topic.Choices))
+		for i := 0; i < len(topic.Votes); i++ {
+			topic.Votes[i] = "0"
+		}
+
+		//change expire_date to go time format
+		expireDateTime, err := time.Parse("01/02/2006", topic.ExpireDate)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		topic.ExpireDate = expireDateTime.String()
+
 		topicBytes, err := json.Marshal(&topic)
-
-		fmt.Println(topic)
-
 		if err != nil {
 			fmt.Println("Error marshalling topic")
 			return nil, err
@@ -449,19 +464,6 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		err = stub.PutState(topicHeader+topic.ID, topicBytes)
 		if err != nil {
 			fmt.Println("Error issuing topic")
-			return nil, err
-		}
-
-		fmt.Println("Marshalling account bytes to write")
-		accountBytesToWrite, err := json.Marshal(&account)
-		if err != nil {
-			fmt.Println("Error marshalling account")
-			return nil, err
-		}
-
-		err = stub.PutState(topicHeader+topic.Issuer, accountBytesToWrite)
-		if err != nil {
-			fmt.Println("Error putting state on accountBytesToWrite")
 			return nil, err
 		}
 
@@ -511,12 +513,12 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		})
 
 		if errCreateTable != nil {
-			fmt.Println("Error creating topic "+topic.ID+" table: ", errCreateTable)
+			fmt.Println("Error creating topic "+topic.TopicStr+" table: ", errCreateTable)
 			return nil, errCreateTable
 		}
 
 		//all success
-		fmt.Println("Issued topic " + topic.ID)
+		fmt.Println("Issued topic " + topic.TopicStr)
 		return nil, nil
 	}
 
@@ -535,18 +537,18 @@ func (t *SimpleChaincode) clearTopics(stub *shim.ChaincodeStub, args []string) (
 	}
 
 	for _, topic := range topics {
-		fmt.Println("Clearing topic ID \"" + topic.ID + "\"...")
+		fmt.Println("Clearing topic ID \"" + topic.TopicStr + "\"...")
 
 		err2 := stub.DelState(topicHeader + topic.ID)
 		if err2 != nil {
-			fmt.Println("Error: Failed to clear vote topic \""+topic.ID+"\": ", err2)
+			fmt.Println("Error: Failed to clear vote topic \""+topic.TopicStr+"\": ", err2)
 			return nil, err2
 		}
-		fmt.Println("Successfully cleared vote topic ID " + topic.ID)
+		fmt.Println("Successfully cleared vote topic ID " + topic.TopicStr)
 
 		err2 = stub.DeleteTable(topicHeader + topic.ID)
 		if err2 != nil {
-			fmt.Println("Error: Failed to delete table for vote topic \""+topic.ID+"\": ", err2)
+			fmt.Println("Error: Failed to delete table for vote topic \""+topic.TopicStr+"\": ", err2)
 			return nil, err2
 		}
 	}
@@ -651,6 +653,8 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 		return nil, err
 	}
 
+	fmt.Println("Vote: ", vote)
+
 	account, errGetAccount := t.getAccount(stub, []string{vote.Voter})
 
 	if errGetAccount != nil {
@@ -672,6 +676,17 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 	}
 
 	//check votes are valid
+
+	//make sure topic has not expired
+	expireTime, errTimeParse := time.Parse("2006-07-08 00:00:00 +0000 UTC", topic.ExpireDate)
+	if errTimeParse != nil {
+		fmt.Println(errTimeParse)
+		return nil, errTimeParse
+	}
+	if !(time.Now().Before(expireTime)) {
+		fmt.Println("[ERROR] Attempted to cast vote on expired topic")
+		return nil, errors.New("Attempted to cast vote on expired topic")
+	}
 
 	//make sure all votes are >=0
 	var count uint64
@@ -700,7 +715,10 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 		return nil, errors.New("Number of vote quantities does not match choices count")
 	}
 
+	fmt.Println("Casting votes for topic " + topic.TopicStr + "...")
+
 	for i := 0; i < len(topic.Choices); i++ {
+		fmt.Println("Casting vote for choice ")
 		voteQty, err := strconv.Atoi(vote.Votes[i])
 		if err != nil {
 			fmt.Println(err)
@@ -710,6 +728,7 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 			//add to array in Topic
 			topicVoteTally, err := strconv.Atoi(topic.Votes[i])
 			if err != nil {
+				fmt.Println(err)
 				return nil, err
 			}
 			topic.Votes[i] = strconv.Itoa(topicVoteTally + voteQty) //convery to int, add vote, then convert back to string
@@ -732,6 +751,18 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 
 			transactionID++
 		}
+	}
+
+	//rewrite topic
+	topicBytes, err2 := json.Marshal(&topic)
+	if err2 != nil {
+		fmt.Println(err2)
+		return nil, err2
+	}
+	err2 = stub.PutState(topicHeader+topic.ID, topicBytes)
+	if err2 != nil {
+		fmt.Println(err2)
+		return nil, err2
 	}
 
 	fmt.Println("Vote successfully cast!")
@@ -917,12 +948,11 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Failed to enrolled first user")
 	}
 
-
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
-			&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: true},
-			&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: false},
-			&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	// Handle table creation errors
 	if errAccountRequest != nil {

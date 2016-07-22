@@ -8,13 +8,16 @@ $(document).ready(function () {
   //
   // Get current topic info
   //
-  // $.get('/api/gettopic', topicid, function ( data, status) {
-  //   data = JSON.parse(data);
-  //   $('#topic-description').append(topicid);
-  //   // TODO get topic data set up.
-  //   // $('#cand1').append(data.topic.choices[0]);
-  //   // $('#cand2').append(data.topic.choices[1]);
-  // });
+  var topicid = $('#topic-description').html();
+  $.get('/api/get-topic', { 'id': topicid }, function (data, status) {
+    //data = JSON.parse(data);
+    if (data) {
+      console.log('Topic found!');
+      console.log(data);
+      $('#cand1').append(data['choices[]'][0]);
+      $('#cand2').append(data['choices[]'][1]);
+    }
+  });
 
   //
   // Disables manual form input to votes and set values.
@@ -31,7 +34,7 @@ $(document).ready(function () {
   //
   $('#submit').click(function (e) {
     e.preventDefault(e);
-    $.get('/api/get-topic', {"topicID":$('#topic-description').html()}, function (data, status) {
+    $.get('/api/get-topic', { "id": $('#topic-description').html() }, function (data, status) {
       if (data) {
         var votesArray = []
 
@@ -47,7 +50,7 @@ $(document).ready(function () {
           "voter": null, //TODO this should be username
           "castDate": (new Date()).toString()
         }
-        
+
         $.post('/api/vote-submit', votes, function (data, status) {
           // Handle response
           data = JSON.parse(data);

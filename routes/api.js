@@ -10,7 +10,7 @@ var router = express.Router();
 var session = require('express-session');
 var chaincode = require('../libs/blockchainSDK');
 
-var DEFAULT_VOTES = 5
+var DEFAULT_VOTES = 5;
 
 /* Login in request. */
 router.post('/login', function (req, res, next) {
@@ -25,13 +25,14 @@ router.post('/login', function (req, res, next) {
       req.session.name = user.account_id;
       console.log('Logging in as.....');
       console.log(req.session.name);
+
       // Send response.
       res.json('{"status" : "success"}');
     } else {
       res.json('{"status" : "Invalid login."}');
     }
   });
-  // TODO Create user in chaincode.
+  // TODO Create user string queryin chaincode.
 });
 
 router.get('/get-account', function (req, res, next) {
@@ -65,9 +66,6 @@ router.get('/o', function (req, res) {
 router.get('/get-topics', function (req, res) {
   var args = [];
   chaincode.query('get_all_topics', args, function (err, data) {
-    //chaincode.query('tally_votes', 'Who will be the next CEO?', function () { });
-    //console.log("[INFO] All topics: ", data);
-
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
@@ -75,21 +73,28 @@ router.get('/get-topics', function (req, res) {
 
 /* Get specific voting topic from blockchain */
 router.get('/get-topic', function (req, res) {
-  var args = req.query.topicID;
-  console.log(args);
+  console.log('getting topic...');
+  console.log(req.query);
+  var args = req.query.id;
   chaincode.query('get_topic', args, function (err, data) {
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
 });
 
-router.post('/topic-check/', function (req, res, next) {
+router.get('/topic-check', function (req, res, next) {
   // Get the topic id from the post
-  var topicID = req.body;
-  // TODO See if the topic is valid
-
-  // Send response
-  res.json('{"status" : "success"}');
+  var topicID = req.query;
+  console.log("TopicID: ", topicID);
+  var args = [];
+  args.push(topicID.topic_id);
+  chaincode.query('get-topic', args, function (err, data) {
+    if (data) {
+      res.json('{"status" : "success"}');
+    } else {
+      res.json('{"status" : "failure"}');
+    }
+  });
 });
 
 /* Create a new voting topic */

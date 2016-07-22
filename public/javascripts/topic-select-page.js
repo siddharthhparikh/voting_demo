@@ -5,18 +5,30 @@
  * Handles all animations and hiding for info boxes (and some other elements).
  * Handles new topic generation.
  */
-$(document).ready(function () {
-  //
-  // Generate topic buttons
-  //
+
+function generateID(length) {
+  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+
+  var id = '';
+  for (var i = 0; i < length; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
+/* loadTopics reloads the topic buttons list */
+function loadTopics() {
+  $('#topics').empty();
+  $('#loader').show();
+  console.log('loading topics...');
   $.get('/api/get-topics', function (data, status) {
-    $('#loader').remove();    
     if (data) {
+      $('#loader').hide();
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var topic in data) {
-        console.log('found topic \"' + data[topic].topic_id + '\"');
-        var html = '<button class="topic button">' + data[topic].topic_id + '</button>';
+        console.log('found topic \"' + data[topic].topic + '\"');
+        var html = '<button class="topic button" id="' + data[topic].topic_id + '">' + data[topic].topic + '</button>';
         $('#topics').append(html);
         count++;
       }
@@ -28,10 +40,13 @@ $(document).ready(function () {
       $('#topics').append(html);
     }
   });
+}
 
+$(document).ready(function() {
   // 
   // Page setup.
   // 
+  //loadTopics();
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
@@ -49,49 +64,95 @@ $(document).ready(function () {
     $('#topic-creation').toggle("fast", function () { });
   });
   //Animation for new topic, info box.
-  $('#user-button').click(function () {
+  $('#open-user-info').click(function () {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function () { });
   });
+  // Set click action for refresh button.
+  $('#refresh-topics').click(loadTopics());
 
   //
   // Topic generation for in the 'create' info-box
   //
   $('#topic-submit').click(function (e) {
     e.preventDefault();
-    // Create a new topic object.
-    var topic = {
-      'topic_id': $('#topic-name').val(),
-      'issuer': '',
-      'choices': [
-        $('#topic-cand1').val(),
-        $('#topic-cand2').val()
-      ]
-    }
-    console.log('topic: ');
-    console.log(topic);
-    // Submit the new topic
-    $.post('/api/create', topic, function (data, status) {
-      // Handle res.
-      data = JSON.parse(data);
-      if (data.status == 'success') {
-        // Create new topic button element
-        var html = '<button class="topic, button">' + $('#topic-name').val() + '</button>';
-        console.log(html);
-        // Append to the html
-        $('#topics').append(html);
-      } else {
-        // ERROR
-        console.log(data.status);
+
+    var choices = [];
+    $('.topic-candidate').each(function(){
+      choices.push($(this).val());
+    });
+
+    issueUniqueID(10); //attempt 10 times to issue unique ID
+
+    function issueUniqueID(countdown) {
+      if (!countdown || (countdown < 0)) {
+        console.log('Could not create unique ID for topic, sorry!')
+        return;
       }
-    })
-    $('topic-creation').fadeOut();
+
+      var id = generateID(Math.max($('#topic-name').val().length, 16));
+      console.log('Topic ID: ' + id);
+
+      $.get('/api/topic-check', { "topic_id": id }, function (data, status) {
+        if (data.status == 'success') {
+          console.log('Topic ID taken!  Issuing new ID...');
+          issueUniqueID(countdown - 1);
+        } else {
+          issueTopic(id);
+        }
+      });
+    }
+
+    function issueTopic(id) {
+      // Create a new topic object.
+      var topic = {
+        'topic_id': id,
+        'topic': $('#topic-name').val(),
+        'issuer': '',
+        'expire_date': $('#datepicker').val(),
+        'choices': choices
+      }
+
+      console.log('topic: ');
+      console.log(topic);
+      // Submit the new topic
+      $.post('/api/create', topic, function (data, status) {
+        // Handle res.
+        data = JSON.parse(data);
+        if (data.status == 'success') {
+          // Create new topic button element
+          //var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
+          //console.log(html);
+          // Append to the html
+          //$('#topics').append(html);
+          // TEST
+          loadTopics();
+
+        } else {
+          // ERROR
+          console.log(data.status);
+        }
+      });
+    }
+    $('#topic-creation').fadeOut();
   });
 
+  $('#datepicker').click(function () {
+    $("#datepicker").datepicker();
+  })
+  //
+  // Add a new candidate form
+  //
+  $('#add-cand').click(function() {
+    var html = '<input type="text" class="topic-candidate" placeholder="Candidate"/>';
+    $('#candidate-append').append(html);
+  });
+  
   //
   // Routes user to the selected topic.
   //
-  $('.topic').click(function (e) {
+  $(document).on('click', '.topic', function () {
+    console.log('testing');
     // $.post('/api/topic-check/', $(this).html(), function (data, status) {
     //   // Handle res.
     //   data = JSON.parse(data);
@@ -104,7 +165,6 @@ $(document).ready(function () {
     //     console.log(data.status);
     //   }
     // });
-    // window.location.replace("../topic/?id=" + $(this).html());
-    window.location.replace("../topic");
+    window.location.replace("../topic/id?=" + $(this).html());
   });
 });

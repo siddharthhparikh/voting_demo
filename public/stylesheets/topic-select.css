@@ -43,9 +43,10 @@
 }
 .info-box input[type='text']{
   height: 35px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
-#user-button:active {
+#open-user-info:active {
   color: #F7F7F7;
 }
 
@@ -77,8 +78,13 @@
 
 /* Special header for topic creation*/
 
+#topic-input {
+  height: 72%;
+  overflow: auto;
+}
+
 #create-header {
-  margin: 0px 0px 15px 0px;
+  margin: 0px 0px 25px 0px;
   font-size: 28px;
   line-height: 30px;
   font-weight: bold;
@@ -86,26 +92,12 @@
 }
 
 .form-label {
-  margin: 5px;
+  margin: 5px 5px 5px 15px;
+  text-align: left;
 }
 
 #topic-submit {
-  margin-top: 50px;
-}
-
-/* Special user info-box styling */
-
-.info-header {
-  margin: 75px 0px 10px 0px;
-  font-size: 28px;
-  line-height: 30px;
-  font-weight: bold;
-  text-decoration: underline;
-}
-
-.user-info {
- margin: 30px;
- font-size : 24px;
+  margin-top: 40px;
 }
 
 #logout {
@@ -117,6 +109,52 @@
 
 }
 
+#refresh-topics {
+  float: right;
+  margin-top: -23px;
+  color: #313131;
+}
+
+#refresh-topics:hover{
+  cursor: pointer;
+  border: 2px solid #313131;
+  border-radius: 5px;
+}
+
+#refresh-topics:active{
+  cursor: pointer;
+  color: #F7F7F7;
+  background-color: #313131;
+  border: 2px solid #313131;
+  border-radius: 5px;
+}
+
+#add-cand {
+  color: #313131;
+}
+
+#add-cand:hover{
+  cursor: pointer;
+  border: 2px solid #313131;
+  border-radius: 5px;
+}
+
+#add-cand:active{
+  cursor: pointer;
+  color: #F7F7F7;
+  background-color: #313131;
+  border: 2px solid #313131;
+  border-radius: 5px;
+}
+
 #loading-msg {
+  margin: 0px;
+}
+
+.user-info-header {
+  text-decoration: underline;
+}
+
+#candidate-append {
   margin: 0px;
 }
