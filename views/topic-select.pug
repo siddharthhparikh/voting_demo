@@ -3,38 +3,43 @@ extends layout
 block content
 
   script(src='/javascripts/topic-select-page.js')
+  script(src='https://code.jquery.com/jquery-1.12.4.js')
+  script(src='https://code.jquery.com/ui/1.12.0/jquery-ui.js')
   link(rel='stylesheet', href='/stylesheets/topic-select.css')
   link(rel='stylesheet', href='/stylesheets/loader.css')
+  link(rel='stylesheet' href='//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css')
 
   #header
     h1(id='title')= title
     h1(class='welcome') Welc
     h1(class='welcome-o' class='welcome') o
     h1(class='welcome' id='welcome-end') me
-    i(class="material-icons md-48" id='user-button') account_circle
+    i(class="material-icons md-48" id='open-user-info') account_circle
 
   #content-header
     h1 Current Voting Topics
     i(class="material-icons" id='refresh-topics') refresh
 
   #topic-creation(class='info-box' class='hidden')
-    h1(id='create-header') Create A Topic
+    h1(id='create-header') Create a Topic
     #topic-input
       p(class='form-label') Vote Description:
-      input(type='text' class='new-topic-input' id='topic-name' placeholder='Topic Description')
-      p(class='form-label') First Candidate:
-      input(type='text' class='new-topic-input' id='topic-cand1' placeholder='Candidate')
-      p(class='form-label') Second Candidate:
-      input(type='text' class='new-topic-input' id='topic-cand2' placeholder='Candidate')
-      p
+      input(type='text' class='topic-input' id='topic-name' placeholder='Topic Description')
+      p(class='form-label') Expire Date:
+      input(type="text" id="datepicker")
+      p(class='form-label') Candidates:
+      input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
+      input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
+      #candidate-append
       i(class="material-icons" id='add-cand') add
     input(type='submit' class='button' id='topic-submit' value='Submit' )
 
   #user-info(class='info-box' class='hidden')
-    p(class='info-header') You are logged in as:
+    h1(class='user-info-header') My Account
+    h1 You are logged in as:
     p(class='user-info' id='username')
     p
-    p(class='info-header') Available votes per topic: 
+    h1 Available votes per topic: 
     p(class='user-info' id='user-votes') 5
     p
     form(action='/logout' method='get')
@@ -44,5 +49,4 @@ block content
     #topics
     #add
       i(class="material-icons md-48" id='new-topic') playlist_add
-
 

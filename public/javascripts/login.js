@@ -8,10 +8,8 @@ $(document).ready(function () {
   $('.hidden').hide();
 
   $.get('/api/load-chain', function (data, status) {
-    console.log('testing loading');
     data = JSON.parse(data);
     if (data.status == "success") {
-      console.log('I\'m in......');
       $('#loading-screen').remove();
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();
@@ -30,7 +28,11 @@ $(document).ready(function () {
   //
   $('#submit').click(function (e) {
     e.preventDefault();
-    var user = { 'account_id': $('#username').val(), 'account_pass': $('#password').val() };
+
+    var user = {
+      'account_id': $('#username').val(),
+      'password': $('#password').val()
+    };
     $.post('/api/login', user, function (data, status) {
       data = JSON.parse(data);
       // Handle response.
