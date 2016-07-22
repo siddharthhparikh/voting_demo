@@ -447,7 +447,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		for i := 0; i < len(topic.Votes); i++ {
 			topic.Votes[i] = "0"
 		}
-		/*
+
 		//change expire_date to go time format
 		expireDateTime, err := time.Parse("01/02/2006", topic.ExpireDate)
 		if err != nil {
@@ -455,7 +455,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			return nil, err
 		}
 		topic.ExpireDate = expireDateTime.String()
-		*/
+	
 		topicBytes, err := json.Marshal(&topic)
 		if err != nil {
 			fmt.Println("Error marshalling topic")
