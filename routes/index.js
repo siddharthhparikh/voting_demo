@@ -26,6 +26,10 @@ router.get('/topic/:id', function(req, res) {
   res.render('topic', {title: 'Chain Vote', topicID: id});
 });
 
+router.get('/manager', function(req, res) {
+  res.render('manager', {title: 'Chain Vote'});
+});
+
 router.get('/logout', function(req, res) {
   res.redirect('/');
 });
