@@ -27,10 +27,12 @@
 }
 
 .info-box .button {
+  width: 60%;
   height: 50px;
+  
   background-color: #313131;
   color: #F7F7F7;
-  width: 150px;
+
   border-radius: 15px;
 }
 
@@ -41,18 +43,23 @@
 .info-box .button:active {
   background-color: #FFFFFF;
 }
+
 .info-box input[type='text']{
   height: 35px;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
+/*/////////////////*/
+/*/////////////////*/
+/*/////////////////*/
+/*/////////////////*/
+
+
 #open-user-info:active {
   color: #F7F7F7;
 }
 
-/* New topic button 
-   - Opens a info box to create a new topic
-*/
+/* New topic open button */
 
 #new-topic {
   float: none;
@@ -67,16 +74,16 @@
 }
 
 #new-topic:hover {
-  border: 2px solid #00C26A;
+  border: 2px solid #313131;
 }
 
 #new-topic:active {
-  border: 2px solid #00C26A;
+  border: 2px solid #313131;
   background-color: #313131;
   color: #F7F7F7;
 }
 
-/* Special header for topic creation*/
+/* New topic info-box content */
 
 #topic-input {
   height: 72%;
@@ -100,14 +107,18 @@
   margin-top: 40px;
 }
 
-#logout {
-  margin-top: 15px;
+
+.user-info-header {
+  text-decoration: underline;
 }
+
+
 
 .welcome-o {
   margin: 0px;
-
 }
+
+/* Refresh topics button */
 
 #refresh-topics {
   float: right;
@@ -129,6 +140,8 @@
   border-radius: 5px;
 }
 
+/* Add candidate button */
+
 #add-cand {
   color: #313131;
 }
@@ -147,14 +160,10 @@
   border-radius: 5px;
 }
 
+#logout {
+  margin-top: 15px;
+}
+
 #loading-msg {
-  margin: 0px;
-}
-
-.user-info-header {
-  text-decoration: underline;
-}
-
-#candidate-append {
   margin: 0px;
 }

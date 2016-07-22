@@ -8,10 +8,8 @@ $(document).ready(function () {
   $('.hidden').hide();
 
   $.get('/api/load-chain', function (data, status) {
-    console.log('testing loading');
     data = JSON.parse(data);
     if (data.status == "success") {
-      console.log('I\'m in......');
       $('#loading-screen').remove();
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();

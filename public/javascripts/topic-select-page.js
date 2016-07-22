@@ -9,9 +9,9 @@
  /* loadTopics reloads the topic buttons list */
 function loadTopics() {
   $('#topics').empty();
-  $('#loader').show();
+  $('#topics').append('<div id="loader"></div>');
   $.get('/api/get-topics', function (data, status) {
-    $('#loader').hide();    
+    $('#loader').remove();    
     if (data) {
       // Create a lot of buttons from the topic list.
       var count = 0;
