@@ -190,7 +190,7 @@ router.post('/register', function (req, res) {
 });
 
 router.get('/manage', function (req, res) {
-  chaincode.query('get_open_request', [], function (data, err) {
+  chaincode.query('get_open_requests', [], function (data, err) {
     console.log(data);
     res.json(data);
   });
