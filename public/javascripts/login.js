@@ -39,7 +39,12 @@ $(document).ready(function () {
       if (data.status === 'success') {
         console.log('login success');
         // Redirect user.
-        window.location.replace("../topics");
+        if(data.type === 'user') {
+          window.location.replace("../topics");
+        }
+        else if(data.type === 'manager') {
+          window.location.replace("../manager");
+        }
       } else {
         console.log('Error: ' + data.status);
         $('#error-msg').html('Error: ' + data.status);

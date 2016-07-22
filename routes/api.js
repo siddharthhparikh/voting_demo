@@ -29,8 +29,12 @@ router.post('/login', function (req, res, next) {
     console.log('Logging in as.....');
     console.log(req.session.name);
     // Send response.
-    res.json('{"status" : "success"}');
-
+    if (username.indexOf('manager') > -1) {
+      res.json('{"status" : "success", "type": "manager"}');
+    }
+    else {
+      res.json('{"status" : "success", "type": "user"}');
+    }
   });
   /*chaincode.query('get_account', args, function (err, data) {
     if (data) {
@@ -180,7 +184,7 @@ router.post('/register', function (req, res) {
 });
 
 router.post('/manage', function (req, res) {
-  
+
 });
 
 module.exports = router;
