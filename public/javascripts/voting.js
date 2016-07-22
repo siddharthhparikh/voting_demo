@@ -17,7 +17,7 @@ $(document).ready(function () {
   // Get current topic info
   //
   var topicid = $('#topic-description').html();
-  $.post('/api/get-topic',{'id':topicid}, function (data, status) {
+  $.get('/api/get-topic',{'id':topicid}, function (data, status) {
     data = JSON.parse(data);
     if(data) {
     // Create candidates

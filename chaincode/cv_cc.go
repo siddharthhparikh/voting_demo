@@ -309,7 +309,7 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 	return account, nil
 }
 
-func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, error) {
+func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]byte, error) {
 
 	// Retrieve all the rows that are messages for the specified user
 
@@ -321,7 +321,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, e
 	}
 
 	// Extract the rows
-	var account_ids []string
+	var account_ids []byte
 	for row := range rowChan {
 		if len(row.Columns) != 0 {
 			account_ids = append(account_ids, t.readStringSafe(row.Columns[1]))
@@ -815,6 +815,8 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.changeStatus(stub, args)
 	case "cast_vote":
 		return t.castVote(stub, args)
+	case "get_open_requests":
+		return t.getOpenRequests(stub)
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error

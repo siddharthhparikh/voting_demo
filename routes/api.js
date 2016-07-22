@@ -157,18 +157,23 @@ router.get('/user', function (req, res) {
   res.json(response);
 });
 
+var username;
+var email;
+var votes;
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
-  var username = req.body.name;
-  var email = req.body.email;
-  var votes = "10";
+  username = req.body.name;
+  email = req.body.email;
+  votes = null;
   chaincode.invoke('request_account', [username, email], function (err, results) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
     console.log("\n\n\nrequest account result:")
     console.log(results);
+    res.json('{"status" : "success"}');
+    /*
     chaincode.registerAndEnroll(username, "user", function (err, cred) {
       //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
       if (err != null) {
@@ -178,13 +183,16 @@ router.post('/register', function (req, res) {
       console.log(cred);
       res.json('{"status" : "success"}');
     });
+    */
   });
   // create account
   //remove this when ui is ready for manager approval
 });
 
 router.post('/manage', function (req, res) {
-
+  chaincode.invoke('get_open_request', [], function (err) {
+    
+  });
 });
 
 module.exports = router;
