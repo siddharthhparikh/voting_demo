@@ -19,9 +19,9 @@ function generateID(length) {
 /* loadTopics reloads the topic buttons list */
 function loadTopics() {
   $('#topics').empty();
-  $('#loader').show();
-  console.log('loading topics...');
+  $('#topics').append('<div id="loader"></div>');
   $.get('/api/get-topics', function (data, status) {
+    $('#loader').remove();    
     if (data) {
       $('#loader').hide();
       // Create a lot of buttons from the topic list.
