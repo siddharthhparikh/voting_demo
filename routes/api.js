@@ -10,7 +10,7 @@ var router = express.Router();
 var session = require('express-session');
 var chaincode = require('../libs/blockchainSDK');
 
-var DEFAULT_VOTES = 5
+var DEFAULT_VOTES = 5;
 
 /* Login in request. */
 router.post('/login', function (req, res, next) {

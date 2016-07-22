@@ -18,8 +18,9 @@ function generateID(length) {
 
 /* loadTopics reloads the topic buttons list */
 function loadTopics() {
-  $('#loader').show();
   $('#topics').empty();
+  $('#loader').show();
+  console.log('loading topics...');
   $.get('/api/get-topics', function (data, status) {
     if (data) {
       $('#loader').hide();
@@ -41,11 +42,11 @@ function loadTopics() {
   });
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
   // 
   // Page setup.
   // 
-  loadTopics();
+  //loadTopics();
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
@@ -63,7 +64,7 @@ $(document).ready(function () {
     $('#topic-creation').toggle("fast", function () { });
   });
   //Animation for new topic, info box.
-  $('#user-button').click(function () {
+  $('#open-user-info').click(function () {
     $('#topic-creation').hide();
     $('#user-info').toggle("fast", function () { });
   });
@@ -75,7 +76,11 @@ $(document).ready(function () {
   //
   $('#topic-submit').click(function (e) {
     e.preventDefault();
-    console.log('Expire date: ', $('#datepicker').val());
+
+    var choices = [];
+    $('.topic-candidate').each(function(){
+      choices.push($(this).val());
+    });
 
     issueUniqueID(10); //attempt 10 times to issue unique ID
 
@@ -105,11 +110,9 @@ $(document).ready(function () {
         'topic': $('#topic-name').val(),
         'issuer': '',
         'expire_date': $('#datepicker').val(),
-        'choices': [
-          $('#topic-cand1').val(),
-          $('#topic-cand2').val()
-        ]
+        'choices': choices
       }
+
       console.log('topic: ');
       console.log(topic);
       // Submit the new topic
@@ -129,14 +132,22 @@ $(document).ready(function () {
           // ERROR
           console.log(data.status);
         }
-      })
-      $('topic-creation').fadeOut();
+      });
     }
+    $('#topic-creation').fadeOut();
   });
 
   $('#datepicker').click(function () {
     $("#datepicker").datepicker();
   })
+  //
+  // Add a new candidate form
+  //
+  $('#add-cand').click(function() {
+    var html = '<input type="text" class="topic-candidate" placeholder="Candidate"/>';
+    $('#candidate-append').append(html);
+  });
+  
   //
   // Routes user to the selected topic.
   //
