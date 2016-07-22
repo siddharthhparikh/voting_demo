@@ -103,7 +103,7 @@ function Login(id, secret, cb) {
                     });
                     var Request = {
                         chaincodeID: chaincodeID,
-                        fcn: 'createAccount',
+                        fcn: 'create_account',
                         args: [id]
                     }
                     var invokeTx = usr.invoke(Request);
@@ -159,7 +159,7 @@ function login2(id, secret, cb) {
                     });
                     var Request = {
                         chaincodeID: chaincodeID,
-                        fcn: 'createAccount',
+                        fcn: 'create_account',
                         args: [id]
                     }
                     var invokeTx = usr.invoke(Request);
