@@ -34,7 +34,7 @@ $(document).ready(function () {
   //
   $('#submit').click(function (e) {
     e.preventDefault(e);
-    $.get('/api/get-topic', {"topicID":$('#topic-description').html()}, function (data, status) {
+    $.get('/api/get-topic', { "id": $('#topic-description').html() }, function (data, status) {
       if (data) {
         var votesArray = []
 
@@ -50,7 +50,7 @@ $(document).ready(function () {
           "voter": null, //TODO this should be username
           "castDate": (new Date()).toString()
         }
-        
+
         $.post('/api/vote-submit', votes, function (data, status) {
           // Handle response
           data = JSON.parse(data);

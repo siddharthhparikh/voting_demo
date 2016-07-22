@@ -3,8 +3,11 @@ extends layout
 block content
 
   script(src='/javascripts/topic-select-page.js')
+  script(src='https://code.jquery.com/jquery-1.12.4.js')
+  script(src='https://code.jquery.com/ui/1.12.0/jquery-ui.js')
   link(rel='stylesheet', href='/stylesheets/topic-select.css')
   link(rel='stylesheet', href='/stylesheets/loader.css')
+  link(rel='stylesheet' href='//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css')
 
   #header
     h1(id='title')= title
@@ -22,6 +25,8 @@ block content
     #topic-input
       p(class='form-label') Vote Description:
       input(type='text' class='topic-input' id='topic-name' placeholder='Topic Description')
+      p(class='form-label') Expire Date:
+      input(type="text" id="datepicker")
       p(class='form-label') Candidates:
       input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
       input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
