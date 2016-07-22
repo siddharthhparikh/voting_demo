@@ -414,7 +414,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 
 	var topic Topic
 	var err error
-	var account Account
+	//var account Account
 
 	fmt.Println("Unmarshalling topic")
 	err = json.Unmarshal([]byte(args[0]), &topic)
@@ -424,6 +424,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 	}
 
 	fmt.Println("Getting state of issuer " + topic.Issuer)
+	/*
 	accountBytes, err := stub.GetState(accountHeader + topic.Issuer)
 	if err != nil {
 		fmt.Println("Error getting state of - " + topic.Issuer)
@@ -434,7 +435,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		fmt.Println("Error unmarshalling accountBytes")
 		return nil, err
 	}
-
+	*/
 	fmt.Println("Getting state on topic " + topic.ID)
 	existingTopicBytes, err := stub.GetState(topicHeader + topic.ID)
 	if existingTopicBytes == nil {
@@ -445,7 +446,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		for i := 0; i < len(topic.Votes); i++ {
 			topic.Votes[i] = "0"
 		}
-
+		/*
 		//change expire_date to go time format
 		expireDateTime, err := time.Parse("01/02/2006", topic.ExpireDate)
 		if err != nil {
@@ -453,7 +454,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			return nil, err
 		}
 		topic.ExpireDate = expireDateTime.String()
-
+		*/
 		topicBytes, err := json.Marshal(&topic)
 		if err != nil {
 			fmt.Println("Error marshalling topic")
