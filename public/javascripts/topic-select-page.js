@@ -23,6 +23,8 @@ function loadTopics() {
   $.get('/api/get-topics', function (data, status) {
     $('#loader').remove();    
     if (data) {
+      console.log('Loading topics...');
+      console.log('data: ', data);
       $('#loader').hide();
       // Create a lot of buttons from the topic list.
       var count = 0;
@@ -46,7 +48,7 @@ $(document).ready(function() {
   // 
   // Page setup.
   // 
-  //loadTopics();
+  loadTopics();
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
@@ -69,7 +71,7 @@ $(document).ready(function() {
     $('#user-info').toggle("fast", function () { });
   });
   // Set click action for refresh button.
-  $('#refresh-topics').click(loadTopics());
+  $('#refresh-topics').click(loadTopics);
 
   //
   // Topic generation for in the 'create' info-box
@@ -113,8 +115,7 @@ $(document).ready(function() {
         'choices': choices
       }
 
-      console.log('topic: ');
-      console.log(topic);
+      console.log('topic: ', topic);
       // Submit the new topic
       $.post('/api/create', topic, function (data, status) {
         // Handle res.
