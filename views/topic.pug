@@ -14,7 +14,12 @@ block content
     h1(id="topic-description")=topicID
    
   #content-block
-    input(type='number' id='votes2' class='votes' min='0' max=5)
+    p(id='cand1' class='cand') 
+      input(type='number' id='votes1' class='votes' min='0' max=5)
+    p(id='cand2' class='cand') 
+      input(type='number' id='votes2' class='votes' min='0' max=5)
+    p(id='cand2') 
+      input(type='number' id='votes2' class='votes' min='0' max=5)
     p
     input(type='submit' class='button' id='submit' value='Submit')
     

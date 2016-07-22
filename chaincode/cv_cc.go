@@ -43,6 +43,7 @@ var accountHeader = "account::"
 //Topic voting topic and choices
 type Topic struct {
 	ID         string   `json:"topic_id"`
+	TopicStr   string   `json:"topic"`
 	Issuer     string   `json:"issuer"`
 	Choices    []string `json:"choices[]"`
 	Votes      []string `json:"votes[]"` //ints in string form
@@ -435,7 +436,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		return nil, err
 	}
 
-	fmt.Println("Getting state on topic " + topic.ID)
+	fmt.Println("Getting state on topic " + topic.TopicStr)
 	existingTopicBytes, err := stub.GetState(topicHeader + topic.ID)
 	if existingTopicBytes == nil {
 		fmt.Println("Topic does not exist, creating new topic...")
@@ -512,12 +513,12 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		})
 
 		if errCreateTable != nil {
-			fmt.Println("Error creating topic "+topic.ID+" table: ", errCreateTable)
+			fmt.Println("Error creating topic "+topic.TopicStr+" table: ", errCreateTable)
 			return nil, errCreateTable
 		}
 
 		//all success
-		fmt.Println("Issued topic " + topic.ID)
+		fmt.Println("Issued topic " + topic.TopicStr)
 		return nil, nil
 	}
 
@@ -536,18 +537,18 @@ func (t *SimpleChaincode) clearTopics(stub *shim.ChaincodeStub, args []string) (
 	}
 
 	for _, topic := range topics {
-		fmt.Println("Clearing topic ID \"" + topic.ID + "\"...")
+		fmt.Println("Clearing topic ID \"" + topic.TopicStr + "\"...")
 
 		err2 := stub.DelState(topicHeader + topic.ID)
 		if err2 != nil {
-			fmt.Println("Error: Failed to clear vote topic \""+topic.ID+"\": ", err2)
+			fmt.Println("Error: Failed to clear vote topic \""+topic.TopicStr+"\": ", err2)
 			return nil, err2
 		}
-		fmt.Println("Successfully cleared vote topic ID " + topic.ID)
+		fmt.Println("Successfully cleared vote topic ID " + topic.TopicStr)
 
 		err2 = stub.DeleteTable(topicHeader + topic.ID)
 		if err2 != nil {
-			fmt.Println("Error: Failed to delete table for vote topic \""+topic.ID+"\": ", err2)
+			fmt.Println("Error: Failed to delete table for vote topic \""+topic.TopicStr+"\": ", err2)
 			return nil, err2
 		}
 	}
@@ -714,7 +715,7 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 		return nil, errors.New("Number of vote quantities does not match choices count")
 	}
 
-	fmt.Println("Casting votes for topic " + topic.ID + "...")
+	fmt.Println("Casting votes for topic " + topic.TopicStr + "...")
 
 	for i := 0; i < len(topic.Choices); i++ {
 		fmt.Println("Casting vote for choice ")
