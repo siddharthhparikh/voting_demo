@@ -71,7 +71,7 @@ function getUser2(name, cb) {
     });
 }
 */
-module.exports.login = function (id, secret, cb) {
+function Login(id, secret, cb) {
     chain.getMember(id, function (err, usr) {
         if (err) {
             console.log("Failed to get" + id + "member " + " ---> " + err);
@@ -178,7 +178,7 @@ function login2(id, secret, cb) {
     });
 }
 */
-module.exports.registerUSer = function (username, role, cb) {
+function registerUSer(username, role, cb) {
     chain.getMember(username, function (err, usr) {
         if (!usr.isRegistered()) {
             console.log("registering user..........");
@@ -195,7 +195,7 @@ module.exports.registerUSer = function (username, role, cb) {
                         id: username,
                         secret: enrollsecret
                     }
-                    login(cred.id, cred.secret, function (err){
+                    Login(cred.id, cred.secret, function (err){
                         if(err != null) {
                             cb(err, null);
                         } else {
@@ -241,8 +241,8 @@ function registerUser(username, role, cb) {
     });
 }
 */
-module.exports.login = login;
-module.exports.registerUser = registerUser;
+module.exports.login = Login;
+module.exports.registerUser = registerUSer;
 
 module.exports.setup = function (ccID, ch, cb) {
     if (chain && ccID) {

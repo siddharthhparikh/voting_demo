@@ -506,8 +506,8 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		//create table associated with topic
 		errCreateTable := stub.CreateTable(topicHeader+topic.ID, []*shim.ColumnDefinition{
 			&shim.ColumnDefinition{Name: "TransactionID", Type: shim.ColumnDefinition_UINT64, Key: true},
-			&shim.ColumnDefinition{Name: "Voter", Type: shim.ColumnDefinition_STRING, Key: true},
-			&shim.ColumnDefinition{Name: "Choice", Type: shim.ColumnDefinition_STRING, Key: true},
+			&shim.ColumnDefinition{Name: "Voter", Type: shim.ColumnDefinition_STRING, Key: false},
+			&shim.ColumnDefinition{Name: "Choice", Type: shim.ColumnDefinition_STRING, Key: false},
 			&shim.ColumnDefinition{Name: "Votes", Type: shim.ColumnDefinition_UINT64, Key: false},
 			&shim.ColumnDefinition{Name: "Time", Type: shim.ColumnDefinition_STRING, Key: false},
 		})
@@ -941,7 +941,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	}
 
 	//for testing: enroll first user "Ethan!"
-	fmt.Println("Registering first user \"Ethan!\"")
+	fmt.Println("Registering first user \"Ethan\"")
 	username := []string{"Ethan", "ecoeyta@us.ibm.com", "16"}
 	_, err3 := t.createAccount(stub, username)
 	if err3 != nil {

@@ -18,8 +18,21 @@ router.post('/login', function (req, res, next) {
   var user = req.body;
   // TODO check if the user already exsits in db.
 
-  var args = user.account_id;
-  chaincode.query('get_account', args, function (err, data) {
+  var username = user.account_id;
+  var password = user.account_pass;
+  console.log("inside /login");
+  chaincode.login(username, password, function (err) {
+    if (err != null) {
+      res.json('{"status" : "Invalid login."}');
+    }
+    req.session.name = user.account_id;
+    console.log('Logging in as.....');
+    console.log(req.session.name);
+    // Send response.
+    res.json('{"status" : "success"}');
+
+  });
+  /*chaincode.query('get_account', args, function (err, data) {
     if (data) {
       // Create user session
       req.session.name = user.account_id;
@@ -31,7 +44,7 @@ router.post('/login', function (req, res, next) {
     } else {
       res.json('{"status" : "Invalid login."}');
     }
-  });
+  });*/
   // TODO Create user string queryin chaincode.
 });
 
@@ -140,8 +153,29 @@ router.get('/user', function (req, res) {
 });
 
 /* Regiister a user */
-router.get('/register', function (req, res) {
-  res.json('{"status" : "success"}');
+router.post('/register', function (req, res) {
+  console.log(req.body);
+  var username = req.body.name;
+  var email = req.body.email;
+  var votes = "10";
+  chaincode.invoke('request_account', [username, email], function (err, results) {
+    if (err != null) {
+      res.json('{"status" : "failure", "Error": err}');
+    }
+    console.log("\n\n\nrequest account result:")
+    console.log(results);
+    chaincode.registerAndEnroll(username, "user", function (err, cred) {
+      //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
+      if (err != null) {
+        res.json('{"status" : "failure", "Error": err}');
+      }
+      console.log("\n\n\ncreate account result:")
+      console.log(cred);
+      res.json('{"status" : "success"}');
+    });
+  });
+  // create account
+  //remove this when ui is ready for manager approval
 });
 
 module.exports = router;
