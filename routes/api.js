@@ -179,4 +179,8 @@ router.post('/register', function (req, res) {
   //remove this when ui is ready for manager approval
 });
 
+router.post('/manage', function (req, res) {
+  
+});
+
 module.exports = router;
