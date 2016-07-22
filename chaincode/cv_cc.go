@@ -23,6 +23,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+    "reflect"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -310,22 +311,24 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 }
 
 
-func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]byte, error) {
+func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, error) {
 
 	// Retrieve all the rows that are messages for the specified user
 
 	//rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: "open"}}})
 	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: "open"}}})
+	fmt.Println(reflect.TypeOf(rowChan))
+	fmt.Println(rowChan)
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 		return nil, rowErr
 	}
 
 	// Extract the rows
-	var account_ids []byte
+	var account_ids []string
 	for row := range rowChan {
 		if len(row.Columns) != 0 {
-			//account_ids = append(account_ids, []byte(t.readStringSafe(row.Columns[1])))
+			account_ids = append(account_ids, t.readStringSafe(row.Columns[1]))
 			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
 		}
 	}
@@ -816,8 +819,6 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.changeStatus(stub, args)
 	case "cast_vote":
 		return t.castVote(stub, args)
-	case "get_open_requests":
-		return t.getOpenRequests(stub)
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error
@@ -917,6 +918,21 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		fmt.Println("All success, returning vote tallies")
 		return topicVotesBytes, nil
 
+		
+	case "get_open_requests":
+		allOpenRequests, err := t.getOpenRequests(stub)
+		if err != nil {
+			fmt.Println("Error from get_all_topics")
+			return nil, err
+		}
+
+		allOpenRequestsBytes, err1 := json.Marshal(&allOpenRequests)
+		if err1 != nil {
+			fmt.Println("Error marshalling allOpenRequests")
+			return nil, err1
+		}
+		fmt.Println("All success, returning allOpenRequests")
+		return allOpenRequestsBytes, nil
 	}
 	fmt.Println("query did not find func: " + function) //error
 
