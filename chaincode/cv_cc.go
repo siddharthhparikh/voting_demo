@@ -931,13 +931,6 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Successfully initialized cast votes")
 	}
 
-	//for testing: enroll first user "Ethan!"
-	fmt.Println("Registering first user \"Ethan\"")
-	username := []string{"Ethan", "ecoeyta@us.ibm.com", "16"}
-	_, err3 := t.requestAccount(stub, username)
-	if err3 != nil {
-		fmt.Println("Failed to enrolled first user")
-	}
 
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
@@ -964,5 +957,16 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		//console.log(fmt.Sprintf("[ERROR] Could not create account request table: %s", errApprovedAccount))
 		return nil, errApprovedAccount
 	}
+
+	
+	//for testing: enroll first user "Ethan!"
+	fmt.Println("Registering first user \"Ethan\"")
+	username := []string{"Ethan", "ecoeyta@us.ibm.com", "16"}
+	_, err3 := t.requestAccount(stub, username)
+	if err3 != nil {
+		fmt.Println("Failed to enrolled first user")
+		return nil, err3
+	}
+
 	return nil, nil
 }
