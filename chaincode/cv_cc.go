@@ -142,10 +142,10 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 }
 
 func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	if len(args) != 3 {
+	/*if len(args) != 3 {
 		fmt.Println("Could not obtain username passed to createAcount")
 		return nil, errors.New("Incorrect number of arguments. Expecting 3")
-	}
+	}*/
 	//msgID, err = strconv.ParseUint(strID, 10, 64)
 	fmt.Println("\n\n\nI am in create account\n\n\n");
 	username := args[0]
