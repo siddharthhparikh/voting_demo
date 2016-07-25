@@ -237,6 +237,8 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		})
 
 		if rowErr != nil || !rowAdded {
+			fmt.Println(rowErr);
+			fmt.Println(rowAdded);
 			fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger: %s", rowErr))
 			return nil, rowErr
 		}
