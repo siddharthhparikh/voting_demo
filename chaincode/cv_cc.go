@@ -204,11 +204,12 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 }
 
 func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	/*
 	if len(args) != 1 {
 		fmt.Println("Could not obtain username passed to createAcount")
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: username of account")
 	}
-
+	*/
 	username := args[0]
 	email := args[1]
 	var account = Account{ID: username, Email: email, VoteCount: 0}
