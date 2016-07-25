@@ -253,7 +253,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 			return nil, rowErr
 		}
 		if err == nil {
-			fmt.Println("Created account " + account.ID)
+			fmt.Println("requested account " + account.ID)
 			return nil, nil
 		}
 
