@@ -222,7 +222,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 	fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
 	existingBytes, err := stub.GetState(accountHeader + account.ID)
-	if nil == nil {
+	if true {
 		fmt.Println("No existing account found for " + account.ID + ", initializing account")
 		//err = stub.PutState(accountHeader+account.ID, accountBytes)
 		//errRequestAccount, Account := requestAccount(account_id)
