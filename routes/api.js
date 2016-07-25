@@ -157,9 +157,9 @@ router.get('/user', function (req, res) {
   res.json(response);
 });
 
-var username;
-var email;
-var votes;
+var username = "";
+var email = "";
+var votes = "";
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
