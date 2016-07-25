@@ -217,8 +217,8 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: username of account")
 	}
 	*/
-	username := args[0]
-	email := args[1]
+	var username := args[0]
+	var email := args[1]
 	fmt.Println("In request Account username= " + username + " email= "+ email);
 	var account = Account{ID: username, Email: email, VoteCount: 0}
 	accountBytes, err := json.Marshal(&account)
