@@ -150,12 +150,17 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 	//msgID, err = strconv.ParseUint(strID, 10, 64)
 
 	fmt.Println("\n\n\nI am in create account\n\n\n");
+
+	
 	username := args[0]
 	votes, e := strconv.ParseUint(args[2], 10, 64)
 	if e != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not parse the votes to a number: %s", e))
 	}
 	email := args[1]
+
+	fmt.Println("In request Account username= " + username + " email= "+ email);
+	
 	var account = Account{ID: username, Email: email, VoteCount: votes}
 	accountBytes, err := json.Marshal(&account)
 	if err != nil {
@@ -214,6 +219,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	*/
 	username := args[0]
 	email := args[1]
+	fmt.Println("In request Account username= " + username + " email= "+ email);
 	var account = Account{ID: username, Email: email, VoteCount: 0}
 	accountBytes, err := json.Marshal(&account)
 	fmt.Println(accountBytes)
@@ -967,6 +973,10 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Failed to enrolled first user")
 		return nil, err3
 	}
-
+	_, err4 := t.createAccount(stub, username)
+	if err4 != nil {
+		fmt.Println("Failed to enrolled first user")
+		return nil, err4
+	}
 	return nil, nil
 }
