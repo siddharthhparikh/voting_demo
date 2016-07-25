@@ -71,7 +71,7 @@ function getUser2(name, cb) {
     });
 }
 */
-function Login(id, secret, cb) {
+function Login(id, secret, email, votes, cb) {
     chain.getMember(id, function (err, usr) {
         if (err) {
             console.log("Failed to get" + id + "member " + " ---> " + err);
@@ -104,7 +104,7 @@ function Login(id, secret, cb) {
                     var Request = {
                         chaincodeID: chaincodeID,
                         fcn: 'create_account',
-                        args: [id]
+                        args: [id, email, votes]
                     }
                     var invokeTx = usr.invoke(Request);
                     invokeTx.on('submitted', function (results) {
