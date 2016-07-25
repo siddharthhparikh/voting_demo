@@ -898,6 +898,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 		
 	case "get_open_requests":
+		fmt.Println("I am in get open requests")
 		allOpenRequests, err := t.getOpenRequests(stub)
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
