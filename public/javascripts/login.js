@@ -19,8 +19,14 @@ $(document).ready(function () {
   });
 
   //Animation for register info box.
-  $('#open-register').click(function () {
-    $('#register-box').toggle("fast", function () { });
+  $('#open-register').click(function() {
+    $('#register-box').animate({ height: 'toggle'}, 'fast');
+  });
+  // Hides menus when user clicks out of them.
+  $(document).click(function(event){
+    if(!$(event.target).is('#register-box') && !$(event.target).is('#open-register')){
+      $('.info-box').fadeOut('fast');
+    }     
   });
 
   //

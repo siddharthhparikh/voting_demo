@@ -5,6 +5,7 @@ $(document).ready(function(){
    // $(this).parent().append();
 
     $.post('/api/manage', request, function(data, status){
+      console.log(data);
       if(status == 'success') $(this).parent().remove();
     });
   });
