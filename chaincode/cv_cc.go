@@ -148,6 +148,7 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 	}*/
 	fmt.Println("length of the arguments:%d", len(args));
 	//msgID, err = strconv.ParseUint(strID, 10, 64)
+
 	fmt.Println("\n\n\nI am in create account\n\n\n");
 	username := args[0]
 	votes, e := strconv.ParseUint(args[2], 10, 64)
@@ -236,7 +237,9 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 				{&shim.Column_String_{String_: email}},
 			},
 		})
-
+		fmt.Println(rowErr);
+		fmt.Println(rowAdded);
+		
 		if rowErr != nil || !rowAdded {
 			fmt.Println(rowErr);
 			fmt.Println(rowAdded);
