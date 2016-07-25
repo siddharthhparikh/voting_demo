@@ -189,7 +189,7 @@ router.post('/register', function (req, res) {
   //remove this when ui is ready for manager approval
 });
 
-router.post('/manage', function (req, res) {
+router.post('/manager', function (req, res) {
   chaincode.query('get_open_requests', [], function (data, err) {
     console.log(data);
     res.json(data);
