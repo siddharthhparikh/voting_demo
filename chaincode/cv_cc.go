@@ -221,7 +221,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	}
 
 	fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
-	existingBytes, err := stub.GetState(accountHeader + account.ID)
+	//existingBytes, err := stub.GetState(accountHeader + account.ID)
 	if err != nil {
 		fmt.Println("No existing account found for " + account.ID + ", initializing account")
 		//err = stub.PutState(accountHeader+account.ID, accountBytes)
@@ -248,7 +248,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		fmt.Println("Failed to initialize an account for " + account.ID)
 		return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
 	}
-	
+
 	fmt.Println("existing account bytes: " + string([]byte(existingBytes)))
 	fmt.Println("Account already exists for " + account.ID)
 	return nil, errors.New("Can't reinitialize existing user " + account.ID)
