@@ -147,7 +147,7 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 		return nil, errors.New("Incorrect number of arguments. Expecting 3")
 	}
 	//msgID, err = strconv.ParseUint(strID, 10, 64)
-
+	fmt.Println("\n\n\nI am in create account\n\n\n");
 	username := args[0]
 	votes, e := strconv.ParseUint(args[2], 10, 64)
 	if e != nil {
