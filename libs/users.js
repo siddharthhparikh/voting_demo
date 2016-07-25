@@ -195,7 +195,7 @@ function registerUSer(username, role, cb) {
                         id: username,
                         secret: enrollsecret
                     }
-                    Login(cred.id, cred.secret, function (err){
+                    Login(cred.id, cred.secret, "sid", "10", function (err){
                         if(err != null) {
                             cb(err, null);
                         } else {
