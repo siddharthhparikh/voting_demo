@@ -68,9 +68,4 @@ $(document).ready(function () {
       }
     });
   });
-  /*
-  $('#manage').click(function() {
-    window.location.replace("../manager");
-  });
-  */
 });
