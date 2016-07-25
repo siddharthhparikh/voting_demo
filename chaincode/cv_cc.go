@@ -327,6 +327,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, e
 	// Extract the rows
 	var account_ids []string
 	for row := range rowChan {
+		fmt.Println(fmt.Sprintf("HERE: %d", len(row.Columns)))
 		if len(row.Columns) != 0 {
 			account_ids = append(account_ids, t.readStringSafe(row.Columns[1]))
 			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
