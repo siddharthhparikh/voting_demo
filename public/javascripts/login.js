@@ -10,10 +10,10 @@ $(document).ready(function () {
   $.get('/api/load-chain', function (data, status) {
     data = JSON.parse(data);
     if (data.status == "success") {
-      //$('#loading-screen').remove();
-      //$('#content-header').fadeIn();
-      //$('#content-block').fadeIn();
-      //$('#open-register').fadIn();
+      $('#loading-screen').remove();
+      $('#content-header').fadeIn();
+      $('#content-block').fadeIn();
+      $('#open-register').fadIn();
     } else {
       //TODO display err
     }
