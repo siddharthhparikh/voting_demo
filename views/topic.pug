@@ -11,7 +11,9 @@ block content
     h1(class='vote-header') Remaining Votes:
 
   #content-header
-    h1(id="topic-description")=topicID
+    h1(id="topic-description" )=topicName
+    p(id='topicID' class='hidden')=topicID
+    
    
   #content-block
     #candidates

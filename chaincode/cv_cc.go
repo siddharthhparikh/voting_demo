@@ -576,6 +576,8 @@ func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 		return nil, err
 	}
 
+	fmt.Println(topicsBytes)
+
 	var topics []string
 	err = json.Unmarshal(topicsBytes, &topics)
 	if err != nil {
@@ -597,19 +599,27 @@ func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 			return nil, err
 		}
 
-		fmt.Println("Appending topic " + value)
+		fmt.Println("Appending topic " + topic.TopicStr)
 		allTopics = append(allTopics, topic)
 	}
 
 	return allTopics, nil
 }
 
-func getTopic(stub *shim.ChaincodeStub, topicName string) (Topic, error) {
-	fmt.Println("Retrieving topic " + topicName + "...")
-
+func getTopic(stub *shim.ChaincodeStub, args []string) (Topic, error) {
 	var emptyTopic Topic
 
-	topicBytes, err := stub.GetState(topicHeader + topicName)
+	if len(args) == 0 || len(args) > 2 {
+		fmt.Println("Incorrect number of arguments. Expecting 2: topicID and userID")
+		return emptyTopic, errors.New("Incorrect number of arguments. Expecting 2: topicID and userID")
+	}
+
+	var topicID = args[0]
+	//var userID = args[1]
+
+	fmt.Println("Retrieving topic " + topicID + "...")
+
+	topicBytes, err := stub.GetState(topicHeader + topicID)
 	if err != nil {
 		fmt.Println("Error retrieving vote topic")
 		return emptyTopic, err
@@ -620,7 +630,7 @@ func getTopic(stub *shim.ChaincodeStub, topicName string) (Topic, error) {
 	var topic Topic
 	err = json.Unmarshal(topicBytes, &topic)
 	if err != nil {
-		fmt.Println("Error unmarshalling vote topics: ", err)
+		fmt.Println("Error unmarshalling vote topic "+topicID+": ", err)
 		return emptyTopic, err
 	}
 
@@ -846,14 +856,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		return allTopicsBytes, nil
 
 	case "get_topic":
-		if len(args) != 1 {
-			fmt.Println("Incorrect number of arguments. Expecting 1: string of account ID being queried")
-			return nil, nil
-		}
-
-		topicID := string([]byte(args[0]))
-
-		topic, err1 := getTopic(stub, topicID)
+		topic, err1 := getTopic(stub, args)
 		if err1 != nil {
 			fmt.Println("Error from get_topic: ", err1)
 			return nil, err1

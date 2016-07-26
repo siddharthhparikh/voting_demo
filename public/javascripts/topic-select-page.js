@@ -6,6 +6,8 @@
  * Handles new topic generation.
  */
 
+var MIN_ID_LENGTH = 32;
+
 function generateID(length) {
   var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
 
@@ -92,7 +94,7 @@ $(document).ready(function() {
         return;
       }
 
-      var id = generateID(Math.max($('#topic-name').val().length, 16));
+      var id = generateID(Math.max($('#topic-name').val().length, MIN_ID_LENGTH));
       console.log('Topic ID: ' + id);
 
       $.get('/api/topic-check', { "topic_id": id }, function (data, status) {
@@ -166,6 +168,6 @@ $(document).ready(function() {
     //     console.log(data.status);
     //   }
     // });
-    window.location.replace("../topic/id?=" + $(this).html());
+    window.location.replace("../topic/id?=" + $(this).context.id);
   });
 });

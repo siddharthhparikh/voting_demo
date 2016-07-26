@@ -75,7 +75,9 @@ router.get('/get-topics', function (req, res) {
 router.get('/get-topic', function (req, res) {
   console.log('getting topic...');
   console.log(req.query);
-  var args = req.query.id;
+  var args = [];
+  args.push(req.query.topicID);
+  args.push(req.session.name);
   chaincode.query('get_topic', args, function (err, data) {
     if (err) console.log('ERROR: ', err);
     else res.json(data);

@@ -12,12 +12,12 @@ function setMaxVotes(){
 $(document).ready(function () {
 
   var maxVotes = 5
+  $('.hidden').hide();
 
   //
   // Get current topic info
   //
-  var topicid = $('#topic-description').html();
-  $.post('/api/get-topic',{'id':topicid}, function (data, status) {
+  $.get('/api/get-topic',{'topicID':$('#topic-description').html()}, function (data, status) {
     data = JSON.parse(data);
     if(data) {
     // Create candidates
@@ -34,7 +34,7 @@ $(document).ready(function () {
   //
   $('#submit').click(function (e) {
     e.preventDefault(e);
-    $.get('/api/get-topic', { "id": $('#topic-description').html() }, function (data, status) {
+    $.get('/api/get-topic', { "topicID": $('#topic-description').html() }, function (data, status) {
       if (data) {
         var votesArray = []
 
