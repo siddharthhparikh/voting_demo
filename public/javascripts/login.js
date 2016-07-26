@@ -10,9 +10,10 @@ $(document).ready(function () {
   $.get('/api/load-chain', function (data, status) {
     data = JSON.parse(data);
     if (data.status == "success") {
-      $('#loading-screen').remove();
-      $('#content-header').fadeIn();
-      $('#content-block').fadeIn();
+      //$('#loading-screen').remove();
+      //$('#content-header').fadeIn();
+      //$('#content-block').fadeIn();
+      //$('#open-register').fadIn();
     } else {
       //TODO display err
     }
@@ -24,7 +25,7 @@ $(document).ready(function () {
   });
   // Hides menus when user clicks out of them.
   $(document).click(function(event){
-    if(!$(event.target).is('#register-box') && !$(event.target).is('#open-register')){
+    if(!$(event.target).is('#register-box') && !$(event.target).is('#open-register') && !$(event.target).is('.input')){
       $('.info-box').fadeOut('fast');
     }     
   });
