@@ -220,7 +220,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 	username := args[0]
 	email := args[1]
-	fmt.Println("In request Account username= " + typeof(username) + " email= "+ typeof(email) + " ");
+	fmt.Println("In request Account username= " + reflect.TypeOf(username) + " email= "+ reflect.TypeOf(email) + " ");
 	var account = Account{ID: username, Email: email, VoteCount: 0}
 	accountBytes, err := json.Marshal(&account)
 	fmt.Println(accountBytes)
