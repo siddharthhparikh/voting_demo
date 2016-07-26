@@ -1,10 +1,29 @@
 extend layout
 
 block content
+  script(src='/javascripts/manage.js')
+  link(rel='stylesheet', href='/stylesheets/manager.css')
 
   #header
     h1(id='title')= title
 
   #table
-    p(id='s' class='somethihngelse') hkghjgkjhg
-    p(class='fkjkjkjk')
+    table
+      tr(id='request-header')
+        th Name
+        th Username
+        th Email adress
+        th Votes
+        th Approval
+      tr(class='request')
+        td Gennaro Cuomo
+        td gccuomo
+        td gennaroccuomo@gmail.com
+        td 
+          input(type='number' class='vote-ammount' class='request-info' value='5')
+        td
+          button(class='button' class='approve') Approve
+          button(class='button' class='decline') Decline
+
+    
+    

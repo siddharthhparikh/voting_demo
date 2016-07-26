@@ -5,11 +5,12 @@ block content
   link(rel='stylesheet', href='/stylesheets/login.css')
   link(rel='stylesheet', href='/stylesheets/loading.css')
   link(rel='stylesheet', href='/stylesheets/loader.css')
+  link(rel='stylesheet', href='/stylesheets/info-box.css')
   script(src='/javascripts/login.js')
   
   #header
     h1(id='title')= title
-    button(class='button' id='open-register') Register
+    h1(id='open-register') Register
   
   #content-header(class='hidden')
     h1( id='login') Login:
@@ -20,8 +21,8 @@ block content
     input(type='text' id='name' placeholder='First Last')
     p Email Address: 
     input(type='text' id='email' placeholder='Email')
-    p SSN: 
-    input(type='text' id='orginization' placeholder='XXX-XX-XXXX')
+    p Organization: 
+    input(type='text' id='organization' placeholder='Organization')
     button(class='button' id='reg-usr') Submit 
 
 
@@ -36,6 +37,8 @@ block content
     p(class='loading-msg') Blockchains are linking.
     #loader
     p(class='loading-msg') Please wait...
+
+  button(class='button' id='manage') Manage
 
 
   

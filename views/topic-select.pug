@@ -8,17 +8,20 @@ block content
   link(rel='stylesheet', href='/stylesheets/topic-select.css')
   link(rel='stylesheet', href='/stylesheets/loader.css')
   link(rel='stylesheet' href='//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css')
+  link(rel='stylesheet', href='/stylesheets/info-box.css')
 
   #header
     h1(id='title')= title
     h1(class='welcome') Welc
     h1(class='welcome-o' class='welcome') o
     h1(class='welcome' id='welcome-end') me
-    i(class="material-icons md-48" id='open-user-info') account_circle
+    i(class="material-icons md-48" class='header-icons' id='open-user-info') account_circle
+    i(class="material-icons md-48" class='header-icons' id='new-topic') playlist_add
+    i(class="material-icons" class='header-icons' id='refresh-topics') refresh  
 
   #content-header
-    h1 Current Voting Topics
-    i(class="material-icons" id='refresh-topics') refresh
+    h1(id='open-topics' class='active') Open Topics
+    h1(id='closed-topics' class='inactive') Closed Topics
 
   #topic-creation(class='info-box' class='hidden')
     h1(id='create-header') Create a Topic
@@ -47,6 +50,5 @@ block content
       
   #content-block 
     #topics
-    #add
-      i(class="material-icons md-48" id='new-topic') playlist_add
+     
 

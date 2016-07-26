@@ -38,7 +38,11 @@ router.get('/topic/:id', function (req, res) {
 
 });
 
-router.get('/logout', function (req, res) {
+router.get('/manager', function(req, res) {
+  res.render('manager', {title: 'Chain Vote'});
+});
+
+router.get('/logout', function(req, res) {
   res.redirect('/');
 });
 

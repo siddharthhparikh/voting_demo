@@ -48,39 +48,65 @@ function loadTopics() {
 
 $(document).ready(function() {
   // 
-  // Page setup.
-  // 
+  // Animation and page set up.
+  //
+
   loadTopics();
+
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
     $('#username').append(data.user);
     // TODO append votes to #user-votes
   });
-  $('.welcome-o').click(function () {
+  // Secret button.
+  $('.welcome-o').click(function() {
     $.get('/api/o', function (data, status) { });
   });
+
   // Hide all hidden elements
   $('.hidden').hide();
+
   //Animation for new topic, info box.
-  $('#new-topic').click(function () {
-    $('#user-info').hide();
-    $('#topic-creation').toggle("fast", function () { });
+  $('#new-topic').click(function() {
+    $('#user-info').hide(); 
+    $('#topic-creation').animate({ height: 'toggle'}, 'fast');
   });
+
   //Animation for new topic, info box.
-  $('#open-user-info').click(function () {
+  $('#open-user-info').click(function() {
     $('#topic-creation').hide();
-    $('#user-info').toggle("fast", function () { });
+    $('#user-info').animate({ height: 'toggle'}, 'fast');
   });
+
+  // Hides menus when user clicks out of them.
+  $(document).click(function(event){
+    if(!$(event.target).is('.info-box') && !$(event.target).is('.header-icons')){
+      $('.info-box').fadeOut('fast');
+    }     
+  });
+
   // Set click action for refresh button.
   $('#refresh-topics').click(loadTopics);
+
+  // For date picking
+  $('#datepicker').click(function () {
+    $("#datepicker").datepicker();
+  });
+
+  // Tabs for open/closed topic switching
+  $(document).on('click', '.inactive', function(){
+    $('.active').removeClass('active').addClass('inactive');
+    $(this).addClass('active').removeClass('inactive');
+  });
 
   //
   // Topic generation for in the 'create' info-box
   //
   $('#topic-submit').click(function (e) {
     e.preventDefault();
-
+    // First grab all candidates the user creates
+    // TODO don't grab empty candidate boxes
     var choices = [];
     $('.topic-candidate').each(function(){
       choices.push($(this).val());
@@ -117,7 +143,6 @@ $(document).ready(function() {
         'choices': choices
       }
 
-      console.log('topic: ', topic);
       // Submit the new topic
       $.post('/api/create', topic, function (data, status) {
         // Handle res.
@@ -137,14 +162,12 @@ $(document).ready(function() {
         }
       });
     }
+    // Fade out element
     $('#topic-creation').fadeOut();
   });
 
-  $('#datepicker').click(function () {
-    $("#datepicker").datepicker();
-  })
   //
-  // Add a new candidate form
+  // Add new candidate button.
   //
   $('#add-cand').click(function() {
     var html = '<input type="text" class="topic-candidate" placeholder="Candidate"/>';
@@ -155,7 +178,6 @@ $(document).ready(function() {
   // Routes user to the selected topic.
   //
   $(document).on('click', '.topic', function () {
-    console.log('testing');
     // $.post('/api/topic-check/', $(this).html(), function (data, status) {
     //   // Handle res.
     //   data = JSON.parse(data);
