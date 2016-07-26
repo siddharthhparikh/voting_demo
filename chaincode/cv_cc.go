@@ -978,6 +978,27 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Failed to enrolled first user")
 		return nil, err3
 	}
+
+	username1 := []string{"Ethan1", "ecoeyta@us.ibm.com", "16"}
+	_, err3 = t.requestAccount(stub, username1)
+	if err3 != nil {
+		fmt.Println("Failed to enrolled first user")
+		return nil, err3
+	}
+	username2 := []string{"Ethan2", "ecoeyta@us.ibm.com", "16"}
+	_, err3 = t.requestAccount(stub, username2)
+	if err3 != nil {
+		fmt.Println("Failed to enrolled first user")
+		return nil, err3
+	}
+	username3 := []string{"Ethan3", "ecoeyta@us.ibm.com", "16"}
+	_, err3 = t.requestAccount(stub, username3)
+	if err3 != nil {
+		fmt.Println("Failed to enrolled first user")
+		return nil, err3
+	}
+	
+	
 	fmt.Println("creating account for first user \"Ethan\"")
 	_, err4 := t.createAccount(stub, username)
 	if err4 != nil {
