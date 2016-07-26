@@ -1,5 +1,5 @@
 $(document).ready(function (){
-    $.post('api/manager', function(data, status) {
+    $.get('api/manager', function(data, status) {
         
     });
 });
