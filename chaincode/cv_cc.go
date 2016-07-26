@@ -296,7 +296,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, e
 	// Retrieve all the rows that are messages for the specified user
 
 	//rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: "open"}}})
-	rowChan, rowErr := stub.GetRows("AccountRequests");
+	rowChan, rowErr := stub.GetRows("AccountRequests", columns);
 	fmt.Println(reflect.TypeOf(rowChan))
 	fmt.Println(rowChan);
 	fmt.Println(rowErr);
