@@ -359,7 +359,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 			return nil, rowErr
 		}
 		fmt.Println("rowchan")
-		fmt.Println(rowChan.email)
+		fmt.Println(rowChan)
 		fmt.Println("rowERR")
 		fmt.Println(rowErr)
 		
