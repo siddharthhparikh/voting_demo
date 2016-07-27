@@ -362,10 +362,6 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		fmt.Println(rowChan)
 		fmt.Println("rowERR")
 		fmt.Println(rowErr)
-		fmt.Println("rowchan")
-		fmt.Println(rowChan)
-		fmt.Println("rowERR")
-		fmt.Println(rowErr)
 		
 		account.Email = string(rowChan.Columns[0].GetBytes())
 		fmt.Println(reflect.TypeOf(rowChan.Columns[0].GetBytes()))
