@@ -279,7 +279,9 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 					{&shim.Column_String_{String_: email}},
 				},
 			})
+			fmt.Println("row error")
 			fmt.Println(rowErr);
+			fmt.Println("rowAdded")
 			fmt.Println(rowAdded);
 		
 			if rowErr != nil || !rowAdded {
