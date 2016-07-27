@@ -272,29 +272,30 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 				fmt.Println("Error writting Account Requests back")
 				return nil, err1
 			}
-		}
-		//write to the Account request table
-		rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
-			Columns: []*shim.Column{
-				{&shim.Column_String_{String_: "open"}},
-				{&shim.Column_String_{String_: username}},
-				{&shim.Column_String_{String_: email}},
-			},
-		})
-		fmt.Println(rowErr);
-		fmt.Println(rowAdded);
-		
-		if rowErr != nil || !rowAdded {
+			rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
+				Columns: []*shim.Column{
+					{&shim.Column_String_{String_: "open"}},
+					{&shim.Column_String_{String_: username}},
+					{&shim.Column_String_{String_: email}},
+				},
+			})
 			fmt.Println(rowErr);
 			fmt.Println(rowAdded);
-			fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger: %s", rowErr))
-			return nil, rowErr
-		}
-		if err == nil {
-			fmt.Println("requested account " + account.ID)
-			return nil, nil
-		}
+		
+			if rowErr != nil || !rowAdded {
+				fmt.Println(rowErr);
+				fmt.Println(rowAdded);
+				fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger: %s", rowErr))
+				return nil, rowErr
+			}
+			if err == nil {
+				fmt.Println("requested account " + account.ID)
+				return nil, nil
+			}
 
+		}
+		//write to the Account request table
+		
 		fmt.Println("Failed to initialize an account for " + account.ID)
 		return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
 	}
@@ -343,33 +344,25 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	}
 	
 	for _, value := range AccReqs {	
-		/*AccReqBytes, err := stub.GetState(accountHeader + value)
-		fmt.Println("AccreqBytes= ")
-		fmt.Println(AccReqBytes);
-		if err != nil {
-			fmt.Println("Error retrieving account "+value+": ", err)
-			return nil, err
-		}
-
-<<<<<<< HEAD
-		var account Account 
-		err = json.Unmarshal(AccReqBytes, &account)
-		if err != nil {
-			fmt.Println("Error unmarshalling account "+value+": ", err)
-			return nil, err
-=======
-	// Extract the rows
-	var accountIDs []string
-	for row := range rowChan {
-		if len(row.Columns) != 0 {
-			accountIDs = append(accountIDs, t.readStringSafe(row.Columns[1]))
-			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
->>>>>>> origin/master
-		}
-		*/
 		var account Account
 		account.ID = value
 		account.Email = "sid"
+
+		rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: value}}})
+		if rowErr != nil {
+			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+			return nil, rowErr
+		}
+
+		// Extract the rows
+		var rows []shim.Row
+		for row := range rowChan {
+			if len(row.Columns) != 0 {
+				rows = append(rows, row)
+				fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
+			}
+		}
+	
 		fmt.Println("Appending account " + value)
 		allAccReq = append(allAccReq, account)
 		fmt.Println("All account Reqs:")
