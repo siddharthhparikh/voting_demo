@@ -353,7 +353,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		col1 := shim.Column{Value: &shim.Column_String_{String_: account.ID}}
 		columns = append(columns, col1)
 
-		rowChan, rowErr := stub.GetRow("AccountRequests", columns)
+		rowChan, rowErr := stub.GetRows("AccountRequests", columns)
 		if rowErr != nil {
 			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 			return nil, rowErr
