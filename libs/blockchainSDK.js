@@ -58,18 +58,6 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
 function cb_deployed() {
 
-    // invoke('issue_topic', JSON.stringify({
-    //   'topic_id': 'where to go for lunch?',
-    //   'issuer': 'ethan!',
-    //   'choices': ['chipotle', 'ruckus', 'other']
-    // }), function(err, results) {
-    //   console.log(err);
-    //   console.log(results);
-    // });
-
-    // query('get_all_topics', [], function (err, results) {
-    //   if (results && results.result) console.log(results.result.toString('ascii'));
-    // });
 }
 
 ///////////////////////////////
