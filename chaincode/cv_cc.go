@@ -365,6 +365,8 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		fmt.Println(rowErr)
 		var rows []shim.Row
 		for row := range rowChan {
+			fmt.Println("inside for loop")
+			fmt.Println(len(row.Columns))
 			if len(row.Columns) != 0 {
 				rows = append(rows, row)
 				fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
