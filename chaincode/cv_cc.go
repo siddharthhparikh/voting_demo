@@ -274,9 +274,8 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 			}
 			rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
 				Columns: []*shim.Column{
-					{&shim.Column_String_{String_: username}},
-					{&shim.Column_String_{String_: "open"}},
-					{&shim.Column_String_{String_: email}},
+					&shim.Column{Value: &shim.Column_String_{String_: username}},
+					&shim.Column{Value: &shim.Column_String_{String_: email}},
 				},
 			})
 			fmt.Println("row error")
@@ -349,28 +348,24 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		var account Account
 		account.ID = value
 		account.Email = "sid"
+	
+		var columns []shim.Column
+		col1 := shim.Column{Value: &shim.Column_String_{String_: account.ID}}
+		columns = append(columns, col1)
 
-		rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: value}}})
+		rowChan, rowErr := stub.GetRow("AccountRequests", columns)
 		if rowErr != nil {
 			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 			return nil, rowErr
 		}
+		
 		fmt.Println("rowchan")
 		fmt.Println(rowChan)
 		fmt.Println("rowERR")
 		fmt.Println(rowErr)
-
-		// Extract the rows
-		var rows []shim.Row
-		for row := range rowChan {
-			fmt.Println("length")
-			fmt.Println(len(row.Columns))
-			if len(row.Columns) != 0 {
-				rows = append(rows, row)
-				fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
-			}
-		}
-	
+		
+		account.Email = string(rowChan.Columns[1].GetBytes())
+		fmt.Println(reflect.TypeOf(rowChan.Columns[1].GetBytes()))
 		fmt.Println("Appending account " + value)
 		allAccReq = append(allAccReq, account)
 		fmt.Println("All account Reqs:")
@@ -1118,7 +1113,6 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
-		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	// Handle table creation errors
