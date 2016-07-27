@@ -971,8 +971,8 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
         AccReqJSON := JSONcapsule{
             AllAccReq: allOpenRequests,
         }
-		fmt.Println("AllAccReq")
-		fmt.Println(AllAccJSON)
+		fmt.Println("AccReqJSON")
+		fmt.Println(AccReqJSON)
 		allOpenRequestsBytes, err1 := json.Marshal(&AccReqJSON);
 		
 		fmt.Println("All open Reqs bytes:")
