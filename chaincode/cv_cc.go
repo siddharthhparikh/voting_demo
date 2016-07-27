@@ -238,7 +238,41 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		fmt.Println("No existing account found for " + account.ID + ", initializing account")
 		//err = stub.PutState(accountHeader+account.ID, accountBytes)
 		//errRequestAccount, Account := requestAccount(account_id)
+		
+		fmt.Println("Getting Account Requests")
+		AccReqBytes, err1 := stub.GetState("AccReq")
+		if err1 != nil {
+			fmt.Println("Error retrieving Account Requests")
+			return nil, err1
+		}
+		var AccReqs []string
+		err1 = json.Unmarshal(AccReqBytes, &AccReqs)
+		if err1 != nil {
+			fmt.Println("Error unmarshalling Account Requests")
+			return nil, err1
+		}
 
+		fmt.Println("Appending the new account to Account Requests")
+		foundAccReq := false
+		for _, tmp := range AccReqs {
+			if tmp == account.ID {
+				foundAccReq = true
+			}
+		}
+		if foundAccReq == false {
+			AccReqs = append(AccReqs, account.ID)
+			AccReqBytesToWrite, err1 := json.Marshal(&AccReqs)
+			if err1 != nil {
+				fmt.Println("Error marshalling Account Requests")
+				return nil, err1
+			}
+			fmt.Println("Put state on Account Requests")
+			err1 = stub.PutState("AccReq", AccReqBytesToWrite)
+			if err1 != nil {
+				fmt.Println("Error writting Account Requests back")
+				return nil, err1
+			}
+		}
 		//write to the Account request table
 		rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
 			Columns: []*shim.Column{
