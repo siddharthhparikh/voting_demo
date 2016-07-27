@@ -274,8 +274,8 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 			}
 			rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
 				Columns: []*shim.Column{
-					{&shim.Column_String_{String_: "open"}},
 					{&shim.Column_String_{String_: username}},
+					{&shim.Column_String_{String_: "open"}},
 					{&shim.Column_String_{String_: email}},
 				},
 			})
@@ -1117,8 +1117,8 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
-		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	// Handle table creation errors
