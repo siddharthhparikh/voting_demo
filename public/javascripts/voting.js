@@ -3,51 +3,58 @@
  * 
  * Handels voting events including the remaining vote count.
  */
+
+function setMaxVotes(){
+  
+}
+
+
 $(document).ready(function () {
+
+  var maxVotes = 5
+  $('.hidden').hide();
 
   //
   // Get current topic info
   //
-  // $.get('/api/gettopic', topicid, function ( data, status) {
-  //   data = JSON.parse(data);
-  //   $('#topic-description').append(topicid);
-  //   // TODO get topic data set up.
-  //   // $('#cand1').append(data.topic.choices[0]);
-  //   // $('#cand2').append(data.topic.choices[1]);
-  // });
-
-  //
-  // Disables manual form input to votes and set values.
-  //
-  $('.votes').keypress(function (e) {
-    e.preventDefault();
+  $.get('/api/get-topic',{'topicID':$('#topicID').html()}, function (data, status) {
+    
+    if(data) {
+    // Create candidates
+      data['choices[]'].forEach(function(entry) {
+        var candidate = '<p class="candidate">' + entry + ': </p>';
+        var voteInput = '<input type="number" class="votes" min="0" max="5"/>';
+        $('#candidates').append(candidate, voteInput);
+      });
+    }
   });
-  var totalVotes = $("#remaining-votes").text();
-  $(".votes").val(0);
-
 
   //
   // Submit user votes
   //
   $('#submit').click(function (e) {
     e.preventDefault(e);
-    $.get('/api/get-topic', {"topicID":$('#topic-description').html()}, function (data, status) {
+    $.get('/api/get-topic', { "topicID": $('#topicID').html() }, function (data, status) {
       if (data) {
         var votesArray = []
 
         //TODO this should be made a for loop to handle variable number of candidates
         votesArray.push($('#votes1').val());
         votesArray.push($('#votes2').val());
-        votesArray.push($('#votes3').val());
+        //votesArray.push($('#votes3').val());
+
+        console.log(votesArray);
 
         var votes = {
           "topic": data.topic_id,
-          "choices": data.choices,
-          "votes": votesArray,
+          "choices[]": data["choices[]"],
+          "votes[]": votesArray,
           "voter": null, //TODO this should be username
-          "castDate": (new Date()).toString()
+          "castDate": (new Date()).toString() //TODO should this be done on chaincode side of things?
         }
-        
+
+        console.log("VOTE: ", votes);
+
         $.post('/api/vote-submit', votes, function (data, status) {
           // Handle response
           data = JSON.parse(data);
@@ -63,18 +70,7 @@ $(document).ready(function () {
   });
 
   //
-  // Update the remaining number of votes based on the current issued votes.
-  //
-  $(".votes").change(function () {
-    // Update the number of remaining votes.
-    var votes1 = $("#votes1").val();
-    var votes2 = $("#votes2").val();
-    var remaining = Number(totalVotes) - (Number(votes1) + Number(votes2));
-    $("#remaining-votes").html(remaining);
-    // Upadte maximum votes for each responce.
-    $("#votes1").attr("max", (Number(totalVotes) - Number(votes2)));
-    $("#votes2").attr("max", (Number(totalVotes) - Number(votes1)));
-  });
+
 });
 
 

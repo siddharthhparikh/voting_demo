@@ -24,10 +24,10 @@ var users = null;
 var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
-caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
-peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
-//peerURLs.push('grpc://test-p2.rtp.raleigh.ibm.com:30303');
-//peerURLs.push('grpc://test-p3.rtp.raleigh.ibm.com:30303');
+caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
+peerURLs.push('grpc://ethan-p2.rtp.raleigh.ibm.com:30303');
+peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
 
 registrar = {
     'username': 'ethanicus',
@@ -58,18 +58,6 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
 function cb_deployed() {
 
-    // invoke('issue_topic', JSON.stringify({
-    //   'topic_id': 'where to go for lunch?',
-    //   'issuer': 'ethan!',
-    //   'choices': ['chipotle', 'ruckus', 'other']
-    // }), function(err, results) {
-    //   console.log(err);
-    //   console.log(results);
-    // });
-
-    // query('get_all_topics', [], function (err, results) {
-    //   if (results && results.result) console.log(results.result.toString('ascii'));
-    // });
 }
 
 ///////////////////////////////

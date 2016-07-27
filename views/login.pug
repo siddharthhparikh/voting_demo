@@ -5,28 +5,30 @@ block content
   link(rel='stylesheet', href='/stylesheets/login.css')
   link(rel='stylesheet', href='/stylesheets/loading.css')
   link(rel='stylesheet', href='/stylesheets/loader.css')
+  link(rel='stylesheet', href='/stylesheets/info-box.css')
   script(src='/javascripts/login.js')
   
   #header
     h1(id='title')= title
-    button(class='button' id='open-register') Register
+    h1(id='open-register') Register
   
   #content-header(class='hidden')
     h1( id='login') Login:
 
   #register-box(class='info-box' class='hidden')
-    p(id='register') Register
+    h1(id='register') Register
     p Full Name: 
     input(type='text' id='name' placeholder='First Last')
     p Email Address: 
     input(type='text' id='email' placeholder='Email')
-    p SSN: 
-    input(type='text' id='orginization' placeholder='XXX-XX-XXXX')
-    button(class='button' id='register-user') Submit 
+    p Organization: 
+    input(type='text' id='organization' placeholder='Organization')
+    button(class='button' id='reg-usr') Submit 
 
 
   form#content-block(action='topics' method='GET' class='hidden')
-    input(type='text' name='username' placeholder='Username...' id='username')
+    input(type='text' name='username' placeholder='Username' id='username')
+    input(type='text' name='password' placeholder='Password' id='password')
     p
     input(type='submit' class='button' id='submit' value='Submit')
     p(id='error-msg')
@@ -35,6 +37,8 @@ block content
     p(class='loading-msg') Blockchains are linking.
     #loader
     p(class='loading-msg') Please wait...
+
+  button(class='button' id='manage') Manage
 
 
   

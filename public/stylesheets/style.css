@@ -55,21 +55,12 @@ h1 {
 }
 
 #content-header > h1 {
-  margin: auto; 
-  font-size: 30px;
-  padding-top: 35px;
-}
-
-/* User welcome message */
-
-.welcome {
+  margin: auto;
   display: inline-block;
-  margin-top: 22px;
+  padding: 0px 10px 0px 10px;
 }
 
-#welcome-end {
-  margin-right: 150px;
-}
+
 
 /* Styling for main page content */
 
@@ -107,19 +98,3 @@ input[type='text'] {
 
   margin: 3px auto 3px auto;  
 }
-
-/* Styling for google material icons
-   - icons used include user porifle image and new topic button
- */
-
-.material-icons.md-48 {
-  float: right;
-
-  margin: 12px 15px 0px 15px;
-
-  font-size: 48px;
-
-  cursor: pointer;
-}
-
-
