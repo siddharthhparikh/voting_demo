@@ -361,8 +361,10 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		var account Account
 		account.ID = value
 		account.Email = "sid"
-		//fmt.Println("Appending topic " + value)
+		fmt.Println("Appending account " + value)
 		allAccReq = append(allAccReq, account)
+		fmt.Println("All account Reqs:")
+		fmt.Println(allAccReq)
 	}
 	return allAccReq, nil	
 }
@@ -955,12 +957,16 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	case "get_open_requests":
 		fmt.Println("I am in get open requests")
 		allOpenRequests, err := t.getOpenRequests(stub)
+		fmt.Println("All open Reqs:")
+		fmt.Println(allOpenRequests)
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
 		}
 
 		allOpenRequestsBytes, err1 := json.Marshal(&allOpenRequests)
+		fmt.Println("All open Reqs bytes:")
+		fmt.Println(allOpenRequestsBytes)
 		if err1 != nil {
 			fmt.Println("Error marshalling allOpenRequests")
 			return nil, err1
