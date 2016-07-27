@@ -306,9 +306,9 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 // getAccount returns the account matching the given username
 
-func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (Account, error) {
+func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string) (Account, error) {
 	var account Account
-	accountID := args[0]
+
 	accountBytes, err := stub.GetState(accountHeader + accountID)
 	if err != nil {
 		fmt.Println("Could not find account " + accountID)
@@ -351,11 +351,20 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 			return nil, err
 		}
 
+<<<<<<< HEAD
 		var account Account 
 		err = json.Unmarshal(AccReqBytes, &account)
 		if err != nil {
 			fmt.Println("Error unmarshalling account "+value+": ", err)
 			return nil, err
+=======
+	// Extract the rows
+	var accountIDs []string
+	for row := range rowChan {
+		if len(row.Columns) != 0 {
+			accountIDs = append(accountIDs, t.readStringSafe(row.Columns[1]))
+			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
+>>>>>>> origin/master
 		}
 		*/
 		var account Account
@@ -366,7 +375,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		fmt.Println("All account Reqs:")
 		fmt.Println(allAccReq)
 	}
-	return allAccReq, nil	
+	return allAccReq, nil
 }
 	
 
@@ -493,8 +502,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			fmt.Println(err)
 			return nil, err
 		}
-		topic.ExpireDate = expireDateTime.String()
-	
+		topic.ExpireDate = expireDateTime.Format(time.RFC3339)
 		topicBytes, err := json.Marshal(&topic)
 		if err != nil {
 			fmt.Println("Error marshalling topic")
@@ -570,7 +578,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 func (t *SimpleChaincode) clearTopics(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	fmt.Println("Clearing all topics...")
 
-	topics, err := getAllTopics(stub)
+	topics, err := t.getAllTopics(stub)
 	if err != nil {
 		fmt.Println("Error: Could not retrieve voting topics: ", err)
 		return nil, err
@@ -605,7 +613,7 @@ func (t *SimpleChaincode) clearTopics(stub *shim.ChaincodeStub, args []string) (
 }
 
 //getAllTopics returns an array of all topicIDs
-func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
+func (t *SimpleChaincode) getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 	fmt.Println("Retrieving all topics...")
 
 	var allTopics []Topic
@@ -637,30 +645,30 @@ func getAllTopics(stub *shim.ChaincodeStub) ([]Topic, error) {
 			return nil, err
 		}
 
-		fmt.Println("Appending topic " + value)
+		fmt.Println("Appending topic " + topic.TopicStr)
 		allTopics = append(allTopics, topic)
 	}
 
 	return allTopics, nil
 }
 
-func getTopic(stub *shim.ChaincodeStub, topicName string) (Topic, error) {
-	fmt.Println("Retrieving topic " + topicName + "...")
-
+func (t *SimpleChaincode) getTopic(stub *shim.ChaincodeStub, topicID string) (Topic, error) {
 	var emptyTopic Topic
 
-	topicBytes, err := stub.GetState(topicHeader + topicName)
+	fmt.Println("Retrieving topic " + topicID + "...")
+
+	topicBytes, err := stub.GetState(topicHeader + topicID)
 	if err != nil {
 		fmt.Println("Error retrieving vote topic")
 		return emptyTopic, err
 	}
 
-	fmt.Println(topicBytes)
+	//fmt.Println(topicBytes)
 
 	var topic Topic
 	err = json.Unmarshal(topicBytes, &topic)
 	if err != nil {
-		fmt.Println("Error unmarshalling vote topics: ", err)
+		fmt.Println("Error unmarshalling vote topic "+topicID+": ", err)
 		return emptyTopic, err
 	}
 
@@ -695,7 +703,7 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 
 	fmt.Println("Vote: ", vote)
 
-	account, errGetAccount := t.getAccount(stub, []string{vote.Voter})
+	account, errGetAccount := t.getAccount(stub, vote.Voter)
 
 	if errGetAccount != nil {
 		fmt.Println("Error retrieving account: ", errGetAccount)
@@ -718,7 +726,7 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 	//check votes are valid
 
 	//make sure topic has not expired
-	expireTime, errTimeParse := time.Parse("2006-07-08 00:00:00 +0000 UTC", topic.ExpireDate)
+	expireTime, errTimeParse := time.Parse(time.RFC3339, topic.ExpireDate)
 	if errTimeParse != nil {
 		fmt.Println(errTimeParse)
 		return nil, errTimeParse
@@ -751,8 +759,8 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 
 	//make sure voter has cast correct number of votes
 	if len(vote.Votes) != len(topic.Choices) {
-		fmt.Println("Error: number of vote quantities does not match choices count")
-		return nil, errors.New("Number of vote quantities does not match choices count")
+		fmt.Println("Error: number of vote quantities (" + strconv.Itoa(len(vote.Votes)) + ") does not match choices count (" + strconv.Itoa(len(topic.Choices)) + ")")
+		return nil, errors.New("Number of vote quantities (" + strconv.Itoa(len(vote.Votes)) + ") does not match choices count (" + strconv.Itoa(len(topic.Choices)) + ")")
 	}
 
 	fmt.Println("Casting votes for topic " + topic.TopicStr + "...")
@@ -871,38 +879,117 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		return t.read(stub, args)
 
 	case "get_all_topics":
-		allTopics, err := getAllTopics(stub)
+		if len(args) != 1 {
+			fmt.Println("Incorrect number of arguments. Expecting 1: user ID")
+			return nil, errors.New("Incorrect number of arguments. Expecting 1: user ID")
+		}
+
+		account, errAccount := t.getAccount(stub, args[0])
+		if errAccount != nil {
+			fmt.Println("Error getting account:", errAccount)
+			return nil, errAccount
+		}
+
+		allTopics, err := t.getAllTopics(stub)
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
 		}
 
-		allTopicsBytes, err1 := json.Marshal(&allTopics)
+		type ExtendedTopic struct {
+			Topic  Topic
+			Status string
+		}
+
+		var extendedTopics []ExtendedTopic
+
+		for _, topic := range allTopics {
+			var temp ExtendedTopic
+			temp.Topic = topic
+			temp.Status = "closed"
+
+			expireTime, errTimeParse := time.Parse(time.RFC3339, topic.ExpireDate)
+			if errTimeParse != nil {
+				fmt.Println(errTimeParse)
+				return nil, errTimeParse
+			}
+			if time.Now().Before(expireTime) {
+				rowChan, rowErr := stub.GetRows(topicHeader+topic.ID, []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.ID}}})
+				if rowErr != nil {
+					fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+					return nil, rowErr
+				}
+
+				// Extract the rows
+				for row := range rowChan {
+					if len(row.Columns) != 0 {
+						fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
+					}
+				}
+				temp.Status = "open"
+			}
+
+			fmt.Println("Appending extended topic ", temp)
+			extendedTopics = append(extendedTopics, temp)
+		}
+
+		//json.Marshal can only marshal JSON, not array of JSON, so we put array inside single JSON object to pass to server
+		type JSONcapsule struct {
+			AllTopics []ExtendedTopic
+		}
+		extendedTopicsJSON := JSONcapsule{
+			AllTopics: extendedTopics,
+		}
+
+		extendedTopicsBytes, err1 := json.Marshal(&extendedTopicsJSON)
 		if err1 != nil {
-			fmt.Println("Error marshalling allTopics")
+			fmt.Println("Error marshalling extendedTopics")
 			return nil, err1
 		}
-		fmt.Println("All success, returning allTopics")
-		return allTopicsBytes, nil
+		fmt.Println("All success, returning extendedTopics")
+		return extendedTopicsBytes, nil
 
 	case "get_topic":
-		if len(args) != 1 {
-			fmt.Println("Incorrect number of arguments. Expecting 1: string of account ID being queried")
-			return nil, nil
+		if len(args) != 2 {
+			fmt.Println("Incorrect number of arguments. Expecting 2: topic ID and user ID")
+			return nil, errors.New("Incorrect number of arguments. Expecting 2: topic ID and user ID")
 		}
 
-		topicID := string([]byte(args[0]))
+		//account, errAccount := t.getAccount(stub, args[1])
+		// if errAccount != nil {
+		// 	fmt.Println("Error getting account:", errAccount)
+		// 	return nil, errAccount
+		// }
 
-		topic, err1 := getTopic(stub, topicID)
-		if err1 != nil {
-			fmt.Println("Error from get_topic: ", err1)
-			return nil, err1
+		topic, errTopic := t.getTopic(stub, args[0])
+		if errTopic != nil {
+			fmt.Println("Error getting topic: ", errTopic)
+			return nil, errTopic
 		}
 
-		topicBytes, err2 := json.Marshal(&topic)
-		if err2 != nil {
-			fmt.Println("Error marshalling topic: ", err2)
-			return nil, err2
+		var status = "closed"
+
+		expireTime, errTimeParse := time.Parse(time.RFC3339, topic.ExpireDate)
+		if errTimeParse != nil {
+			fmt.Println(errTimeParse)
+			return nil, errTimeParse
+		}
+		if time.Now().Before(expireTime) {
+			status = "open"
+		}
+
+		type ExtendedTopic Topic
+
+		topicBytes, errMarshal := json.Marshal(struct {
+			ExtendedTopic
+			Status string
+		}{
+			ExtendedTopic: ExtendedTopic(topic),
+			Status:        status,
+		})
+		if errMarshal != nil {
+			fmt.Println("Error marshalling topic: ", errMarshal)
+			return nil, errMarshal
 		}
 		return topicBytes, nil
 
@@ -914,7 +1001,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 		accountID := args[0]
 
-		account, err1 := t.getAccount(stub, []string{accountID})
+		account, err1 := t.getAccount(stub, accountID)
 
 		if err1 != nil {
 			fmt.Println("Error from get_account: ", err1)

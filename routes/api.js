@@ -82,6 +82,7 @@ router.get('/o', function (req, res) {
 /* Get all voting topics from blockchain */
 router.get('/get-topics', function (req, res) {
   var args = [];
+  args.push(req.session.name);
   chaincode.query('get_all_topics', args, function (err, data) {
     if (err) console.log('ERROR: ', err);
     else res.json(data);
@@ -92,9 +93,11 @@ router.get('/get-topics', function (req, res) {
 
 router.get('/get-topic', function (req, res) {
   console.log('getting topic...');
-  console.log(req.query);
-  var args = req.query.id;
+  var args = [];
+  args.push(req.query.topicID);
+  args.push(req.session.name);
   chaincode.query('get_topic', args, function (err, data) {
+    console.log("DATA: ", data);
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
@@ -102,15 +105,15 @@ router.get('/get-topic', function (req, res) {
 
 router.get('/topic-check', function (req, res, next) {
   // Get the topic id from the post
-  var topicID = req.query;
-  console.log("TopicID: ", topicID);
   var args = [];
-  args.push(topicID.topic_id);
-  chaincode.query('get-topic', args, function (err, data) {
-    if (data) {
-      res.json('{"status" : "success"}');
-    } else {
+  args.push(req.query.topicID);
+  args.push(req.session.name);
+  console.log(req.query);
+  chaincode.query('get_topic', args, function (err, data) {
+    if (err) {
       res.json('{"status" : "failure"}');
+    } else {
+      res.json('{"status" : "success"}');
     }
   });
 });

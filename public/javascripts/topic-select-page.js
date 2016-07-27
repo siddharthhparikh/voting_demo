@@ -6,6 +6,8 @@
  * Handles new topic generation.
  */
 
+var MIN_ID_LENGTH = 32;
+
 function generateID(length) {
   var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
 
@@ -18,19 +20,46 @@ function generateID(length) {
 
 /* loadTopics reloads the topic buttons list */
 function loadTopics() {
+  console.log('Loading topics...');
+
+  var showClosedTopics = false;
+
+  // Check which open/closed tab is selected in the UI.
+  if( $('.active').atrr('id') == "closed-topics" ) {
+    showClosedTopics = true;
+  }
+
   $('#topics').empty();
   $('#topics').append('<div id="loader"></div>');
   $.get('/api/get-topics', function (data, status) {
-    $('#loader').remove();    
-    if (data) {
+    $('#loader').remove();
+    if (data && data.AllTopics) {
+      data = data.AllTopics;
+
+      console.log('data: ', data);
+
       $('#loader').hide();
       // Create a lot of buttons from the topic list.
       var count = 0;
-      for (var topic in data) {
-        console.log('found topic \"' + data[topic].topic + '\"');
-        var html = '<button class="topic button" id="' + data[topic].topic_id + '">' + data[topic].topic + '</button>';
-        $('#topics').append(html);
-        count++;
+      for (var i in data) {
+        // Load Closed topics.
+        if(showClosedTopics) {
+          // TODO ethan is this the right syntax??
+          if(data[i].Topic.status == "closed") {
+            console.log('found topic: ', data[i]);
+            var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
+            $('#topics').append(html);
+            count++;
+          }
+        // Show Open topics.
+        } else {
+          if(data[i].Topic.status == "open") {
+            console.log('found topic: ', data[i]);
+            var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
+            $('#topics').append(html);
+            count++;
+          }
+        }
       }
       if (count == 0) {
         console.log('no topics found');
@@ -42,43 +71,69 @@ function loadTopics() {
   });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   // 
-  // Page setup.
-  // 
-  //loadTopics();
+  // Animation and page set up.
+  //
+
+  loadTopics();
+
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
     $('#username').append(data.user);
     // TODO append votes to #user-votes
   });
+  // Secret button.
   $('.welcome-o').click(function () {
     $.get('/api/o', function (data, status) { });
   });
+
   // Hide all hidden elements
   $('.hidden').hide();
+
   //Animation for new topic, info box.
   $('#new-topic').click(function () {
     $('#user-info').hide();
-    $('#topic-creation').toggle("fast", function () { });
+    $('#topic-creation').animate({ height: 'toggle' }, 'fast');
   });
+
   //Animation for new topic, info box.
   $('#open-user-info').click(function () {
     $('#topic-creation').hide();
-    $('#user-info').toggle("fast", function () { });
+    $('#user-info').animate({ height: 'toggle' }, 'fast');
   });
+
+  // Hides menus when user clicks out of them.
+  $(document).click(function(event){
+    if(!$(event.target).is('.info-box') && !$(event.target).is('.header-icons') && !$(event.target).is('.topic-input')){
+      $('.info-box').fadeOut('fast');
+    }
+  });
+
   // Set click action for refresh button.
-  $('#refresh-topics').click(loadTopics());
+  $('#refresh-topics').click(loadTopics);
+
+  // For date picking
+  $('#datepicker').click(function () {
+    $("#datepicker").datepicker();
+  });
+
+  // Tabs for open/closed topic switching
+  $(document).on('click', '.inactive', function () {
+    $('.active').removeClass('active').addClass('inactive');
+    $(this).addClass('active').removeClass('inactive');
+  });
 
   //
   // Topic generation for in the 'create' info-box
   //
   $('#topic-submit').click(function (e) {
     e.preventDefault();
-
+    // First grab all candidates the user creates
+    // TODO don't grab empty candidate boxes
     var choices = [];
-    $('.topic-candidate').each(function(){
+    $('.topic-candidate').each(function () {
       choices.push($(this).val());
     });
 
@@ -90,10 +145,10 @@ $(document).ready(function() {
         return;
       }
 
-      var id = generateID(Math.max($('#topic-name').val().length, 16));
+      var id = generateID(Math.max($('#topic-name').val().length, MIN_ID_LENGTH));
       console.log('Topic ID: ' + id);
 
-      $.get('/api/topic-check', { "topic_id": id }, function (data, status) {
+      $.get('/api/topic-check', { "topicID": id }, function (data, status) {
         if (data.status == 'success') {
           console.log('Topic ID taken!  Issuing new ID...');
           issueUniqueID(countdown - 1);
@@ -113,8 +168,6 @@ $(document).ready(function() {
         'choices': choices
       }
 
-      console.log('topic: ');
-      console.log(topic);
       // Submit the new topic
       $.post('/api/create', topic, function (data, status) {
         // Handle res.
@@ -134,25 +187,22 @@ $(document).ready(function() {
         }
       });
     }
+    // Fade out element
     $('#topic-creation').fadeOut();
   });
 
-  $('#datepicker').click(function () {
-    $("#datepicker").datepicker();
-  })
   //
-  // Add a new candidate form
+  // Add new candidate button.
   //
-  $('#add-cand').click(function() {
+  $('#add-cand').click(function () {
     var html = '<input type="text" class="topic-candidate" placeholder="Candidate"/>';
     $('#candidate-append').append(html);
   });
-  
+
   //
   // Routes user to the selected topic.
   //
   $(document).on('click', '.topic', function () {
-    console.log('testing');
     // $.post('/api/topic-check/', $(this).html(), function (data, status) {
     //   // Handle res.
     //   data = JSON.parse(data);
@@ -165,6 +215,6 @@ $(document).ready(function() {
     //     console.log(data.status);
     //   }
     // });
-    window.location.replace("../topic/id?=" + $(this).html());
+    window.location.replace("../topic/id?=" + $(this).context.id);
   });
 });
