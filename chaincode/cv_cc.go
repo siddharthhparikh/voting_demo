@@ -291,31 +291,43 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 }
 
 
-func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]string, error) {
+func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, error) {
 
 	// Retrieve all the rows that are messages for the specified user
-
-	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: "open"}}})
-	//rowChan, rowErr := stub.GetRows("AccountRequests", columns);
-	fmt.Println(reflect.TypeOf(rowChan))
-	fmt.Println(rowChan);
-	fmt.Println(rowErr);
-	if rowErr != nil {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return nil, rowErr
+	fmt.Println("Getting Account Requests")
+	AccReqBytes, err := stub.GetState("AccReq")
+	if err != nil {
+		fmt.Println("Error retrieving Account Requests")
+		return nil, err
 	}
-
-	// Extract the rows
-	var account_ids []string
-	for row := range rowChan {
-		fmt.Println(fmt.Sprintf("HERE: %d", len(row.Columns)))
-		if len(row.Columns) != 0 {
-			account_ids = append(account_ids, t.readStringSafe(row.Columns[1]))
-			fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
+	var allAccReq []Account
+	var AccReqs []string
+	err = json.Unmarshal(AccReqBytes, &AccReqs)
+	if err != nil {
+		fmt.Println("Error unmarshalling Account Requests")
+		return nil, err
+	}
+	
+	for _, value := range AccReqs {	
+		AccReqBytes, err := stub.GetState(accountHeader + value)
+		if err != nil {
+			fmt.Println("Error retrieving account "+value+": ", err)
+			return nil, err
 		}
+
+		var account Account 
+		err = json.Unmarshal(AccReqBytes, &account)
+		if err != nil {
+			fmt.Println("Error unmarshalling account "+value+": ", err)
+			return nil, err
+		}
+
+		fmt.Println("Appending topic " + value)
+		allAccReq = append(allAccReq, account)
 	}
-	return account_ids, nil
+	return allAccReq, nil	
 }
+	
 
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	status := args[0]
@@ -929,6 +941,22 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	blankBytes, _ := json.Marshal(&blank)
 	err := stub.PutState("VoteTopics", blankBytes)
 	if err != nil {
+		fmt.Println("Failed to initialize vote topics")
+	} else {
+		fmt.Println("Successfully initialized vote topics")
+	}
+
+	fmt.Println("Initializing account requests...")
+	errAccReq := stub.PutState("AccReq", blankBytes)
+	if errAccReq != nil {
+		fmt.Println("Failed to initialize vote topics")
+	} else {
+		fmt.Println("Successfully initialized vote topics")
+	}
+
+	fmt.Println("Initializing existing accounts...")
+	errAcc := stub.PutState("accounts", blankBytes)
+	if errAcc != nil {
 		fmt.Println("Failed to initialize vote topics")
 	} else {
 		fmt.Println("Successfully initialized vote topics")
