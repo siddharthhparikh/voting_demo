@@ -344,6 +344,8 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	
 	for _, value := range AccReqs {	
 		AccReqBytes, err := stub.GetState(accountHeader + value)
+		fmt.Println("AccreqBytes = ")
+		fmt.Println(AccReqBytes);
 		if err != nil {
 			fmt.Println("Error retrieving account "+value+": ", err)
 			return nil, err
@@ -356,7 +358,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 			return nil, err
 		}
 
-		fmt.Println("Appending topic " + value)
+		//fmt.Println("Appending topic " + value)
 		allAccReq = append(allAccReq, account)
 	}
 	return allAccReq, nil	
