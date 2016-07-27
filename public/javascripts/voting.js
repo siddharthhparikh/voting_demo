@@ -36,12 +36,12 @@ $(document).ready(function () {
     e.preventDefault(e);
     $.get('/api/get-topic', { "id": $('#topic-description').html() }, function (data, status) {
       if (data) {
-        var votesArray = []
-
-        //TODO this should be made a for loop to handle variable number of candidates
-        votesArray.push($('#votes1').val());
-        votesArray.push($('#votes2').val());
-        votesArray.push($('#votes3').val());
+        
+        var votesArray = [];
+        var votes = document.getElementsByClassName('votes');
+        for (i = 0; i < votesArray.length; i++) {
+          votesArray.push(votesArray[i].val());
+        }
 
         var votes = {
           "topic": data.topic_id,
@@ -65,8 +65,20 @@ $(document).ready(function () {
     });
   });
 
-  //
-
+  // Remaining votes
+  $('.votes').click(function(e){
+    e.preventDefault();
+    var sum = 0;
+    var votes = document.getElementsByClassName('votes');
+    for(var i = 0; i < votes.length; i++){ 
+      sum += votes[i].val();
+    }
+    console.log(sum);
+    if(sum < maxVotes){
+      $(this).val() += 1;
+      
+    }
+  })
 });
 
 
