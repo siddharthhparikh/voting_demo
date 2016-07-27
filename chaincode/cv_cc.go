@@ -343,8 +343,8 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	}
 	
 	for _, value := range AccReqs {	
-		AccReqBytes, err := stub.GetState(accountHeader + value)
-		fmt.Println("AccreqBytes = ")
+		/*AccReqBytes, err := stub.GetState(accountHeader + value)
+		fmt.Println("AccreqBytes= ")
 		fmt.Println(AccReqBytes);
 		if err != nil {
 			fmt.Println("Error retrieving account "+value+": ", err)
@@ -357,7 +357,10 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 			fmt.Println("Error unmarshalling account "+value+": ", err)
 			return nil, err
 		}
-
+		*/
+		var account Account
+		account.ID = value
+		account.Email = "sid"
 		//fmt.Println("Appending topic " + value)
 		allAccReq = append(allAccReq, account)
 	}
