@@ -84,8 +84,8 @@ $(document).ready(function () {
   });
 
   // Hides menus when user clicks out of them.
-  $(document).click(function (event) {
-    if (!$(event.target).is('.info-box') && !$(event.target).is('.header-icons')) {
+  $(document).click(function(event){
+    if(!$(event.target).is('.info-box') && !$(event.target).is('.header-icons') && !$(event.target).is('.topic-input')){
       $('.info-box').fadeOut('fast');
     }
   });
