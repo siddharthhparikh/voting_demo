@@ -957,14 +957,23 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	case "get_open_requests":
 		fmt.Println("I am in get open requests")
 		allOpenRequests, err := t.getOpenRequests(stub)
+		
 		fmt.Println("All open Reqs:")
 		fmt.Println(allOpenRequests)
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
 		}
-
-		allOpenRequestsBytes, err1 := json.Marshal(&allOpenRequests)
+		//json.Marshal can only marshal JSON, not array of JSON, so we put array inside single JSON object to pass to server
+        type JSONcapsule struct {
+            AllAccReq []Account
+        }
+        AccReqJSON := JSONcapsule{
+            AllAccReq: allOpenRequests,
+        }
+		
+		allOpenRequestsBytes, err1 := json.Marshal(&AccReqJSON);
+		
 		fmt.Println("All open Reqs bytes:")
 		fmt.Println(allOpenRequestsBytes)
 		if err1 != nil {
