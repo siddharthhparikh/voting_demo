@@ -377,7 +377,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		fmt.Println(reflect.TypeOf(rowChan.Columns[0].GetBytes()))
 		fmt.Println(rowChan.Columns[0].GetBytes())
 		fmt.Println(string(rowChan.Columns[0].GetBytes()))
-		fmt.Println(string(rowChan.Columns[0]))
+		fmt.Println(rowChan.Columns[0])
 		fmt.Println("Appending account " + value)
 		allAccReq = append(allAccReq, account)
 		fmt.Println("All account Reqs:")
