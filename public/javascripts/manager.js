@@ -6,7 +6,7 @@ $(document).ready(function(){
       // Create a <tr> for each request that exists.
       data.AllAccReq.forEach(function(entry){
       // This was fun to write.
-        $('#request-table tr:last').after('<tr><td>' + entry.account_id + '</td><td>' + entry.email + '</td><td><input type"number" class="vote-ammount request-info" value="5"/></td><td><button class="button approve">Approve</button></td><button class="button decline">Decline</button></tr>');
+        $('#request-table tr:last').after('<tr class="request"><td>' + entry.account_id + '</td><td>' + entry.email + '</td><td><input type"number" class="vote-ammount request-info" value="5"/></td><td><button class="button approve">Approve</button><button class="button decline">Decline</button></td></tr>');
       });
     }
   });
@@ -20,3 +20,5 @@ $(document).ready(function(){
     $(this).parent().remove();
   });
 });
+
+
