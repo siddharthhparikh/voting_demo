@@ -193,6 +193,7 @@ router.post('/register', function (req, res) {
 });
 
 router.get('/manager', function (req, res) {
+  console.log("before querying")
   chaincode.query('get_open_requests', [], function (err, data) {
     console.log(data);
     res.json(data);
