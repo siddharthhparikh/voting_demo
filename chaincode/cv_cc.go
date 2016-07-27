@@ -353,10 +353,15 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 			return nil, rowErr
 		}
+		fmt.Println("rowchan")
+		fmt.Println(rowChan)
+		fmt.Println("rowERR")
+		fmt.Println(rowErr)
 
 		// Extract the rows
 		var rows []shim.Row
 		for row := range rowChan {
+			fmt.Println(len(row.Columns))
 			if len(row.Columns) != 0 {
 				rows = append(rows, row)
 				fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
