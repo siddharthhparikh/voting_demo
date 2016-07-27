@@ -360,14 +360,22 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		}
 		fmt.Println("rowchan")
 		fmt.Println(rowChan)
-		fmt.Println(rowChan.GetColumns()[1])
+		//fmt.Println(rowChan.GetColumns()[1])
 		fmt.Println("rowERR")
 		fmt.Println(rowErr)
-		
+		var rows []shim.Row
+		for row := range rowChan {
+			if len(row.Columns) != 0 {
+				rows = append(rows, row)
+				fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
+			}
+		}
+		/*
 		account.Email = string(rowChan.Columns[0].GetBytes())
 		fmt.Println(reflect.TypeOf(rowChan.Columns[0].GetBytes()))
 		fmt.Println(rowChan.Columns[0].GetBytes())
 		fmt.Println(string(rowChan.Columns[0].GetBytes()))
+		*/
 		fmt.Println("Appending account " + value)
 		allAccReq = append(allAccReq, account)
 		fmt.Println("All account Reqs:")
