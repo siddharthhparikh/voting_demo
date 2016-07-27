@@ -4,8 +4,8 @@
  * Handels voting events including the remaining vote count.
  */
 
-function setMaxVotes(){
-  
+function setMaxVotes() {
+
 }
 
 
@@ -17,11 +17,11 @@ $(document).ready(function () {
   //
   // Get current topic info
   //
-  $.get('/api/get-topic',{'topicID':$('#topicID').html()}, function (data, status) {
-    
-    if(data) {
-    // Create candidates
-      data['choices[]'].forEach(function(entry) {
+  $.get('/api/get-topic', { 'topicID': $('#topicID').html() }, function (data, status) {
+
+    if (data) {
+      // Create candidates
+      data['choices[]'].forEach(function (entry) {
         var candidate = '<p class="candidate">' + entry + ': </p>';
         var voteInput = '<input type="number" class="votes" min="0" max="5"/>';
         $('#candidates').append(candidate, voteInput);
@@ -36,14 +36,16 @@ $(document).ready(function () {
     e.preventDefault(e);
     $.get('/api/get-topic', { "topicID": $('#topicID').html() }, function (data, status) {
       if (data) {
-        
+
         var votesArray = [];
         var votes = document.getElementsByClassName('votes');
-        for (i = 0; i < votesArray.length; i++) {
-          votesArray.push(votesArray[i].val());
-        }
+        $('.votes').each(function () {
+          var val = this.value.toString();
+          if (val == "") val = "0";
+          votesArray.push(val);
+        });
 
-        var votes = {
+        var voteJSON = {
           "topic": data.topic_id,
           "choices[]": data["choices[]"],
           "votes[]": votesArray,
@@ -51,9 +53,7 @@ $(document).ready(function () {
           "castDate": (new Date()).toString() //TODO should this be done on chaincode side of things?
         }
 
-        console.log("VOTE: ", votes);
-
-        $.post('/api/vote-submit', votes, function (data, status) {
+        $.post('/api/vote-submit', voteJSON, function (data, status) {
           // Handle response
           data = JSON.parse(data);
           if (data.status == 'success') {
@@ -68,17 +68,17 @@ $(document).ready(function () {
   });
 
   // Remaining votes
-  $('.votes').click(function(e){
+  $('.votes').click(function (e) {
     e.preventDefault();
     var sum = 0;
     var votes = document.getElementsByClassName('votes');
-    for(var i = 0; i < votes.length; i++){ 
+    for (var i = 0; i < votes.length; i++) {
       sum += votes[i].val();
     }
     console.log(sum);
-    if(sum < maxVotes){
+    if (sum < maxVotes) {
       $(this).val() += 1;
-      
+
     }
   })
 });

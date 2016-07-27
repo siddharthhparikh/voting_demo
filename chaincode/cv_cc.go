@@ -720,7 +720,6 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 	for i := 0; i < len(topic.Choices); i++ {
 		fmt.Println("Casting vote for choice " + topic.Choices[i])
 		voteQty, err := strconv.Atoi(vote.Votes[i])
-		fmt.Println(voteQty)
 		if err != nil {
 			fmt.Println(err)
 			return nil, err

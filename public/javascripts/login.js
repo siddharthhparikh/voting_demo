@@ -13,7 +13,7 @@ $(document).ready(function () {
       $('#loading-screen').remove();
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();
-      $('#open-register').fadIn();
+      $('#open-register').fadeIn();
     } else {
       //TODO display err
     }
