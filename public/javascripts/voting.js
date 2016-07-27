@@ -40,7 +40,7 @@ $(document).ready(function () {
         var votesArray = [];
         var votes = document.getElementsByClassName('votes');
         for (i = 0; i < votesArray.length; i++) {
-          votesArray.push(votesArray[i].val());
+          votesArray.push(votes[i].val);
         }
 
         var votes = {
