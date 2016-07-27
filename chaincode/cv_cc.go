@@ -360,7 +360,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		}
 		fmt.Println("rowchan")
 		fmt.Println(rowChan)
-		fmt.Println(rowChan.getColumns()[0])
+		fmt.Println(rowChan.GetColumns()[0])
 		fmt.Println("rowERR")
 		fmt.Println(rowErr)
 		
