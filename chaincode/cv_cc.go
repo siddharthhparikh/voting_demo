@@ -972,7 +972,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
             AllAccReq: allOpenRequests,
         }
 		fmt.Println("AllAccReq")
-		fmt.Println(AllAccReq)
+		fmt.Println(AllAccJSON)
 		allOpenRequestsBytes, err1 := json.Marshal(&AccReqJSON);
 		
 		fmt.Println("All open Reqs bytes:")
