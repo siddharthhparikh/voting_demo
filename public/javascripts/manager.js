@@ -12,7 +12,7 @@ $(document).ready(function(){
   });
   
   // Events for the approve/decline buttons.
-  $('.approve').click(function() {
+  $(document).on('click', '.approve', function (){
     console.log($(this).parent().parent().find('.vote-ammount').val());
     //TODO approve the user
     var user = {
