@@ -20,4 +20,8 @@ $(document).ready(function(){
     //TODO Maybe send notification to user.
     $(this).parent().remove();
   });
+
+  $('#title').click(function() {
+    window.location.replace('../topics');
+  });
 });

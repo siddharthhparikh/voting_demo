@@ -11,6 +11,9 @@ router.get('/', function (req, res, next) {
 
 // Submits username and routes user to main topic page.
 router.get('/topics', function (req, res) {
+  if(!req.session.name){
+    res.json('{"status":"Error: No user session"}')
+  }
   res.render('topic-select', { title: 'Chain Vote' });
 });
 
