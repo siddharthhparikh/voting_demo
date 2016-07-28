@@ -160,16 +160,10 @@ router.get('/user', function (req, res) {
   res.json(response);
 });
 
-var username = "";
-var email = "";
-var votes = "";
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
-  username = req.body.name;
-  email = req.body.email;
-  org = req.body.org;
-  chaincode.invoke('request_account', [username, email, org], function (err, results) {
+  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org], function (err, results) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }

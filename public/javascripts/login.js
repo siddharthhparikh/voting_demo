@@ -67,9 +67,10 @@ $(document).ready(function () {
       'email': $('#email').val(),
       'org': $('#orginization').val()
     };
+    console.log(newUser);
     //Send request object.
     $.post('/api/register', newUser, function (data, status) {
-      if (status == 'success') {
+      if (status.status == 'success') {
         $('#register-box').hide();
         $('#error-msg').html('New account request has been sent.');
       }
