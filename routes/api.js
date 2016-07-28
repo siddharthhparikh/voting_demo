@@ -202,6 +202,7 @@ router.get('/manager', function (req, res) {
 
 router.post('/approved', function (req, res) {
   console.log("request approved")
+  console.log()
   console.log(req.ID)
   chaincode.registerAndEnroll(req.ID, "user", function (err, cred) {
       //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
