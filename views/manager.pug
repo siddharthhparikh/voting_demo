@@ -1,7 +1,7 @@
 extend layout
 
 block content
-  script(src='/javascripts/manage.js')
+  script(src='/javascripts/manager.js')
   link(rel='stylesheet', href='/stylesheets/manager.css')
 
   #header
@@ -20,8 +20,8 @@ block content
         td 
           input(type='number' class='vote-ammount' class='request-info' value='5')
         td
-          button(class='button' class='approve') Approve
-          button(class='button' class='decline') Decline
+          i(class='button' class='approve' class='material-icons') check
+          i(class='material-icons' class='button' class='decline') close
 
     
     

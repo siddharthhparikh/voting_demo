@@ -25,7 +25,7 @@ function loadTopics() {
   var showClosedTopics = false;
 
   // Check which open/closed tab is selected in the UI.
-  if( $('.active').atrr('id') == "closed-topics" ) {
+  if( $('.active').attr('id') == "closed-topics" ) {
     showClosedTopics = true;
   }
 
@@ -158,6 +158,8 @@ $(document).ready(function () {
       });
     }
 
+    // Issue topic function generates a new voting topic and submits it to the chaincode
+    // database for verification. 
     function issueTopic(id) {
       // Create a new topic object.
       var topic = {
@@ -173,21 +175,15 @@ $(document).ready(function () {
         // Handle res.
         data = JSON.parse(data);
         if (data.status == 'success') {
-          // Create new topic button element
-          //var html = '<button class="button topic">' + $('#topic-name').val() + '</button>';
-          //console.log(html);
-          // Append to the html
-          //$('#topics').append(html);
-          // TEST
+          // If successful reload the topics.
           loadTopics();
-
         } else {
           // ERROR
           console.log(data.status);
         }
       });
     }
-    // Fade out element
+    // Fade out info-box element
     $('#topic-creation').fadeOut();
   });
 
