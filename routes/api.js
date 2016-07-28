@@ -169,7 +169,6 @@ router.post('/register', function (req, res) {
   username = req.body.name;
   email = req.body.email;
   org = req.body.org;
-  votes = null;
   chaincode.invoke('request_account', [username, email, org], function (err, results) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
