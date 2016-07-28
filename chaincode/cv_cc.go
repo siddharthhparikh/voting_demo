@@ -247,8 +247,8 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		},
 	})
 	if rowErr != nil || !rowAdded {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger: %s", rowErr))
-		return nil, rowErr
+		fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger mostly because email is already registered: %s", rowErr))
+		return nil, nil
 	}
 	
 	return nil, nil
