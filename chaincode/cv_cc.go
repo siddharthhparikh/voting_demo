@@ -275,6 +275,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 			rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
 				Columns: []*shim.Column{
 					&shim.Column{Value: &shim.Column_String_{String_: username}},
+					&shim.Column{Value: &shim.Column_String_{String_: "open"}},
 					&shim.Column{Value: &shim.Column_String_{String_: email}},
 				},
 			})
@@ -329,7 +330,23 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string)
 
 func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, error) {
 
+	
+	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{})
+	if rowErr != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+		return nil, rowErr
+	}
+
+	var openRequest []Account
+	for _, chanValue := range rowChan {
+		if row.Columns[1].String_() == "open"{
+			openRequest = append(openRequest, Account{ID:row.Columns[0].String_(), Email:row.Columns[2].String_(), VoteCount: 0})
+		}
+	}
+
+	return openRequest, nil
 	// Retrieve all the rows that are messages for the specified user
+	/*
 	fmt.Println("Getting Account Requests")
 	AccReqBytes, err := stub.GetState("AccReq")
 	if err != nil {
@@ -348,19 +365,11 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		var account Account
 		account.ID = value
 		account.Email = "sid"
-	
-		var columns []shim.Column
-		col1 := shim.Column{Value: &shim.Column_String_{String_: account.ID}}
-		columns = append(columns, col1)
 
-		rowChan, rowErr := stub.GetRow("AccountRequests", columns)
-		if rowErr != nil {
-			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-			return nil, rowErr
-		}
+
 		fmt.Println("rowchan")
 		fmt.Println(rowChan)
-		/*fmt.Println("rowERR")
+		fmt.Println("rowERR")
 		fmt.Println(rowErr)
 		var rows []shim.Row
 		for row := range rowChan {
@@ -370,7 +379,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 				rows = append(rows, row)
 				fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
 			}
-		}*/
+		}
 		
 		account.Email = t.readStringSafe(rowChan.Columns[1])
 		fmt.Println("Appending account " + value)
@@ -379,6 +388,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 		fmt.Println(allAccReq)
 	}
 	return allAccReq, nil
+	*/
 }
 	
 
@@ -1120,7 +1130,9 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
+
 	})
 	// Handle table creation errors
 	if errAccountRequest != nil {
