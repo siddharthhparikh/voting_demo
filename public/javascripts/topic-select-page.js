@@ -22,6 +22,13 @@ function generateID(length) {
 function loadTopics() {
   console.log('Loading topics...');
 
+  var showClosedTopics = false;
+
+  // Check which open/closed tab is selected in the UI.
+  if( $('.active').attr('id') == "closed-topics" ) {
+    showClosedTopics = true;                                                                                                          
+  }
+
   $('#topics').empty();
   $('#topics').append('<div id="loader"></div>');
   $.get('/api/get-topics', function (data, status) {
@@ -35,10 +42,25 @@ function loadTopics() {
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var i in data) {
-        console.log('found topic: ', data[i]);
-        var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
-        $('#topics').append(html);
-        count++;
+        console.log(data[i]);
+        // Load Closed topics.
+        if(showClosedTopics) {
+          // TODO ethan is this the right syntax??
+          if(data[i].Status == "closed") {
+            console.log('found topic: ', data[i]);
+            var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
+            $('#topics').append(html);
+            count++;
+          }
+        // Show Open topics.
+        } else {
+          if(data[i].Status == "open") {
+            console.log('found topic: ', data[i]);
+            var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
+            $('#topics').append(html);
+            count++;
+          }
+        }
       }
       if (count == 0) {
         console.log('no topics found');
@@ -102,6 +124,7 @@ $(document).ready(function () {
   $(document).on('click', '.inactive', function () {
     $('.active').removeClass('active').addClass('inactive');
     $(this).addClass('active').removeClass('inactive');
+    loadTopics();
   });
 
   //

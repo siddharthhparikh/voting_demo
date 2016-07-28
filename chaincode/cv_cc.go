@@ -505,8 +505,8 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		//getting here means success so far
 		//create table associated with topic
 		errCreateTable := stub.CreateTable(topicHeader+topic.ID, []*shim.ColumnDefinition{
-			&shim.ColumnDefinition{Name: "TransactionID", Type: shim.ColumnDefinition_UINT64, Key: true},
 			&shim.ColumnDefinition{Name: "Voter", Type: shim.ColumnDefinition_STRING, Key: true},
+			&shim.ColumnDefinition{Name: "TransactionID", Type: shim.ColumnDefinition_UINT64, Key: true},
 			&shim.ColumnDefinition{Name: "Choice", Type: shim.ColumnDefinition_STRING, Key: false},
 			&shim.ColumnDefinition{Name: "Votes", Type: shim.ColumnDefinition_UINT64, Key: false},
 			&shim.ColumnDefinition{Name: "Time", Type: shim.ColumnDefinition_STRING, Key: false},
@@ -736,8 +736,8 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 			//add to table
 			addedRow, errRow := stub.InsertRow(topicHeader+vote.Topic, shim.Row{
 				Columns: []*shim.Column{
-					{&shim.Column_Uint64{Uint64: transactionID}},
 					{&shim.Column_String_{String_: vote.Voter}},
+					{&shim.Column_Uint64{Uint64: transactionID}},
 					{&shim.Column_String_{String_: topic.Choices[i]}},
 					{&shim.Column_Uint64{Uint64: uint64(voteQty)}},
 					{&shim.Column_String_{String_: vote.CastDate}},
@@ -866,22 +866,29 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 				return nil, errTimeParse
 			}
 			if time.Now().Before(expireTime) {
+				table, err := stub.GetTable(topicHeader + topic.ID)
+				if err != nil {
+					fmt.Println(err)
+					return nil, err
+				}
+				fmt.Println("[TABLE]", table)
+
 				rowChan, rowErr := stub.GetRows(topicHeader+topic.ID, []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.ID}}})
 				if rowErr != nil {
 					fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 					return nil, rowErr
 				}
 
-				// Extract the rows
+				//Extract the rows
 				for row := range rowChan {
-					if len(row.Columns) != 0 {
-						fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
-					}
+					//if len(row.Columns) != 0 {
+					fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
+					//}
 				}
 				temp.Status = "open"
 			}
 
-			fmt.Println("Appending extended topic ", temp)
+			fmt.Println("Appending extended topic", temp)
 			extendedTopics = append(extendedTopics, temp)
 		}
 
