@@ -23,7 +23,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-    "reflect"
+    //"reflect"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -34,9 +34,11 @@ type SimpleChaincode struct {
 
 //Account account of user who can vote
 type Account struct {
-	ID        string `json:"account_id"`
+	ID		  string `json:"account_id"`
+	Name	  string `json:"name"`
 	VoteCount uint64 `json:"vote_count"`
 	Email     string `json:"email"`
+	Org		  string `json:"org"`
 }
 
 var accountHeader = "account::"
@@ -211,100 +213,42 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 }
 
 func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	/*
-	if len(args) != 1 {
-		fmt.Println("Could not obtain username passed to createAcount")
-		return nil, errors.New("Incorrect number of arguments. Expecting 1: username of account")
-	}
-	*/
 
-	username := args[0]
-	email := args[1]
-	fmt.Println("In request Account username= ")
-	fmt.Println(reflect.TypeOf(username))
-	fmt.Println(" email= ")
-	fmt.Println(reflect.TypeOf(email))
-	var account = Account{ID: username, Email: email, VoteCount: 0}
-	accountBytes, err := json.Marshal(&account)
-	fmt.Println(accountBytes)
-	if err != nil {
-		fmt.Println("Error creating account " + account.ID)
-		return nil, err
+	if len(args) != 3 {
+		fmt.Println("Not enough arguments passed to createAcount")
+		return nil, errors.New("Incorrect number of arguments. Expecting 3: username, email, org")
 	}
 
-	fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
-	existingBytes, err := stub.GetState(accountHeader + account.ID)
-	if true {
-		fmt.Println("No existing account found for " + account.ID + ", initializing account")
-		//err = stub.PutState(accountHeader+account.ID, accountBytes)
-		//errRequestAccount, Account := requestAccount(account_id)
-		
-		fmt.Println("Getting Account Requests")
-		AccReqBytes, err1 := stub.GetState("AccReq")
-		if err1 != nil {
-			fmt.Println("Error retrieving Account Requests")
-			return nil, err1
-		}
-		var AccReqs []string
-		err1 = json.Unmarshal(AccReqBytes, &AccReqs)
-		if err1 != nil {
-			fmt.Println("Error unmarshalling Account Requests")
-			return nil, err1
-		}
+	fmt.Println("In request Account username= " + args[0] + " email = " + args[1] + " org = " + args[2])
+	var account = Account{ID: "", Name: args[0], Email: args[1], VoteCount: 0, Org: args[2]}
 
-		fmt.Println("Appending the new account to Account Requests")
-		foundAccReq := false
-		for _, tmp := range AccReqs {
-			if tmp == account.ID {
-				foundAccReq = true
-			}
-		}
-		if foundAccReq == false {
-			AccReqs = append(AccReqs, account.ID)
-			AccReqBytesToWrite, err1 := json.Marshal(&AccReqs)
-			if err1 != nil {
-				fmt.Println("Error marshalling Account Requests")
-				return nil, err1
-			}
-			fmt.Println("Put state on Account Requests")
-			err1 = stub.PutState("AccReq", AccReqBytesToWrite)
-			if err1 != nil {
-				fmt.Println("Error writting Account Requests back")
-				return nil, err1
-			}
-			rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
-				Columns: []*shim.Column{
-					&shim.Column{Value: &shim.Column_String_{String_: username}},
-					&shim.Column{Value: &shim.Column_String_{String_: "open"}},
-					&shim.Column{Value: &shim.Column_String_{String_: email}},
-				},
-			})
-			fmt.Println("row error")
-			fmt.Println(rowErr);
-			fmt.Println("rowAdded")
-			fmt.Println(rowAdded);
-		
-			if rowErr != nil || !rowAdded {
-				fmt.Println(rowErr);
-				fmt.Println(rowAdded);
-				fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger: %s", rowErr))
-				return nil, rowErr
-			}
-			if err == nil {
-				fmt.Println("requested account " + account.ID)
-				return nil, nil
-			}
+	//Check if request already exists
+	//user email must be unique in all the accounts
 
-		}
-		//write to the Account request table
-		
-		fmt.Println("Failed to initialize an account for " + account.ID)
-		return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
+	var column []shim.Column
+	column = append(column, shim.Column{Value: &shim.Column_String_{String_: account.Email}})
+	row, errGetRow := stub.GetRow("AccountRequests", column)
+
+	if t.readStringSafe(row.Columns[0]) == account.Email {
+		return nil, fmt.Errorf("Email ID [%s] already exist. Please click on forgot password to recover account. ERR: [%s]", account.Email, errGetRow)
 	}
-
-	fmt.Println("existing account bytes: " + string([]byte(existingBytes)))
-	fmt.Println("Account already exists for " + account.ID)
-	return nil, errors.New("Can't reinitialize existing user " + account.ID)
+	
+	//Account does not exists
+	rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
+		Columns: []*shim.Column{
+			&shim.Column{Value: &shim.Column_String_{String_: account.Email}},
+			&shim.Column{Value: &shim.Column_String_{String_: account.Name}},
+			&shim.Column{Value: &shim.Column_String_{String_: "open"}},
+			&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
+			&shim.Column{Value: &shim.Column_String_{String_: time.Now().String()}},	
+		},
+	})
+	if rowErr != nil || !rowAdded {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger: %s", rowErr))
+		return nil, rowErr
+	}
+	
+	return nil, nil
 }
 
 // getAccount returns the account matching the given username
@@ -328,67 +272,28 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string)
 }
 
 
-func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, error) {
-
+func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, []string, error) {
 	
 	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return nil, rowErr
+		return nil, nil, rowErr
 	}
-
 	var openRequest []Account
+	var timings []string
 	for chanValue := range rowChan {
-		if chanValue.Columns[1].GetString_() == "open"{
-			openRequest = append(openRequest, Account{ID:chanValue.Columns[0].GetString_(), Email:chanValue.Columns[2].GetString_(), VoteCount: 0})
+		if chanValue.Columns[1].GetString_() == "open" {
+			openRequest = append(openRequest, Account{
+				ID:		chanValue.Columns[0].GetString_(), 
+				Email:	chanValue.Columns[1].GetString_(), 
+				Name:	chanValue.Columns[2].GetString_(),
+				Org:	chanValue.Columns[3].GetString_(),
+				VoteCount: 0,
+			})
+			timings = append(timings, chanValue.Columns[3].GetString_())
 		}
 	}
-
-	return openRequest, nil
-	// Retrieve all the rows that are messages for the specified user
-	/*
-	fmt.Println("Getting Account Requests")
-	AccReqBytes, err := stub.GetState("AccReq")
-	if err != nil {
-		fmt.Println("Error retrieving Account Requests")
-		return nil, err
-	}
-	var allAccReq []Account
-	var AccReqs []string
-	err = json.Unmarshal(AccReqBytes, &AccReqs)
-	if err != nil {
-		fmt.Println("Error unmarshalling Account Requests")
-		return nil, err
-	}
-	
-	for _, value := range AccReqs {	
-		var account Account
-		account.ID = value
-		account.Email = "sid"
-
-
-		fmt.Println("rowchan")
-		fmt.Println(rowChan)
-		fmt.Println("rowERR")
-		fmt.Println(rowErr)
-		var rows []shim.Row
-		for row := range rowChan {
-			fmt.Println("inside for loop")
-			fmt.Println(len(row.Columns))
-			if len(row.Columns) != 0 {
-				rows = append(rows, row)
-				fmt.Println(fmt.Sprintf("[INFO] Row: %v", row))
-			}
-		}
-		
-		account.Email = t.readStringSafe(rowChan.Columns[1])
-		fmt.Println("Appending account " + value)
-		allAccReq = append(allAccReq, account)
-		fmt.Println("All account Reqs:")
-		fmt.Println(allAccReq)
-	}
-	return allAccReq, nil
-	*/
+	return openRequest, timings, nil
 }
 	
 
@@ -1056,10 +961,11 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		
 	case "get_open_requests":
 		fmt.Println("I am in get open requests")
-		allOpenRequests, err := t.getOpenRequests(stub)
+		allOpenRequests, timings, err := t.getOpenRequests(stub)
 		
 		fmt.Println("All open Reqs:")
 		fmt.Println(allOpenRequests)
+		fmt.Println(timings)
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
@@ -1101,14 +1007,6 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Successfully initialized vote topics")
 	}
 
-	fmt.Println("Initializing account requests...")
-	errAccReq := stub.PutState("AccReq", blankBytes)
-	if errAccReq != nil {
-		fmt.Println("Failed to initialize vote topics")
-	} else {
-		fmt.Println("Successfully initialized vote topics")
-	}
-
 	fmt.Println("Initializing existing accounts...")
 	errAcc := stub.PutState("accounts", blankBytes)
 	if errAcc != nil {
@@ -1129,10 +1027,12 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
-		&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "full_name", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
-
+		&shim.ColumnDefinition{Name: "org", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "time", Type: shim.ColumnDefinition_STRING, Key: false},
+		
 	})
 	// Handle table creation errors
 	if errAccountRequest != nil {
@@ -1143,52 +1043,20 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 
 	//create table to store all the user account requests
 	errApprovedAccount := stub.CreateTable("ApprovedAccounts", []*shim.ColumnDefinition{
-		&shim.ColumnDefinition{Name: "account_id", Type: shim.ColumnDefinition_STRING, Key: true},
-		&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_INT64, Key: false},
+		&shim.ColumnDefinition{Name: "userID", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "full_name", Type: shim.ColumnDefinition_INT64, Key: false},
 		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "org", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "req_time", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "appr_time", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "appr_manager", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	// Handle table creation errors
 	if errApprovedAccount != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not create account request table: %s", errApprovedAccount))
 		//console.log(fmt.Sprintf("[ERROR] Could not create account request table: %s", errApprovedAccount))
 		return nil, errApprovedAccount
-	}
-
-	
-	//for testing: enroll first user "Ethan!"
-	fmt.Println("Requesting first user \"Ethan\"")
-	username := []string{"Ethan", "ecoeyta@us.ibm.com", "16"}
-	_, err3 := t.requestAccount(stub, username)
-	if err3 != nil {
-		fmt.Println("Failed to enrolled first user")
-		return nil, err3
-	}
-
-	username1 := []string{"Ethan1", "ecoeyta@us.ibm.com", "16"}
-	_, err3 = t.requestAccount(stub, username1)
-	if err3 != nil {
-		fmt.Println("Failed to enrolled first user")
-		return nil, err3
-	}
-	username2 := []string{"Ethan2", "ecoeyta@us.ibm.com", "16"}
-	_, err3 = t.requestAccount(stub, username2)
-	if err3 != nil {
-		fmt.Println("Failed to enrolled first user")
-		return nil, err3
-	}
-	
-	username3 := []string{"Ethan3", "ecoeyta@us.ibm.com", "16"}
-	_, err3 = t.requestAccount(stub, username3)
-	if err3 != nil {
-		fmt.Println("Failed to enrolled first user")
-		return nil, err3
-	}
-	
-	fmt.Println("creating account for first user \"Ethan\"")
-	_, err4 := t.createAccount(stub, username)
-	if err4 != nil {
-		fmt.Println("Failed to enrolled first user")
-		return nil, err4
 	}
 	return nil, nil
 }

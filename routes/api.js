@@ -168,6 +168,7 @@ router.post('/register', function (req, res) {
   console.log(req.body);
   username = req.body.name;
   email = req.body.email;
+  org = req.body.org;
   votes = null;
   chaincode.invoke('request_account', [username, email], function (err, results) {
     if (err != null) {
