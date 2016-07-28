@@ -982,17 +982,20 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 			}
 		}
 
-		type ExtendedTopic Topic
-
-		topicBytes, errMarshal := json.Marshal(struct {
-			ExtendedTopic
+		type ExtendedTopic struct {
+			Topic  Topic
 			Status string
-		}{
-			ExtendedTopic: ExtendedTopic(topic),
-			Status:        status,
-		})
+		}
+
+		fmt.Println(topic)
+
+		var extendedTopic ExtendedTopic
+		extendedTopic.Topic = topic
+		extendedTopic.Status = status
+
+		topicBytes, errMarshal := json.Marshal(&extendedTopic)
 		if errMarshal != nil {
-			fmt.Println("Error marshalling topic: ", errMarshal)
+			fmt.Println("Error marshalling extended topic: ", errMarshal)
 			return nil, errMarshal
 		}
 		return topicBytes, nil
