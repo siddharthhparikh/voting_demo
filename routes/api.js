@@ -177,7 +177,7 @@ router.post('/register', function (req, res) {
     console.log(results);
     //res.json('{"status" : "success"}');
     
-    chaincode.registerAndEnroll(username, "user", function (err, cred) {
+    /*chaincode.registerAndEnroll(username, "user", function (err, cred) {
       //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
@@ -186,7 +186,7 @@ router.post('/register', function (req, res) {
       console.log(cred);
       res.json('{"status" : "success"}');
     });
-    
+    */
   });
   // create account
   //remove this when ui is ready for manager approval
@@ -198,6 +198,19 @@ router.get('/manager', function (req, res) {
     console.log(data);
     res.json(data);
   });
+});
+
+router.post('/approved', function (req, res) {
+  console.log("request approved")
+  chaincode.registerAndEnroll(req.username, "user", function (err, cred) {
+      //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
+      if (err != null) {
+        res.json('{"status" : "failure", "Error": err}');
+      }
+      console.log("\n\n\ncreate account result:")
+      console.log(cred);
+      res.json('{"status" : "success", "cred": cred}');
+    });
 });
 
 module.exports = router;

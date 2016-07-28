@@ -14,6 +14,9 @@ $(document).ready(function(){
   // Events for the approve/decline buttons.
   $('.approve').click(function() {
     //TODO approve the user
+    $.post('/api/approved', user, function (data, status) {
+      console.log($(this).parent().children());
+    });
   });
   $('.decline').click(function() {
     //TODO Maybe send notification to user.
