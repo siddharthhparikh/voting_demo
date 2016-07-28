@@ -46,9 +46,10 @@ function loadTopics() {
         // Load Closed topics.
         if(showClosedTopics) {
           // TODO ethan is this the right syntax??
-          if(data[i].Status == "closed") {
+          if(data[i].Status == "closed" || data[i].Status == "voted") {
             console.log('found topic: ', data[i]);
-            var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
+            var disabledStr = (data[i].Status == "voted") ? " disabled" : "";
+            var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             $('#topics').append(html);
             count++;
           }
