@@ -6,26 +6,24 @@
  */
 $(document).ready(function () {
   $('.hidden').hide();
-
   $.get('/api/load-chain', function (data, status) {
     data = JSON.parse(data);
     if (data.status == "success") {
       $('#loading-screen').remove();
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();
-      $('#open-register').fadIn();
+      $('#open-register').fadeIn();
     } else {
       //TODO display err
     }
   });
-
   //Animation for register info box.
   $('#open-register').click(function() {
     $('#register-box').animate({ height: 'toggle'}, 'fast');
   });
   // Hides menus when user clicks out of them.
   $(document).click(function(event){
-    if(!$(event.target).is('#register-box') && !$(event.target).is('#open-register') && !$(event.target).is('.input')){
+    if(!$(event.target).is('.info-box') && !$(event.target).is('.info-box h1') && !$(event.target).is('.info-box p') && !$(event.target).is('#open-register') && !$(event.target).is('.reg-info')){
       $('.info-box').fadeOut('fast');
     }     
   });
@@ -56,24 +54,29 @@ $(document).ready(function () {
   //
   // Request to register as a new user.
   //
-  $('#register-user').click(function (e) {
-    console.log('Sending request');
-    // Create request object.
-    var newUser = {
-      'name': $('#name').val(),
-      'email': $('#email').val(),
-      'org': $('#orginization').val()
-    };
-    //Send request object.
-    $.post('/api/register', newUser, function (data, status) {
-      if (status == 'success') {
-        $('#register-box').hide();
-        $('#error-msg').html('New account request has been sent.');
+  $('#register-user').click(function() {
+    var errFlag = false;
+    $('.reg-info').each(function(){
+      var index = $(".reg-info").index(this);
+      if ($(this).val() == '' && errFlag == false) {
+        errFlag = true;
+        alert('Error: Input fields can not be left empty.');
       }
     });
-  });
-
-  $('#manage').click(function() {
-    window.location.replace("../manager");
+    if(!errFlag){
+      // Create request object.
+      var newUser = {
+        'name': $('#name').val(),
+        'email': $('#email').val(),
+        'org': $('#orginization').val()
+      };
+      //Send request object.
+      $.post('/api/register', newUser, function (data, status) {
+        if (status == 'success') {
+          $('#register-box').hide();
+          $('#error-msg').html('New account request has been sent.');
+        }
+      });
+    }
   });
 });

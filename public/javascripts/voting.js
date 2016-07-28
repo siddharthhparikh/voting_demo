@@ -51,8 +51,6 @@ $(document).ready(function () {
           "voter": null, //TODO this should be username
           "castDate": (new Date()).toString() //TODO should this be done on chaincode side of things?
         }
-
-        console.log("VOTE: ", votes);
         // Submit the vote object to the server.
         $.post('/api/vote-submit', votes, function (data, status) {
           // Handle response
