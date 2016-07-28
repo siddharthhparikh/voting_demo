@@ -285,7 +285,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	var openRequest []Account
 	var timings []string
 	for chanValue := range rowChan {
-		if chanValue.Columns[1].GetString_() == "open" {
+		if chanValue.Columns[2].GetString_() == "open" {
 			openRequest = append(openRequest, Account{
 				ID:		chanValue.Columns[0].GetString_(), 
 				Email:	chanValue.Columns[1].GetString_(), 
