@@ -13,11 +13,11 @@ $(document).ready(function(){
   
   // Events for the approve/decline buttons.
   $(document).on('click', '.approve', function() {
-    console.log( $(this).attr("account_id"))
+    console.log($(this).attr("name"));
     console.log($(this).parent().parent().find('.vote-ammount').val());
     //TODO approve the user
     var user = {
-      ID: $(this).attr("account_id"),
+      ID: $(this).attr("name"),
       VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
       Email: $(this).attr("email")
     }
