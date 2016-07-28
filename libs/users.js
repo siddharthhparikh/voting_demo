@@ -179,6 +179,7 @@ function login2(id, secret, cb) {
 }
 */
 function registerUSer(username, role, cb) {
+    console.log(username)
     chain.getMember(username, function (err, usr) {
         if (!usr.isRegistered()) {
             console.log("registering user..........");
