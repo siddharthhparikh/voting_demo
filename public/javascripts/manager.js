@@ -21,7 +21,7 @@ $(document).ready(function(){
       Email: $(this).attr("email")
     }
     $.post('/api/approved', user, function (data, status) {
-      console.log($(this).parent().children());
+      //console.log($(this).parent().children());
     });
   });
   $('.decline').click(function() {
