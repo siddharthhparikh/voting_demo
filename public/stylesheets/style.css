@@ -41,6 +41,16 @@ h1 {
   font-size: 32px;
 }
 
+#title:hover {
+  color: #F7F7F7;
+  cursor: pointer;
+}
+
+#title:active {
+  color: #313131;
+  cursor: pointer;
+}
+
 /* Header for page content */
 
 #content-header {

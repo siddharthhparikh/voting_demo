@@ -66,21 +66,10 @@ $(document).ready(function () {
       }
     });
   });
-
-  // Remaining votes
-  $('.votes').click(function(e){
-    e.preventDefault();
-    var sum = 0;
-    var votes = document.getElementsByClassName('votes');
-    for(var i = 0; i < votes.length; i++){ 
-      sum += votes[i].val();
-    }
-    console.log(sum);
-    if(sum < maxVotes){
-      $(this).val() += 1;
-      
-    }
-  })
+  
+  $('#title').click(function() {
+    window.location.replace('../topics');
+  });
 });
 
 

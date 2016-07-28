@@ -213,4 +213,8 @@ $(document).ready(function () {
     // Reroute the user to the topic page with a string query.
     window.location.replace("../topic/id?=" + $(this).context.id);
   });
+
+  $('#title').click(function() {
+    window.location.replace('../topics');
+  });
 });

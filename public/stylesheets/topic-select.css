@@ -39,7 +39,11 @@
   margin: 22px 0px 0px;
 }
 
-.welcome-o {
+#welcome-start {
+  margin-left: 2%;
+}
+
+#welcome-o {
   margin: 0px;
 }
 
