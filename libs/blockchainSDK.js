@@ -111,7 +111,7 @@ exports.invoke = function (fcn, args, cb) {
 
     var transactionContext = registrar.invoke(invokeRequest);
 
-    transactionContext.on('complete', function (results) {
+    transactionContext.on('submitted', function (results) {
         if (cb) {
             if (results.result) {
                 cb(null, results.result)

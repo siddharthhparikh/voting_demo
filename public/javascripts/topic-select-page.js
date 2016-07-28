@@ -36,19 +36,15 @@ function loadTopics() {
     if (data && data.AllTopics) {
       data = data.AllTopics;
 
-      console.log('data: ', data);
-
       $('#loader').hide();
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var i in data) {
-        console.log(data[i]);
         // Load Closed topics.
         if(showClosedTopics) {
           // TODO ethan is this the right syntax??
           if(data[i].Status == "closed" || data[i].Status == "voted") {
-            console.log('found topic: ', data[i]);
-            var disabledStr = (data[i].Status == "voted") ? " disabled" : "";
+            var disabledStr = "";//(data[i].Status == "voted") ? " disabled" : ""; //TODO commented out for DEBUGGING
             var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             $('#topics').append(html);
             count++;
@@ -56,7 +52,6 @@ function loadTopics() {
         // Show Open topics.
         } else {
           if(data[i].Status == "open") {
-            console.log('found topic: ', data[i]);
             var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
             $('#topics').append(html);
             count++;

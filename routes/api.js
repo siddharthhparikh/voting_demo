@@ -119,12 +119,12 @@ router.post('/create', function (req, res, next) {
 
 /* Submit votes from a user */
 router.post('/vote-submit', function (req, res, next) {
+  console.log('ha!!!');
   req.body.voter = req.session.name;
+  console.log('ha!');
 
   console.log(JSON.stringify(req.body));
   chaincode.invoke('cast_vote', JSON.stringify(req.body), function (err, results) {
-    console.log(results);
-
     res.json('{"status" : "success"}');
   })
 });

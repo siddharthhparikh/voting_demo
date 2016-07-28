@@ -30,9 +30,9 @@ router.get('/topic/:id', function (req, res) {
   args.push(req.session.name);
   chaincode.query('get_topic', args, function (err, data) {
     if (data && !err) {
-      res.render('topic', { title: 'Chain Vote', topicName: data.topic, topicID: data.topic_id });
+      res.render('topic', { title: 'Chain Vote', topicName: data.Topic.topic, topicID: data.Topic.topic_id });
     } else {
-       res.render('topic', { title: 'Chain Vote', topicName: "TOPIC NOT FOUND", topicID: "" });
+       res.render('topic', { title: 'Chain Vote', topicName: "TOPIC NOT FOUND", topicID: "" }); //TODO return topic not found object?
     }
   });
 
