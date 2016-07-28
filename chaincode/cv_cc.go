@@ -232,7 +232,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	fmt.Println(errGetRow)
 	fmt.Println(row)
 	
-	if row != {[]} {
+	if row != [] {
 		return nil, fmt.Errorf("Email ID [%s] already exist. Please click on forgot password to recover account. ERR: [%s]", account.Email, errGetRow)
 	}
 	
