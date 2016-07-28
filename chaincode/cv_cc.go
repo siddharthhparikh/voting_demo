@@ -229,7 +229,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	column = append(column, shim.Column{Value: &shim.Column_String_{String_: account.Email}})
 	row, errGetRow := stub.GetRow("AccountRequests", column)
 
-	fmt.Println(t.readStringSafe(row.Columns[0]))
+	fmt.Println(row.Columns[0])
 	fmt.Println(errGetRow)
 	/*if t.readStringSafe(row.Columns[0]) == account.Email {
 		return nil, fmt.Errorf("Email ID [%s] already exist. Please click on forgot password to recover account. ERR: [%s]", account.Email, errGetRow)
