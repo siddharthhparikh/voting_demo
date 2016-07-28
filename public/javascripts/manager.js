@@ -13,7 +13,13 @@ $(document).ready(function(){
   
   // Events for the approve/decline buttons.
   $('.approve').click(function() {
+    console.log($(this).parent().parent().find('.vote-ammount').val());
     //TODO approve the user
+    var user = {
+      ID: $(this).attr("account_id"),
+      VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
+      Email: $(this).attr("email")
+    }
     $.post('/api/approved', user, function (data, status) {
       console.log($(this).parent().children());
     });
