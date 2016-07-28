@@ -21,6 +21,7 @@ $(document).ready(function(){
       VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
       Email: $(this).attr("email")
     }
+    console.log(user);
     $.post('/api/approved', user, function (data, status) {
       //console.log($(this).parent().children());
     });
