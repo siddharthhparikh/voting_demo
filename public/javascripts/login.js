@@ -65,7 +65,7 @@ $(document).ready(function () {
     var newUser = {
       'name': $('#name').val(),
       'email': $('#email').val(),
-      'org': $('#orginization').val()
+      'org': $('#organization').val()
     };
     console.log(newUser);
     //Send request object.
