@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
     //"reflect"
-
+	"math/rand"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -339,9 +339,31 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	return nil, requestTime 
 }
 
-func (t *SimpleChaincode) generateUserID(stub *shim.ChaincodeStub) (string) {
-	//TODO generate random userID
-	return ""
+
+func generateUserID() string {
+	//random number generator
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	const (
+   		letterIdxBits = 6                    // 6 bits to represent a letter index
+   		letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
+   		letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits	
+	)
+	n := 16
+	var src = rand.NewSource(time.Now().UnixNano())
+    b := make([]byte, n)
+    // A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
+    for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
+        if remain == 0 {
+            cache, remain = src.Int63(), letterIdxMax
+        }
+        if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
+            b[i] = letterBytes[idx]
+            i--
+        }
+        cache >>= letterIdxBits
+        remain--
+    }
+    return string(b)
 }
 
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -353,7 +375,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 	}	
 	
 	if(status == "approved") {
-		userID := t.generateUserID(stub)
+		userID := generateUserID()
 		manager := args[3]
 		votes, _ := strconv.ParseUint(args[4], 10, 64)
 		_, err := stub.InsertRow("AccountRequests",
