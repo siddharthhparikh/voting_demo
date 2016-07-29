@@ -231,7 +231,9 @@ router.post('/declined', function (req, res) {
   console.log(req.body)
   mail.email(req.body.Email, "declined", function (err) {
     var args = ['declined', req.body.Name, req.body.Email ];
+    console.log("Email sent");
     chaincode.invoke('change_status', args, function (data, err) {
+      console.log("status changed");
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
