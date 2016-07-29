@@ -922,6 +922,13 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 				} else {
 					temp.Status = "open"
 				}
+
+				//if topic has not closed, results should be hidden from viewers, so results are cleared
+				if temp.Status != "open" {
+					for i := range temp.Topic.Votes {
+						temp.Topic.Votes[i] = "0"
+					}
+				}
 			}
 
 			fmt.Println("Appending extended topic", temp)
@@ -987,11 +994,16 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 			Status string
 		}
 
-		fmt.Println(topic)
-
 		var extendedTopic ExtendedTopic
 		extendedTopic.Topic = topic
 		extendedTopic.Status = status
+
+		//if topic has not closed, results should be hidden from viewers, so results are cleared
+		if extendedTopic.Status != "open" {
+			for i := range extendedTopic.Topic.Votes {
+				extendedTopic.Topic.Votes[i] = "0"
+			}
+		}
 
 		topicBytes, errMarshal := json.Marshal(&extendedTopic)
 		if errMarshal != nil {

@@ -15,6 +15,27 @@
   font-size: 32px;
 }
 
+/* Styling for the table */
+
+#table {
+  width: 80%;
+  height: 550px;
+  background-color: rgba(255, 255, 255, 0.6);
+  margin: 50px auto 0px auto;
+  border-radius: 15px;
+  padding: 10px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tr {
+    height: 56px;
+}
+
 /* Styling for vote input feild */
 
 #table {

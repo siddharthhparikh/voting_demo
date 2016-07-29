@@ -80,8 +80,8 @@ exports.deploy = function (path, args, cb) {
     console.log('deploying chaincode from path %s', deployRequest.chaincodePath)
     var transactionContext = registrar.deploy(deployRequest);
 
-    transactionContext.on('complete', function (results) {
-        console.log('chaincode deployed successfully!');
+    transactionContext.on('submitted', function (results) {
+        console.log('chaincode submitted successfully!');
         console.log('chaincode-ID: %s', results.chaincodeID);
 
         chaincodeID = results.chaincodeID;
@@ -111,7 +111,7 @@ exports.invoke = function (fcn, args, cb) {
 
     var transactionContext = registrar.invoke(invokeRequest);
 
-    transactionContext.on('submitted', function (results) {
+    transactionContext.on('complete', function (results) {
         if (cb) {
             if (results.result) {
                 cb(null, results.result)

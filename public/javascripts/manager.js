@@ -13,11 +13,15 @@ $(document).ready(function(){
   });
   
   // Events for the approve/decline buttons.
-  $('.approve').click(function() {
-    $(this).attr("ema")
+  $(document).on('click', '.approve', function () {
+    console.log($(this).parent().parent().find(".vote-ammount").val());
   });
   $('.decline').click(function() {
     //TODO Maybe send notification to user.
     $(this).parent().remove();
+  });
+
+  $('#title').click(function() {
+    window.location.replace('../topics');
   });
 });

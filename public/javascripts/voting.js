@@ -46,10 +46,10 @@ $(document).ready(function () {
             plotShadow: false
           },
           title: {
-            text: 'Browser<br>shares<br>2015',
+            text: 'RESULTS',
             align: 'center',
             verticalAlign: 'middle',
-            y: 40
+            y: 50
           },
           tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -105,7 +105,7 @@ $(document).ready(function () {
           "voter": null, //TODO this should be username
           "castDate": (new Date()).toString() //TODO should this be done on chaincode side of things?
         }
-
+        
         // Submit the vote object to the server.
         $.post('/api/vote-submit', voteJSON, function (data, status) {
           // Handle response
@@ -136,6 +136,10 @@ $(document).ready(function () {
 
     }
   })
+  
+  $('#title').click(function() {
+    window.location.replace('../topics');
+  });
 });
 
 

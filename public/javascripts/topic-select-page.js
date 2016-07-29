@@ -103,7 +103,7 @@ $(document).ready(function () {
 
   // Hides menus when user clicks out of them.
   $(document).click(function(event){
-    if(!$(event.target).is('.info-box') && !$(event.target).is('.header-icons') && !$(event.target).is('.topic-input')){
+    if(!$(event.target).is('.info-box') && !$(event.target).is('.info-box h1') && !$(event.target).is('.info-box p') && !$(event.target).is('.header-icons') && !$(event.target).is('.topic-input')){
       $('.info-box').fadeOut('fast');
     }
   });
@@ -126,60 +126,72 @@ $(document).ready(function () {
   //
   // Topic generation for in the 'create' info-box
   //
-  $('#topic-submit').click(function (e) {
-    e.preventDefault();
-    // First grab all candidates the user creates
-    // TODO don't grab empty candidate boxes
-    var choices = [];
-    $('.topic-candidate').each(function () {
-      choices.push($(this).val());
-    });
-
-    issueUniqueID(10); //attempt 10 times to issue unique ID
-
-    function issueUniqueID(countdown) {
-      if (!countdown || (countdown < 0)) {
-        console.log('Could not create unique ID for topic, sorry!')
-        return;
-      }
-
-      var id = generateID(Math.max($('#topic-name').val().length, MIN_ID_LENGTH));
-      console.log('Topic ID: ' + id);
-
-      $.get('/api/topic-check', { "topicID": id }, function (data, status) {
-        if (data.status == 'success') {
-          console.log('Topic ID taken!  Issuing new ID...');
-          issueUniqueID(countdown - 1);
-        } else {
-          issueTopic(id);
+  $('#topic-submit').click(function() {
+    var errFlag = false;
+    //TODO this doesn't work
+    // $('.form-label').each(function(key, value){
+    //   var index = $(".reg-info").index(this);
+    //   if ($(this).val() == '' && errFlag == false) {
+    //     errFlag = true;
+    //     alert('Error: Input fields can not be left empty.');
+    //   }
+    // });
+    if(!errFlag) {
+      // First grab all candidates the user creates
+      var choices = [];
+      $('.topic-candidate').each(function () {
+        // Filter out empty forms.
+        if($(this).val()) {
+          choices.push($(this).val());
         }
       });
-    }
 
-    // Issue topic function generates a new voting topic and submits it to the chaincode
-    // database for verification. 
-    function issueTopic(id) {
-      // Create a new topic object.
-      var topic = {
-        'topic_id': id,
-        'topic': $('#topic-name').val(),
-        'issuer': '',
-        'expire_date': $('#datepicker').val(),
-        'choices': choices
+      issueUniqueID(10); //attempt 10 times to issue unique ID
+
+      function issueUniqueID(countdown) {
+        if (!countdown || (countdown < 0)) {
+          console.log('Could not create unique ID for topic, sorry!')
+          return;
+        } 
+
+        var id = generateID(Math.max($('#topic-name').val().length, MIN_ID_LENGTH));
+        console.log('Topic ID: ' + id);
+
+        $.get('/api/topic-check', { "topicID": id }, function (data, status) {
+          if (data.status == 'success') {
+            console.log('Topic ID taken!  Issuing new ID...');
+            issueUniqueID(countdown - 1);
+          } else {
+            issueTopic(id);
+          }
+        });
       }
 
-      // Submit the new topic
-      $.post('/api/create', topic, function (data, status) {
-        // Handle res.
-        data = JSON.parse(data);
-        if (data.status == 'success') {
-          // If successful reload the topics.
-          loadTopics();
-        } else {
-          // ERROR
-          console.log(data.status);
+      // Issue topic function generates a new voting topic and submits it to the chaincode
+      // database for verification. 
+      function issueTopic(id) {
+        // Create a new topic object.
+        var topic = {
+          'topic_id': id,
+          'topic': $('#topic-name').val(),
+          'issuer': '',
+          'expire_date': $('#datepicker').val(),
+          'choices': choices
         }
-      });
+  
+        // Submit the new topic
+        $.post('/api/create', topic, function (data, status) {
+          // Handle res.
+          data = JSON.parse(data);
+          if (data.status == 'success') {
+            // If successful reload the topics.
+            loadTopics();
+          } else {
+            // ERROR
+            console.log(data.status);
+          }
+        });
+      }
     }
     // Fade out info-box element
     $('#topic-creation').fadeOut();
@@ -194,21 +206,14 @@ $(document).ready(function () {
   });
 
   //
-  // Routes user to the selected topic.
+  // Onclick event for topic buttons.
   //
   $(document).on('click', '.topic', function () {
-    // $.post('/api/topic-check/', $(this).html(), function (data, status) {
-    //   // Handle res.
-    //   data = JSON.parse(data);
-    //   if (data.status == 'success') {
-    //     cosnole.log('Loading topic.....');
-    //     // Redirect user.
-    //     window.location.replace("../topic/?id=" + $(this).html() );
-    //   } else {
-    //     // ERROR
-    //     console.log(data.status);
-    //   }
-    // });
+    // Reroute the user to the topic page with a string query.
     window.location.replace("../topic/id?=" + $(this).context.id);
+  });
+
+  $('#title').click(function() {
+    window.location.replace('../topics');
   });
 });
