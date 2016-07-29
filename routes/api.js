@@ -199,24 +199,27 @@ router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
   console.log(req.body.ID)
-  var cred = {
-    id: "you are stupid",
-    secret: "you are super stupid"
-  }
-  mail.email(req.body.Email, cred, function (){
-          res.json('{"status" : "success", "cred": cred}');
-  });
-  /*chaincode.registerAndEnroll(req.body.ID, "user", function (err, cred) {
-      //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
+  chaincode.registerAndEnroll(req.body.ID, "user", function (err, cred) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
       console.log("\n\n\ncreate account result:")
       console.log(cred);
-      mail.email(req.body.email, cred, function (){
-          res.json('{"status" : "success", "cred": cred}');
+      mail.email(req.body.email, cred, function (err){
+        if(err!=null) {
+          res.json('{"status" : "failure"}');
+        }
+        res.json('{"status" : "success"}');
       });
-    });*/
+    });
 });
 
+
+router.post('/declined', function (req, res) {
+  console.log("request declined")
+  console.log(req.body)
+  mail.email(req.body.email, "declined", function (err){
+    res.json('{"status" : "success"');
+  });
+});
 module.exports = router;

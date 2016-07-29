@@ -24,10 +24,13 @@ $(document).ready(function(){
     console.log(user);
     $.post('/api/approved', user, function (data, status) {
       //console.log($(this).parent().children());
+      $(this).parent().remove();
     });
   });
   $('.decline').click(function() {
     //TODO Maybe send notification to user.
-    $(this).parent().remove();
+    $.post('/api/declined', user, function (data, status) {
+      $(this).parent().remove();
+    });
   });
 });
