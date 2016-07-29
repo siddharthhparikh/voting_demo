@@ -233,7 +233,7 @@ router.post('/declined', function (req, res) {
     var args = ['declined', req.body.Name, req.body.Email ];
     console.log("Email sent");
     console.log("For changing status ars are: ")
-    cosnole.log(args)
+    console.log(args)
     chaincode.invoke('change_status', args, function (data, err) {
       console.log("status changed");
       if (err != null) {
