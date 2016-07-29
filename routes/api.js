@@ -224,24 +224,20 @@ router.post('/approved', function (req, res) {
       });
     });
   });
+});
 
-
-  router.post('/declined', function (req, res) {
-    console.log("request declined")
-    console.log(req.body)
-    mail.email(req.body.Email, "declined", function (err) {
-      var args = [
-        'declined',
-        req.body.Name,
-        req.body.Email
-      ]
-      chaincode.invoke('change_status', args, function (data, err) {
-        if (err != null) {
-          res.json('{"status" : "failure", "Error": err}');
-        }
-        res.json('{"status" : "success"');
-
-      });
+router.post('/declined', function (req, res) {
+  console.log("request declined")
+  console.log(req.body)
+  mail.email(req.body.Email, "declined", function (err) {
+    var args = ['declined', req.body.Name, req.body.Email ];
+    chaincode.invoke('change_status', args, function (data, err) {
+      if (err != null) {
+        res.json('{"status" : "failure", "Error": err}');
+      }
+      res.json('{"status" : "success"');
     });
   });
-  module.exports = router;
+});
+
+module.exports = router;
