@@ -207,7 +207,7 @@ router.post('/approved', function (req, res) {
       console.log(cred);
       mail.email(req.body.email, cred, function (err){
         if(err!=null) {
-          res.json('{"status" : "failure"}');
+          res.json('{"status" : "failure", "Error": err}');
         }
         res.json('{"status" : "success"}');
       });
