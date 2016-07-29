@@ -39,7 +39,7 @@ module.exports.email = function (email, creds, cb) {
             cb(error);
             //return console.log(error);
         }
-        console.log('Message sent: ' + info.response);
+        //console.log('Message sent: ' + info.response);
         cb(null);
     });
 }
