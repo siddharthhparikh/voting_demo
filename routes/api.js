@@ -205,7 +205,7 @@ router.post('/approved', function (req, res) {
       }
       console.log("\n\n\ncreate account result:")
       console.log(cred);
-      mail.email(req.body.email, cred, function (err){
+      mail.email(req.body.Email, cred, function (err){
         if(err!=null) {
           res.json('{"status" : "failure", "Error": err}');
         }
@@ -218,7 +218,7 @@ router.post('/approved', function (req, res) {
 router.post('/declined', function (req, res) {
   console.log("request declined")
   console.log(req.body)
-  mail.email(req.body.email, "declined", function (err){
+  mail.email(req.body.Email, "declined", function (err){
     res.json('{"status" : "success"');
   });
 });
