@@ -199,7 +199,14 @@ router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
   console.log(req.body.ID)
-  chaincode.registerAndEnroll(req.body.ID, "user", function (err, cred) {
+  var cred = {
+    id: "you are stupid",
+    secret: "you are super stupid"
+  }
+  mail.email(req.body.Email, cred, function (){
+          res.json('{"status" : "success", "cred": cred}');
+  });
+  /*chaincode.registerAndEnroll(req.body.ID, "user", function (err, cred) {
       //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
@@ -209,7 +216,7 @@ router.post('/approved', function (req, res) {
       mail.email(req.body.email, cred, function (){
           res.json('{"status" : "success", "cred": cred}');
       });
-    });
+    });*/
 });
 
 module.exports = router;
