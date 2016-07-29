@@ -171,20 +171,7 @@ router.post('/register', function (req, res) {
     console.log("\n\n\nrequest account result:")
     console.log(results);
     //res.json('{"status" : "success"}');
-
-    /*chaincode.registerAndEnroll(username, "user", function (err, cred) {
-      //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
-      if (err != null) {
-        res.json('{"status" : "failure", "Error": err}');
-      }
-      console.log("\n\n\ncreate account result:")
-      console.log(cred);
-      res.json('{"status" : "success"}');
-    });
-    */
-  });
-  // create account
-  //remove this when ui is ready for manager approval
+ });
 });
 
 router.get('/manager', function (req, res) {
@@ -220,7 +207,7 @@ router.post('/approved', function (req, res) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
-        res.json('{"status" : "success"');
+        res.json('{"status" : "success"}');
       });
     });
   });
@@ -239,7 +226,7 @@ router.post('/declined', function (req, res) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
-      res.json('{"status" : "success"}');
+      //res.json('{"status" : "success"}');
     });
   });
 });

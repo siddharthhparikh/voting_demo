@@ -109,6 +109,9 @@ exports.invoke = function (fcn, args, cb) {
     transactionContext.on('complete', function (results) {
         if (cb) {
             if (results.result) {
+                console.log("In invoke results on complete")
+                console.log(results)
+                console.log(results.result)
                 cb(null, results.result)
             } else {
                 cb(null, null);
