@@ -9,7 +9,7 @@ var express = require('express');
 var router = express.Router();
 var session = require('express-session');
 var chaincode = require('../libs/blockchainSDK');
-var mail = require('./mail')
+var mail = require('../libs/mail')
 
 var DEFAULT_VOTES = 5;
 
