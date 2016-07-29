@@ -9,6 +9,7 @@ var express = require('express');
 var router = express.Router();
 var session = require('express-session');
 var chaincode = require('../libs/blockchainSDK');
+var mail = require('../mail.js')
 
 var DEFAULT_VOTES = 5;
 
@@ -205,7 +206,9 @@ router.post('/approved', function (req, res) {
       }
       console.log("\n\n\ncreate account result:")
       console.log(cred);
-      res.json('{"status" : "success", "cred": cred}');
+      mail.email(req.email, cred, function (){
+          res.json('{"status" : "success", "cred": cred}');
+      });
     });
 });
 
