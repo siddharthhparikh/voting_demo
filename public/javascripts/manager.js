@@ -30,7 +30,7 @@ $(document).ready(function(){
   $(document).on('click', '.decline', function() {
     //TODO Maybe send notification to user.
     var user = {
-      ID: $(this).attr("name"),
+      Name: $(this).attr("name"),
       VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
       Email: $(this).attr("email")
     }
