@@ -227,6 +227,8 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	fmt.Println(errGetRow)
 	fmt.Println(row)
 	
+	//TODO check if row does not exist then only execute this code
+	//right npw fmt.println(row) is giving {[]} but its not giving any error so ask dale. 
 	/*if !row {
 		return nil, fmt.Errorf("Email ID [%s] already exist. Please click on forgot password to recover account. ERR: [%s]", account.Email, errGetRow)
 	}
@@ -294,52 +296,81 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	return openRequest, timings, nil
 }
 	
+func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []string) (error, string) {
+	status := args[0]
+	votes, _ := strconv.ParseUint(args[2], 10, 64)
+	account := Account{ID: args[1], VoteCount: votes, Email: args[3]}
+
+	//getrow to save request time before deleting
+
+	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
+	if rowErr != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+		return rowErr, ""
+	}
+	var requestTime string
+	for chanValue := range rowChan {
+		requestTime = chanValue.Columns[3].GetString_()
+	}
+
+	//Delete old row
+	err := stub.DeleteRow(
+			"AccountRequests",
+			[]shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}},
+	)
+	if err != nil {
+		return errors.New("Failed deliting row."), ""
+	}
+
+	//inster new row with new status
+	_, err = stub.InsertRow("AccountRequests",
+		shim.Row{
+			Columns: []*shim.Column{
+				&shim.Column{Value: &shim.Column_String_{String_: account.Email}},
+				&shim.Column{Value: &shim.Column_String_{String_: account.Name}},
+				&shim.Column{Value: &shim.Column_String_{String_: status}},
+				&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
+				&shim.Column{Value: &shim.Column_String_{String_: requestTime}},	
+			},
+	})
+	if err != nil {
+		return errors.New("Failed inserting row.") , ""
+	}
+	return nil, requestTime 
+}
+
+func (t *SimpleChaincode) generateUserID(stub *shim.ChaincodeStub) (string) {
+	//TODO generate random userID
+	return ""
+}
 
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	status := args[0]
-	//acc.ID := args[1]
-	//acc.Email := args[3]
-	//acc.VoteCount := args[2]
-	votes, _ := strconv.ParseUint(args[2], 10, 64)
-	acc := Account{ID: args[1], VoteCount: votes, Email: args[3]}
-	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: "open"}}})
-	if rowErr != nil {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return nil, nil
-	}
-
-	// Extract the rows
-	for row := range rowChan {
-		if len(row.Columns) != 0 {
-			if t.readStringSafe(row.Columns[1]) == acc.ID {
-				rowAdded, rowErr := stub.ReplaceRow("AccountRequests", shim.Row{
-					Columns: []*shim.Column{
-						{&shim.Column_String_{String_: status}},
-						{&shim.Column_String_{String_: acc.ID}},
-						{&shim.Column_String_{String_: acc.Email}},
-					},
-				})
-
-				if rowErr != nil || !rowAdded {
-					fmt.Println(fmt.Sprintf("[ERROR] Could not replace a row into the ledger: %s", rowErr))
-					return nil, nil
-				}
-
-				if status == "approved" {
-					rowAdded, rowErr = stub.ReplaceRow("AccountRequests", shim.Row{
-						Columns: []*shim.Column{
-							{&shim.Column_String_{String_: acc.ID}},
-							{&shim.Column_Uint64{Uint64: uint64(acc.VoteCount)}},
-							{&shim.Column_String_{String_: acc.Email}},
-						},
-					})
-
-					if rowErr != nil || !rowAdded {
-						fmt.Println(fmt.Sprintf("[ERROR] Could not replace a row into the ledger: %s", rowErr))
-						return nil, nil
-					}
-				}
-			}
+	account := Account{Name: args[1], Email: args[2]}
+	errReplceRow, reqTime := t.replaceRowRequest(stub, args)
+	if(errReplceRow != nil) {
+		return nil, errReplceRow
+	}	
+	
+	if(status == "approved") {
+		userID := t.generateUserID(stub)
+		manager := args[3]
+		votes, _ := strconv.ParseUint(args[4], 10, 64)
+		_, err := stub.InsertRow("AccountRequests",
+			shim.Row{
+				Columns: []*shim.Column{
+					&shim.Column{Value: &shim.Column_String_{String_: userID}},
+					&shim.Column{Value: &shim.Column_String_{String_: account.Name}},
+					&shim.Column{Value: &shim.Column_String_{String_: account.Email}},
+					&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
+					&shim.Column{Value: &shim.Column_Uint64{Uint64: votes}},
+					&shim.Column{Value: &shim.Column_String_{String_: reqTime}},
+					&shim.Column{Value: &shim.Column_String_{String_: time.Now().String()}},
+					&shim.Column{Value: &shim.Column_String_{String_: manager}},	
+				},
+		})
+		if err != nil {
+			return nil, errors.New("Failed inserting row.")
 		}
 	}
 	return nil, nil
@@ -1042,10 +1073,10 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	//create table to store all the user account requests
 	errApprovedAccount := stub.CreateTable("ApprovedAccounts", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "userID", Type: shim.ColumnDefinition_STRING, Key: true},
-		&shim.ColumnDefinition{Name: "full_name", Type: shim.ColumnDefinition_INT64, Key: false},
+		&shim.ColumnDefinition{Name: "full_name", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "org", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_UINT64, Key: false},
 		&shim.ColumnDefinition{Name: "req_time", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "appr_time", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "appr_manager", Type: shim.ColumnDefinition_STRING, Key: false},

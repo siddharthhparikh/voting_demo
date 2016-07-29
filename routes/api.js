@@ -171,7 +171,7 @@ router.post('/register', function (req, res) {
     console.log("\n\n\nrequest account result:")
     console.log(results);
     //res.json('{"status" : "success"}');
-    
+
     /*chaincode.registerAndEnroll(username, "user", function (err, cred) {
       //chaincode.invoke('create_account', [username, email, votes], function (err, results) {
       if (err != null) {
@@ -200,26 +200,48 @@ router.post('/approved', function (req, res) {
   console.log(req.body)
   console.log(req.body.ID)
   chaincode.registerAndEnroll(req.body.ID, "user", function (err, cred) {
+    if (err != null) {
+      res.json('{"status" : "failure", "Error": err}');
+    }
+    console.log("\n\n\ncreate account result:")
+    console.log(cred);
+    mail.email(req.body.Email, cred, function (err) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
-      console.log("\n\n\ncreate account result:")
-      console.log(cred);
-      mail.email(req.body.Email, cred, function (err){
-        if(err!=null) {
+      var args = [
+        'approved',
+        req.body.Name,
+        req.body.Email,
+        req.body.manager,
+        req.body.VoteCount
+      ]
+      chaincode.invoke('change_status', args, function (data, err) {
+        if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
-        res.json('{"status" : "success"}');
+        res.json('{"status" : "success"');
       });
     });
-});
-
-
-router.post('/declined', function (req, res) {
-  console.log("request declined")
-  console.log(req.body)
-  mail.email(req.body.Email, "declined", function (err){
-    res.json('{"status" : "success"');
   });
-});
-module.exports = router;
+
+
+  router.post('/declined', function (req, res) {
+    console.log("request declined")
+    console.log(req.body)
+    mail.email(req.body.Email, "declined", function (err) {
+      var args = [
+        'declined',
+        req.body.Name,
+        req.body.Email
+      ]
+      chaincode.invoke('change_status', args, function (data, err) {
+        if (err != null) {
+          res.json('{"status" : "failure", "Error": err}');
+        }
+        res.json('{"status" : "success"');
+
+      });
+    });
+  });
+  module.exports = router;
