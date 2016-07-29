@@ -298,8 +298,8 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	
 func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []string) (error, string) {
 	status := args[0]
-	votes, _ := strconv.ParseUint(args[2], 10, 64)
-	account := Account{ID: args[1], VoteCount: votes, Email: args[3]}
+	//votes, _ := strconv.ParseUint(args[2], 10, 64)
+	account := Account{Name: args[1], Email: args[2]}
 
 	//getrow to save request time before deleting
 
