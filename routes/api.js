@@ -206,7 +206,7 @@ router.post('/approved', function (req, res) {
       }
       console.log("\n\n\ncreate account result:")
       console.log(cred);
-      mail.email(req.email, cred, function (){
+      mail.email(req.body.email, cred, function (){
           res.json('{"status" : "success", "cred": cred}');
       });
     });
