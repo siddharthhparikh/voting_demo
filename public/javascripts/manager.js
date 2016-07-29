@@ -24,13 +24,18 @@ $(document).ready(function(){
     console.log(user);
     $.post('/api/approved', user, function (data, status) {
       //console.log($(this).parent().children());
-      $(this).parent().remove();
+      //$(this).parent().remove();
     });
   });
   $(document).on('click', '.decline', function() {
     //TODO Maybe send notification to user.
+    var user = {
+      ID: $(this).attr("name"),
+      VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
+      Email: $(this).attr("email")
+    }
     $.post('/api/declined', user, function (data, status) {
-      $(this).parent().remove();
+      //$(this).parent().remove();
     });
   });
 });
