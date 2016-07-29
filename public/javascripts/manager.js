@@ -27,7 +27,7 @@ $(document).ready(function(){
       $(this).parent().remove();
     });
   });
-  $('.decline').click(function() {
+  $(document).on('click', '.decline', function() {
     //TODO Maybe send notification to user.
     $.post('/api/declined', user, function (data, status) {
       $(this).parent().remove();
