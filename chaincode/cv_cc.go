@@ -306,7 +306,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return rowErr, ""
+		return rowErr, "a"
 	}
 	var requestTime string
 	for chanValue := range rowChan {
@@ -319,7 +319,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 			[]shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}},
 	)
 	if err != nil {
-		return errors.New("Failed deliting row."), ""
+		return errors.New("Failed deliting row."), "a"
 	}
 
 	//inster new row with new status
@@ -334,7 +334,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 			},
 	})
 	if err != nil {
-		return errors.New("Failed inserting row.") , ""
+		return errors.New("Failed inserting row.") , "a"
 	}
 	return nil, requestTime 
 }
@@ -363,10 +363,14 @@ func generateUserID() string {
         cache >>= letterIdxBits
         remain--
     }
+	fmt.Println("Randmly generated String:")
+	fmt.Println(string(b))
     return string(b)
 }
 
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	fmt.Println("Inside change status args are: ")
+	fmt.Println(args)
 	status := args[0]
 	account := Account{Name: args[1], Email: args[2]}
 	errReplceRow, reqTime := t.replaceRowRequest(stub, args)
@@ -828,6 +832,8 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 	case "request_account":
 		return t.requestAccount(stub, args)
 	case "change_status":
+		fmt.Println("For change status args are: ")
+		fmt.Println(args)
 		return t.changeStatus(stub, args)
 	case "cast_vote":
 		return t.castVote(stub, args)
