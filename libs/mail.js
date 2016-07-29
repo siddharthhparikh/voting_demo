@@ -12,19 +12,26 @@ module.exports.email = function (email, creds, cb) {
             pass: "siddharth24"
         }
     });
-
+    console.log("email = " + email);
     // setup e-mail data with unicode symbols
-    var mailOptions = {
-        from: '"Siddharth Parikh" <siddharthparikh1993@gmail.com>', // sender address
-        to: email, // list of receivers
-        subject: '[Confidential] Vote Chain Password', // Subject line
-    };
     if (creds == 'declined') {
-        mailOptions.text = 'your account request has been declined'
-        mailOptions.html = 'your account request has been declined'
+        var mailOptions = {
+            from: '"Siddharth Parikh" <siddharthparikh1993@gmail.com>', // sender address
+            to: email, // list of receivers
+            subject: '[Confidential] Vote Chain Account Request Update', // Subject line
+            text = 'your account request has been declined',
+            html = 'your account request has been declined'
+
+        };
     } else {
-        mailOptions.text = 'username:' + creds.id + 'Your password is' + creds.secret // plaintext body
-        mailOptions.html = 'username: ' + creds.id + '\npassword: ' + creds.secret // html body
+        var mailOptions = {
+            from: '"Siddharth Parikh" <siddharthparikh1993@gmail.com>', // sender address
+            to: email, // list of receivers
+            subject: '[Confidential] Vote Chain Password', // Subject line
+            text = 'username:' + creds.id + 'Your password is' + creds.secret, // plaintext body
+            html = 'username: ' + creds.id + '\npassword: ' + creds.secret // html body
+
+        };
     }
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
