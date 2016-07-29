@@ -28,10 +28,11 @@ module.exports.email = function (email, creds, cb) {
     }
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
+            console.log(error);
             cb(error);
             //return console.log(error);
         }
         console.log('Message sent: ' + info.response);
-        cb(nil);
+        cb(null);
     });
 }
