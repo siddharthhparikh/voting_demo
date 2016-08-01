@@ -304,16 +304,19 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	//getrow to save request time before deleting
 	fmt.Println("Account inside replece row")
 	fmt.Println(account)
-	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
+	row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 		return "a", rowErr
 	}
 	var requestTime string
-	for chanValue := range rowChan {
+	fmt.Println(row)
+	fmt.Println(t.readStringSafe(row.Columns[3]))
+	requestTime = t.readStringSafe(row.Columns[3])
+	/*for chanValue := range rowChan {
 		requestTime = chanValue.Columns[3].GetString_()
 		fmt.Println(chanValue)
-	}
+	}*/
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
