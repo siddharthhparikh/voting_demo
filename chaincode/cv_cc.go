@@ -311,8 +311,8 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	}
 	var requestTime string
 	fmt.Println(row)
-	fmt.Println(t.readStringSafe(row.Columns[3]))
-	requestTime = t.readStringSafe(row.Columns[3])
+	fmt.Println(t.readStringSafe(row.Columns[4]))
+	requestTime = t.readStringSafe(row.Columns[4])
 	/*for chanValue := range rowChan {
 		requestTime = chanValue.Columns[3].GetString_()
 		fmt.Println(chanValue)
