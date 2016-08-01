@@ -38,6 +38,23 @@ tr {
 
 /* Styling for vote input feild */
 
+#table {
+  width: 80%;
+  height: 350px;
+  margin: 5px auto 0px auto;
+  padding: 10px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tr {
+    height: 56px;
+}
+
 .votes {
   width: 35px;
   height: 40px;

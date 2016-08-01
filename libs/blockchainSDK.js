@@ -11,7 +11,7 @@ var exports = module.exports;
 // Create a client chain
 var chaincodeName = 'marble_chaincode'
 var chain = hlc.newChain("voting");
-var chaincodeID = null;
+var chaincodeID = "";
 
 // Configure the KeyValStore which is used to store sensitive keys
 // as so it is important to secure this storage
@@ -53,7 +53,7 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
     registrar = user;
 
-    exports.deploy('github.com/voting_demo/chaincode/', ['99'], cb_deployed);
+    exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], cb_deployed);
 });
 
 function cb_deployed() {
@@ -80,8 +80,8 @@ exports.deploy = function (path, args, cb) {
     console.log('deploying chaincode from path %s', deployRequest.chaincodePath)
     var transactionContext = registrar.deploy(deployRequest);
 
-    transactionContext.on('complete', function (results) {
-        console.log('chaincode deployed successfully!');
+    transactionContext.on('submitted', function (results) {
+        console.log('chaincode submitted successfully!');
         console.log('chaincode-ID: %s', results.chaincodeID);
 
         chaincodeID = results.chaincodeID;
@@ -103,6 +103,10 @@ exports.deploy = function (path, args, cb) {
 
 //invokes function on chaincode (cb in form of cb(err, result))
 exports.invoke = function (fcn, args, cb) {
+    if (chaincodeID == "") {
+        return new Error("No chaincode ID implies chaincode has not yet deployed");
+    }
+
     var invokeRequest = {
         fcn: fcn,
         args: args,
@@ -129,7 +133,16 @@ exports.invoke = function (fcn, args, cb) {
 }
 
 //queries on chaincode (cb in form of cb(err, result))
-exports.query = function (fcn, args, cb) {
+exports.query = function (fcn, args, expectJSON, cb) {
+    if (chaincodeID == "") {
+        return new Error("No chaincode ID implies chaincode has not yet deployed");
+    }
+
+    if (typeof expectJSON === 'function') { //only 3 parameters passed, expectJSON defaults to true
+        cb = expectJSON
+        expectJSON = true
+    }
+
     var queryRequest = {
         fcn: fcn,
         args: args,
@@ -143,8 +156,11 @@ exports.query = function (fcn, args, cb) {
             if (results.result) { //is result is not null
                 //parse data from buffer to json
                 var data = String.fromCharCode.apply(String, results.result);
-                if (data.length > 0) cb(null, JSON.parse(data));
-                else cb(null, null);
+                if (expectJSON) {
+                    if (data.length > 0) cb(null, JSON.parse(data));
+                } else {
+                    cb(null, data)
+                }
             } else {
                 cb(null, null);
             }
