@@ -171,15 +171,19 @@ router.post('/register', function (req, res) {
     console.log("\n\n\nrequest account result:")
     console.log(results);
     //res.json('{"status" : "success"}');
- });
+  });
 });
 
 router.get('/manager', function (req, res) {
-  console.log("before querying")
-  chaincode.query('get_open_requests', [], function (err, data) {
-    console.log(data);
-    res.json(data);
-  });
+  console.log(req.body)
+  if (req.body.indexOf('manager') > -1) {
+    chaincode.query('get_open_requests', [], function (err, data) {
+      console.log(data);
+      res.json(data);
+    });
+  } else {
+    res.send(null);
+  }
 });
 
 router.post('/approved', function (req, res) {
@@ -217,7 +221,7 @@ router.post('/declined', function (req, res) {
   console.log("request declined")
   console.log(req.body)
   mail.email(req.body.Email, "declined", function (err) {
-    var args = ['declined', req.body.Name, req.body.Email ];
+    var args = ['declined', req.body.Name, req.body.Email];
     console.log("Email sent");
     console.log("For changing status ars are: ")
     console.log(args)

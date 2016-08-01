@@ -1,17 +1,15 @@
 $(document).ready(function () {
-  $.get('/api/manager', function (data, status) {
-    if (data) {
-      $.get('/api/user', function (user) {
-        console.log(user);
-        if (user.indexOf('manager') > -1) {
-          // Create a <tr> for each request that exists.
-          data.AllAccReq.forEach(function (entry) {
-            // This was fun to write.
-            $('#request-table tr:last').after('<tr class="request"><td>' + entry.account_id + '</td><td>' + entry.email + '</td><td><input type"number" min="0" class="vote-ammount request-info" value="5"/></td><td><i class="button approve material-icons" name="' + entry.account_id + '" email="' + entry.email + '">check</i><i class="button decline material-icons" name="' + entry.account_id + '" email="' + entry.email + '">close</i></td></tr>');
-          });
-        }
-      });
-    }
+  $.get('/api/user', function (user) {
+    console.log(user);
+    $.get('/api/manager', user, function (data, status) {
+      if (data) {
+        // Create a <tr> for each request that exists.
+        data.AllAccReq.forEach(function (entry) {
+          // This was fun to write.
+          $('#request-table tr:last').after('<tr class="request"><td>' + entry.account_id + '</td><td>' + entry.email + '</td><td><input type"number" min="0" class="vote-ammount request-info" value="5"/></td><td><i class="button approve material-icons" name="' + entry.account_id + '" email="' + entry.email + '">check</i><i class="button decline material-icons" name="' + entry.account_id + '" email="' + entry.email + '">close</i></td></tr>');
+        });
+      }
+    });
   });
 
   // Events for the approve/decline buttons.
