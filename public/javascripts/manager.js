@@ -1,7 +1,7 @@
 $(document).ready(function () {
   $.get('/api/manager', function (data, status) {
     if (data) {
-      $(get)('/api/user', function (user) {
+      $.get('/api/user', function (user) {
         console.log(user);
         if (user.indexOf('manager') > -1) {
           // Create a <tr> for each request that exists.
