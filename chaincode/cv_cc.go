@@ -310,6 +310,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 		return "a", rowErr
 	}
 	var requestTime string
+	fmt.Println("Printing row and time column")
 	fmt.Println(row)
 	fmt.Println(t.readStringSafe(row.Columns[4]))
 	requestTime = t.readStringSafe(row.Columns[4])
