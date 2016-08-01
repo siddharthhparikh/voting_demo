@@ -250,7 +250,7 @@ module.exports.setup = function (ccID, ch, cb) {
         console.log(TAG, "user manager properly configured");
         chaincodeID = ccID;
         chain = ch;
-        registerUSer("masterManager", "manager", function (){
+        registerUSer("master-manager", "manager", function (){
             cb(null, null);
         })
     } else {
