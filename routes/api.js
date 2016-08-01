@@ -35,8 +35,9 @@ router.post('/login', function (req, res, next) {
   // TODO Create user string queryin chaincode.
 });
 
-router.get('/get-account', function (req, res, next) {
-  var args = req.body.account_id;
+router.get('/get-account-info', function (req, res) {
+  var args = [];
+  args.push(req.session.name);
   chaincode.query('get_account', args, function (err, data) {
     if (data) {
       res.json(data);

@@ -49,10 +49,10 @@ function loadTopics() {
             var disabledStr = "";//(data[i].Status == "voted") ? " disabled" : ""; //TODO commented out for DEBUGGING
             var html;
             // Give voted topics a specialized background color.
-            if(data[i].Status == "voted") {
-              html = '<button style="background-color: #64D4E5" class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';  
+            if (data[i].Status == "voted") {
+              html = '<button class="topic button voted" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             } else {
-              html = '<button class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
+              html = '<button class="topic button closed" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             }
             $('#topics').append(html);
             count++;
@@ -158,7 +158,7 @@ $(document).ready(function () {
         if (!countdown || (countdown < 0)) {
           console.log('Could not create unique ID for topic, sorry!')
           return;
-        } 
+        }
 
         var id = generateID(Math.max($('#topic-name').val().length, MIN_ID_LENGTH));
         $.get('/api/topic-check', { "topicID": id }, function (data, status) {
@@ -214,12 +214,23 @@ $(document).ready(function () {
   // Onclick event for topic buttons.
   //
   $(document).on('click', '.topic', function () {
-    // Reroute the user to the topic page with a string query.
-    window.location.replace("../topic/id?=" + $(this).context.id);
+    // Voted topics will not redirect.
+    if (!$(this).hasClass('voted')) {
+      // Reroute the user to the topic page with a string query.
+      window.location.replace("../topic/id?=" + $(this).context.id);
+    } else {
+      $.get('/api/get-topic', { 'topicID': $(this).context.id }, function (data, status) {
+        if (data) {
+          alert('You have already voted for this topic; results will be available one the voting period has ended (' + data.Topic.expire_date.substring(0, 10) + ')');
+        } else {
+          alert('Error retrieving topic info');
+        }
+      });
+    }
   });
 
   // Home button
-  $('#title').click(function() {
+  $('#title').click(function () {
     window.location.replace('../topics');
   });
 });

@@ -5,15 +5,21 @@
  * Handles voting events including the remaining vote count.
  */
 
-function setMaxVotes() {
-
+function setMaxVotes(cb) {
+  $.get('/api/get-account-info', function (data, status) {
+    if (data) {
+      cb(data.vote_count);
+    }
+    return 0;
+  });
 }
 
 
 $(document).ready(function () {
-
-  var maxVotes = 5
-  $('.hidden').hide();
+  setMaxVotes(function (voteCount) {
+    $('#remaining-votes').append(voteCount);
+    $('.hidden').hide();
+  });
 
   //
   // Get current topic info
@@ -103,7 +109,7 @@ $(document).ready(function () {
           "voter": null, //TODO this should be username
           "castDate": (new Date()).toString() //TODO should this be done on chaincode side of things?
         }
-        
+
         // Submit the vote object to the server.
         $.post('/api/vote-submit', voteJSON, function (data, status) {
           // Handle response
@@ -124,17 +130,15 @@ $(document).ready(function () {
   $('.votes').click(function (e) {
     e.preventDefault();
     var sum = 0;
-    var votes = document.getElementsByClassName('votes');
-    for (var i = 0; i < votes.length; i++) {
-      sum += votes[i].val();
-    }
-    if (sum < maxVotes) {
-      $(this).val() += 1;
+    // Collect sum of all votes applied.
+    $('.votes').each(function () {
+      var index = $(".votes").index(this);
+      sum += $(this).val();
+    });
+    $('#remaining-votes').html(maxVotes - sum);
+  });
 
-    }
-  })
-  
-  $('#title').click(function() {
+  $('#title').click(function () {
     window.location.replace('../topics');
   });
 });
