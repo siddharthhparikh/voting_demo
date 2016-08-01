@@ -296,7 +296,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	return openRequest, timings, nil
 }
 	
-func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []string) (error, string) {
+func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []string) (string, error) {
 	status := args[0]
 	//votes, _ := strconv.ParseUint(args[2], 10, 64)
 	account := Account{Name: args[1], Email: args[2]}
@@ -306,20 +306,20 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return rowErr, "a"
+		return "a", rowErr
 	}
 	var requestTime string
 	for chanValue := range rowChan {
 		requestTime = chanValue.Columns[3].GetString_()
 	}
-
+	fmt.Println("request time = " , requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
 			"AccountRequests",
 			[]shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}},
 	)
 	if err != nil {
-		return errors.New("Failed deliting row."), "a"
+		return "a", errors.New("Failed deliting row.")
 	}
 
 	//inster new row with new status
@@ -334,9 +334,9 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 			},
 	})
 	if err != nil {
-		return errors.New("Failed inserting row.") , "a"
+		return "a", errors.New("Failed inserting row.")
 	}
-	return nil, requestTime 
+	return requestTime, nil 
 }
 
 
