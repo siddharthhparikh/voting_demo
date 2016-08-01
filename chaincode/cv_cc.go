@@ -452,11 +452,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		topic.ExpireDate = expireDateTime.Format(time.RFC3339)
 
 		//change issue_date to go time format
-		issueDateTime, err := time.Parse("01/02/2006", topic.IssueDate)
-		if err != nil {
-			fmt.Println(err)
-			return nil, err
-		}
+		issueDateTime := time.Now()
 		topic.IssueDate = issueDateTime.Format(time.RFC3339)
 
 		topicBytes, err := json.Marshal(&topic)

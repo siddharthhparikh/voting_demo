@@ -179,6 +179,7 @@ $(document).ready(function () {
           'topic_id': id,
           'topic': $('#topic-name').val(),
           'issuer': '',
+          'issue_date': '', //this will be set in the chaincode
           'expire_date': $('#datepicker').val(),
           'choices': choices
         }
