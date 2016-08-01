@@ -176,7 +176,7 @@ router.post('/register', function (req, res) {
 
 router.get('/manager', function (req, res) {
   console.log(req.session.name)
-  if (req.query.indexOf('manager') > -1) {
+  if (req.session.name.indexOf('manager') > -1) {
     chaincode.query('get_open_requests', [], function (err, data) {
       console.log(data);
       res.json(data);
