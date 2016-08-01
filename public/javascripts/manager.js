@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+  
   // Populate the request table with generated buttons.
   $.get('/api/manager', function (data, status) {
     if(data) {
@@ -26,6 +26,7 @@ $(document).ready(function(){
       //console.log($(this).parent().children());
       //$(this).parent().remove();
     });
+    location.reload();
   });
   $(document).on('click', '.decline', function() {
     //TODO Maybe send notification to user.
@@ -37,5 +38,6 @@ $(document).ready(function(){
     $.post('/api/declined', user, function (data, status) {
       //$(this).parent().remove();
     });
+    location.reload();
   });
 });
