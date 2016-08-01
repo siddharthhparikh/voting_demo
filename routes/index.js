@@ -19,6 +19,9 @@ router.get('/topics', function (req, res) {
 
 // Routes user to selected topic page.
 router.get('/topic/:id', function (req, res) {
+  if(!req.session.name){
+    res.json('{"status":"Error: No user session"}')
+  }
   console.log("url: ", req.url)
   var url_parts = url.parse(req.url, true);
   console.log(url_parts.query);

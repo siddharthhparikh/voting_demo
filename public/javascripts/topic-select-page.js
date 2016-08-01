@@ -20,8 +20,6 @@ function generateID(length) {
 
 /* loadTopics reloads the topic buttons list */
 function loadTopics() {
-  console.log('Loading topics...');
-
   var showClosedTopics = false;
 
   // Check which open/closed tab is selected in the UI.
@@ -35,18 +33,14 @@ function loadTopics() {
     $('#loader').remove();
     if (data && data.AllTopics) {
       data = data.AllTopics;
-
-      console.log('data: ', data);
-
+      
       $('#loader').hide();
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var i in data) {
         // Load Closed topics.
         if(showClosedTopics) {
-          // TODO ethan is this the right syntax??
           if(data[i].Topic.status == "closed") {
-            console.log('found topic: ', data[i]);
             var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
             $('#topics').append(html);
             count++;
@@ -54,7 +48,6 @@ function loadTopics() {
         // Show Open topics.
         } else {
           if(data[i].Topic.status == "open") {
-            console.log('found topic: ', data[i]);
             var html = '<button class="topic button" id="' + data[i].Topic.topic_id + '">' + data[i].Topic.topic + '</button>';
             $('#topics').append(html);
             count++;
@@ -75,9 +68,7 @@ $(document).ready(function () {
   // 
   // Animation and page set up.
   //
-
   loadTopics();
-
   // Display welcome msg and populate info-box.
   $.get('/api/user', function (data, status) {
     $('#welcome-end').append(', ' + data.user);
@@ -154,10 +145,7 @@ $(document).ready(function () {
           console.log('Could not create unique ID for topic, sorry!')
           return;
         } 
-
         var id = generateID(Math.max($('#topic-name').val().length, MIN_ID_LENGTH));
-        console.log('Topic ID: ' + id);
-
         $.get('/api/topic-check', { "topicID": id }, function (data, status) {
           if (data.status == 'success') {
             console.log('Topic ID taken!  Issuing new ID...');
@@ -213,7 +201,7 @@ $(document).ready(function () {
     // Reroute the user to the topic page with a string query.
     window.location.replace("../topic/id?=" + $(this).context.id);
   });
-
+  // Home button
   $('#title').click(function() {
     window.location.replace('../topics');
   });

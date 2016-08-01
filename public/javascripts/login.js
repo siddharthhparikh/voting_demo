@@ -41,11 +41,9 @@ $(document).ready(function () {
       data = JSON.parse(data);
       // Handle response.
       if (data.status === 'success') {
-        console.log('login success');
         // Redirect user.
         window.location.replace("../topics");
       } else {
-        console.log('Error: ' + data.status);
         $('#error-msg').html('Error: ' + data.status);
       }
     });
