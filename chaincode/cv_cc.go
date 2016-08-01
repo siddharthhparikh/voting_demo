@@ -1086,7 +1086,11 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Successfully initialized cast votes")
 	}
 
-
+	masterManager := []string{"masterManager", "", ""}
+	_, err3 := t.createAccount(stub, masterManager)
+	if err3 != nil {
+		fmt.Println("Failed to enrolled Master Manager")
+	}
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: true},
