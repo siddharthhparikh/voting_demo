@@ -1086,6 +1086,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		fmt.Println("Successfully initialized cast votes")
 	}
 
+
 	//create table to store all the user account requests
 	errAccountRequest := stub.CreateTable("AccountRequests", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: true},
