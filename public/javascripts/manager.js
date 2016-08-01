@@ -1,5 +1,6 @@
 $(document).ready(function () {
   $(get)('/api/user', function (user) {
+    console.log(user);
     if (user.indexOf('manager') > -1) {
       $.get('/api/manager', function (data, status) {
         if (data) {
