@@ -47,6 +47,7 @@ type Topic struct {
 	Issuer     string   `json:"issuer"`
 	Choices    []string `json:"choices[]"`
 	Votes      []string `json:"votes[]"` //ints in string form
+	IssueDate  string   `json:"issue_date"`
 	ExpireDate string   `json:"expire_date"`
 }
 
@@ -113,11 +114,15 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: name of the var to query")
 	}
 
+	fmt.Println("ARGS", args)
+
 	name = args[0]
 	valAsbytes, err := stub.GetState(name)
 	if err != nil {
 		return nil, errors.New("Error: failed to get state for " + name)
 	}
+
+	fmt.Println("BYTES", valAsbytes)
 
 	return valAsbytes, nil
 }
@@ -399,15 +404,6 @@ func (t *SimpleChaincode) getAllRequests(stub *shim.ChaincodeStub, accountID str
 }
 
 func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	/*		0
-			json
-			{
-				"topic_id": "string",
-				"issuer": "username",
-				"choices": ["option1", "option2"]
-			}
-	*/
-
 	if len(args) != 1 {
 		fmt.Println("Incorrect number of arguments. Expecting 1: json object of topic being issued")
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: json object of topic being issued")
@@ -454,6 +450,14 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			return nil, err
 		}
 		topic.ExpireDate = expireDateTime.Format(time.RFC3339)
+
+		//change issue_date to go time format
+		issueDateTime, err := time.Parse("01/02/2006", topic.IssueDate)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		topic.IssueDate = issueDateTime.Format(time.RFC3339)
 
 		topicBytes, err := json.Marshal(&topic)
 		if err != nil {
@@ -876,6 +880,26 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	case "read": //read a variable
 		return t.read(stub, args)
 
+		// type Capsule struct {
+		// 	Data []byte `json:"data"`
+		// }
+
+		// var capsule Capsule
+		// data, err := t.read(stub, args)
+
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	return nil, err
+		// }
+
+		// capsule.Data = data
+		// dataBytes, err1 := json.Marshal(&capsule)
+		// if err1 != nil {
+		// 	fmt.Println("Error marshalling read data")
+		// 	return nil, err1
+		// }
+		// return dataBytes, nil
+
 	case "get_all_topics":
 		if len(args) != 1 {
 			fmt.Println("Incorrect number of arguments. Expecting 1: user ID")
@@ -1067,6 +1091,14 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 // Init resets all the things
 func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	if len(args) > 0 {
+		err := stub.PutState("InitState", []byte(args[0]))
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+	}
+
 	fmt.Println("Initializing vote topics...")
 	var blank []string
 	blankBytes, _ := json.Marshal(&blank)
@@ -1103,7 +1135,6 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	// Handle table creation errors
 	if errAccountRequest != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not create account request table: %s", errAccountRequest))
-		//console.log(fmt.Sprintf("[ERROR] Could not create account request table: %s", errAccountRequest))
 		return nil, errAccountRequest
 	}
 
@@ -1116,7 +1147,6 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	// Handle table creation errors
 	if errApprovedAccount != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not create account request table: %s", errApprovedAccount))
-		//console.log(fmt.Sprintf("[ERROR] Could not create account request table: %s", errApprovedAccount))
 		return nil, errApprovedAccount
 	}
 	return nil, nil
