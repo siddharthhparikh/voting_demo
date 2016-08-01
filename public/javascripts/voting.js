@@ -6,20 +6,23 @@
  */
 
 function setMaxVotes() {
-
+  $.get('/api/get-account', function(status, data){
+    if(data){
+      return data.vote_count;
+    }
+    return 0;
+  });
 }
 
 
 $(document).ready(function () {
 
-  var maxVotes = 5
+  var maxVotes = setMaxVotes();
+  $('#remaining-votes').append(maxVotes);
   $('.hidden').hide();
-
   //
   // Get current topic info
   //
-
-  console.log('Topic ID:', $('#topicID').html());
   // Query the server for a the topic so that it can be loaded to the page
   $.get('/api/get-topic', { 'topicID': $('#topicID').html() }, function (data, status) {
     // If there is a response.
@@ -124,14 +127,12 @@ $(document).ready(function () {
   $('.votes').click(function (e) {
     e.preventDefault();
     var sum = 0;
-    var votes = document.getElementsByClassName('votes');
-    for (var i = 0; i < votes.length; i++) {
-      sum += votes[i].val();
-    }
-    if (sum < maxVotes) {
-      $(this).val() += 1;
-
-    }
+    // Collect sum of all votes applied.
+    $('.votes').each(function(){
+      var index = $(".votes").index(this);
+      sum += $(this).val();
+    });
+    $('#remaining-votes').html(maxVotes - sum);
   })
   
   $('#title').click(function() {

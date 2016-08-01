@@ -48,7 +48,7 @@ $(document).ready(function () {
     };
     $.post('/api/login', user, function (data, status) {
       data = JSON.parse(data);
-      // Handle response.
+      // Handle respse "clonse.
       if (data.status === 'success') {
         // Redirect user.
         window.location.replace("../topics");
