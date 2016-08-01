@@ -374,7 +374,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 	fmt.Println(args)
 	status := args[0]
 	account := Account{Name: args[1], Email: args[2]}
-	errReplceRow, reqTime := t.replaceRowRequest(stub, args)
+	reqTime, errReplceRow := t.replaceRowRequest(stub, args)
 	if(errReplceRow != nil) {
 		return nil, errReplceRow
 	}	
