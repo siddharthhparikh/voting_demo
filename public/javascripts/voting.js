@@ -5,27 +5,20 @@
  * Handles voting events including the remaining vote count.
  */
 
-function setMaxVotes(cb) {
+$(document).ready(function () {
+  var maxVotes;
   $.get('/api/get-account-info', function (data, status) {
     if (data) {
-      cb(data.vote_count);
+      maxVotes = data.vote_count;
+      $('#remaining-votes').append(maxVotes);
+      $('.hidden').hide();
     }
     return 0;
-  });
-}
-
-
-$(document).ready(function () {
-  setMaxVotes(function (voteCount) {
-    $('#remaining-votes').append(voteCount);
-    $('.hidden').hide();
   });
 
   //
   // Get current topic info
   //
-
-  console.log('Topic ID:', $('#topicID').html());
   // Query the server for a the topic so that it can be loaded to the page
   $.get('/api/get-topic', { 'topicID': $('#topicID').html() }, function (data, status) {
     // If there is a response.
@@ -33,7 +26,7 @@ $(document).ready(function () {
       if (data.Status == "open") {
         // Create candidates
         data.Topic['choices[]'].forEach(function (entry) {
-          $('#candidates tr:last').after('<tr><td>' + entry + '</td><td><input type="number" class="votes" min="0" max="5"/></td></tr>')
+          $('#candidates tr:last').after('<tr><td>' + entry + '</td><td><input type="number" class="votes" min="0"/></td></tr>')
         });
         $('.votes').val('0');
       } else if (data.Status == "closed" || data.Status == "voted") {
@@ -127,18 +120,21 @@ $(document).ready(function () {
   });
 
   // Remaining votes
-  $('.votes').click(function (e) {
+  $(document).on('change', '.votes', function (e) {
     e.preventDefault();
     var sum = 0;
     // Collect sum of all votes applied.
-    $('.votes').each(function () {
+    $('.votes').each(function(){
       var index = $(".votes").index(this);
-      sum += $(this).val();
+      sum += parseInt($(this).val());
     });
-    $('#remaining-votes').html(maxVotes - sum);
-  });
+    if(maxVotes > sum){
+      $('#remaining-votes').html(maxVotes - sum);
+      //$(this).val(parseInt($(this).val()) + 1);
+    }
+  })
 
-  $('#title').click(function () {
+  $('#title').click(function() {
     window.location.replace('../topics');
   });
 });
