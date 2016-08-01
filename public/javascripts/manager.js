@@ -25,8 +25,8 @@ $(document).ready(function(){
     $.post('/api/approved', user, function (data, status) {
       //console.log($(this).parent().children());
       //$(this).parent().remove();
+       location.reload();
     });
-    location.reload();
   });
   $(document).on('click', '.decline', function() {
     //TODO Maybe send notification to user.
@@ -37,7 +37,7 @@ $(document).ready(function(){
     }
     $.post('/api/declined', user, function (data, status) {
       //$(this).parent().remove();
+      location.reload();
     });
-    location.reload();
   });
 });
