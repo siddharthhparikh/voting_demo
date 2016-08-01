@@ -313,7 +313,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	for chanValue := range rowChan {
 		requestTime = chanValue.Columns[3].GetString_()
 	}
-	fmt.Println("request time = " , requestTime)
+	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
 			"AccountRequests",
