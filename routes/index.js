@@ -19,9 +19,7 @@ router.get('/topics', function (req, res) {
 
 // Routes user to selected topic page.
 router.get('/topic/:id', function (req, res) {
-  console.log("url: ", req.url)
   var url_parts = url.parse(req.url, true);
-  console.log(url_parts.query);
 
   var id;
   for (var i in url_parts.query) {

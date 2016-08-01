@@ -79,7 +79,6 @@ router.get('/get-topic', function (req, res) {
   args.push(req.query.topicID);
   args.push(req.session.name);
   chaincode.query('get_topic', args, function (err, data) {
-    console.log("Topic: ", data);
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
@@ -90,7 +89,6 @@ router.get('/topic-check', function (req, res, next) {
   var args = [];
   args.push(req.query.topicID);
   args.push(req.session.name);
-  console.log(req.query);
   chaincode.query('get_topic', args, function (err, data) {
     if (err) {
       res.json('{"status" : "failure"}');
@@ -121,15 +119,19 @@ router.post('/create', function (req, res, next) {
 router.post('/vote-submit', function (req, res, next) {
   req.body.voter = req.session.name;
 
-  console.log(JSON.stringify(req.body));
   chaincode.invoke('cast_vote', JSON.stringify(req.body), function (err, results) {
     res.json('{"status" : "success"}');
   })
 });
 
 router.get('/load-chain', function (req, res) {
-  console.log('Block chain loaded');
-  res.json('{"status" : "success"}');
+  var args = [];
+  args.push('InitState')
+  chaincode.query('read', args, false, function (err, results) {
+    if (results == 'ready!') {
+      res.json('{"status" : "success"}');
+    }
+  });
 });
 
 /* Get request for current user */

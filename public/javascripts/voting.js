@@ -33,8 +33,6 @@ $(document).ready(function () {
       } else if (data.Status == "closed" || data.Status == "voted") {
         var graphData = [];
 
-        console.log(data.Topic['votes[]']);
-
         for (var i = 0; i < data.Topic['choices[]'].length; i++) {
           graphData.push([data.Topic['choices[]'][i], parseInt(data.Topic['votes[]'][i])]);
         }
@@ -130,7 +128,6 @@ $(document).ready(function () {
     for (var i = 0; i < votes.length; i++) {
       sum += votes[i].val();
     }
-    console.log(sum);
     if (sum < maxVotes) {
       $(this).val() += 1;
 
