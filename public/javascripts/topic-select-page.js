@@ -50,7 +50,7 @@ function loadTopics() {
             var html;
             // Give voted topics a specialized background color.
             if(data[i].Status == "voted") {
-              html = '<button style="background-color:" class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';  
+              html = '<button style="background-color: #64D4E5" class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';  
             } else {
               html = '<button class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             }
