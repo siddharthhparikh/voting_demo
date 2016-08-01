@@ -13,6 +13,7 @@ $(document).ready(function(){
   
   // Events for the approve/decline buttons.
   $(document).on('click', '.approve', function() {
+    $(this).parent().parent().fadeOut();
     console.log($(this).attr("name"));
     console.log($(this).parent().parent().find('.vote-ammount').val());
     //TODO approve the user
@@ -29,6 +30,7 @@ $(document).ready(function(){
     });
   });
   $(document).on('click', '.decline', function() {
+    $(this).parent().parent().fadeOut();
     //TODO Maybe send notification to user.
     var user = {
       Name: $(this).attr("name"),
