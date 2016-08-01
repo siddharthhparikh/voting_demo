@@ -24,7 +24,6 @@ router.get('/topic/:id', function (req, res) {
   }
   console.log("url: ", req.url)
   var url_parts = url.parse(req.url, true);
-  console.log(url_parts.query);
 
   var id;
   for (var i in url_parts.query) {
@@ -36,9 +35,9 @@ router.get('/topic/:id', function (req, res) {
   args.push(req.session.name);
   chaincode.query('get_topic', args, function (err, data) {
     if (data && !err) {
-      res.render('topic', { title: 'Chain Vote', topicName: data.topic, topicID: data.topic_id });
+      res.render('topic', { title: 'Chain Vote', topicName: data.Topic.topic, topicID: data.Topic.topic_id });
     } else {
-       res.render('topic', { title: 'Chain Vote', topicName: "TOPIC NOT FOUND", topicID: "" });
+       res.render('topic', { title: 'Chain Vote', topicName: "TOPIC NOT FOUND", topicID: "" }); //TODO return topic not found object?
     }
   });
 

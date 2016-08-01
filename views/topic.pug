@@ -3,6 +3,7 @@ extends layout
 block content
 
   script(src="/javascripts/voting.js")
+  script(src="https://code.highcharts.com/highcharts.js")
   link(rel='stylesheet', href='/stylesheets/topic.css')
  
   #header
@@ -18,6 +19,8 @@ block content
   #content-block
     #table
       table(id='candidates')
-      button(class='button' id='submit') Submit
+        th Candidate
+        th Votes
+    button(class='button' id='submit') Submit
 
     
