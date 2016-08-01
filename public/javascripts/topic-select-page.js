@@ -50,9 +50,9 @@ function loadTopics() {
             var html;
             // Give voted topics a specialized background color.
             if(data[i].Status == "voted") {
-              html = '<button style="background-color:" class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';  
+              html = '<button class="topic button voted" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';  
             } else {
-              html = '<button class="topic button" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
+              html = '<button class="topic button closed" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             }
             $('#topics').append(html);
             count++;
@@ -214,8 +214,13 @@ $(document).ready(function () {
   // Onclick event for topic buttons.
   //
   $(document).on('click', '.topic', function () {
-    // Reroute the user to the topic page with a string query.
-    window.location.replace("../topic/id?=" + $(this).context.id);
+    // Voted topics will not redirect.
+    if(!$(this).hasClass('voted')) {
+      // Reroute the user to the topic page with a string query.
+      window.location.replace("../topic/id?=" + $(this).context.id);
+    } else {
+      alert('Topics you have voted on can not be viewed until the voting period has ended.');
+    }
   });
 
   // Home button

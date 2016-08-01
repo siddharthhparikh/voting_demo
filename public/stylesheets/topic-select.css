@@ -103,3 +103,11 @@
 .active {
   font-size: 30px;
 }
+
+.voted {
+  background-color: #64D4E5;
+}
+
+.voted:hover {
+  color: #313131;
+}
