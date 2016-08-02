@@ -190,28 +190,29 @@ router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
   console.log(req.body.ID)
-  chaincode.registerAndEnroll(req.body.ID, "user", function (err, cred) {
+  var args = [
+    'approved',
+    req.body.Name,
+    req.body.Email,
+    req.session.name,
+    req.body.VoteCount
+  ]
+  chaincode.invoke('change_status', args, function (data, err) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
-    console.log("\n\n\ncreate account result:")
-    console.log(cred);
-    mail.email(req.body.Email, cred, function (err) {
+    console.log(data)
+    chaincode.registerAndEnroll(data, "user", function (err, cred) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
-      var args = [
-        'approved',
-        req.body.Name,
-        req.body.Email,
-        req.session.name,
-        req.body.VoteCount
-      ]
-      chaincode.invoke('change_status', args, function (data, err) {
+      console.log("\n\n\ncreate account result:")
+      console.log(cred);
+      mail.email(req.body.Email, cred, function (err) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
-        res.json('{"status" : "success"}');
+        //res.json('{"status" : "success"}');
       });
     });
   });
