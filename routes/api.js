@@ -64,21 +64,21 @@ router.get('/get-account', function (req, res, next) {
   });
 })
 
-//clears all topics on blockchain
-//TODO this is just for debugging!
-router.get('/o', function (req, res) {
-  console.log('deleting all topics...');
-  console.log('hope you know what you\'re doing...');
-  chaincode.invoke('clear_all_topics', [], function (err, data) {
-    if (err) {
-      console.log('ERROR: ' + err);
-      res.json('{"status" : "failure"}');
-    } else {
-      console.log('delete of all topics successful!');
-      res.json('{"status" : "success"}');
-    }
-  });
-});
+// Clears all topics on blockchain
+// TODO this is just for debugging!
+// router.get('/o', function (req, res) {
+//   console.log('deleting all topics...');
+//   console.log('hope you know what you\'re doing...');
+//   chaincode.invoke('clear_all_topics', [], function (err, data) {
+//     if (err) {
+//       console.log('ERROR: ' + err);
+//       res.json('{"status" : "failure"}');
+//     } else {
+//       console.log('delete of all topics successful!');
+//       res.json('{"status" : "success"}');
+//     }
+//   });
+// });
 
 /* Get all voting topics from blockchain */
 router.get('/get-topics', function (req, res) {
@@ -93,23 +93,22 @@ router.get('/get-topics', function (req, res) {
 /* Get specific voting topic from blockchain */
 
 router.get('/get-topic', function (req, res) {
-  console.log('getting topic...');
+  console.log('Getting topic...');
   var args = [];
   args.push(req.query.topicID);
   args.push(req.session.name);
   chaincode.query('get_topic', args, function (err, data) {
-    console.log("DATA: ", data);
     if (err) console.log('ERROR: ', err);
     else res.json(data);
   });
 });
 
+/* Checks the validity of the given topic */
 router.get('/topic-check', function (req, res, next) {
   // Get the topic id from the post
   var args = [];
   args.push(req.query.topicID);
   args.push(req.session.name);
-  console.log(req.query);
   chaincode.query('get_topic', args, function (err, data) {
     if (err) {
       res.json('{"status" : "failure"}');
@@ -140,20 +139,23 @@ router.post('/create', function (req, res, next) {
 router.post('/vote-submit', function (req, res, next) {
   req.body.voter = req.session.name;
 
-  console.log(JSON.stringify(req.body));
   chaincode.invoke('cast_vote', JSON.stringify(req.body), function (err, results) {
-    console.log(results);
-
     res.json('{"status" : "success"}');
   })
 });
 
+/* Used to let the client know when the Chaincode is finished loading */
 router.get('/load-chain', function (req, res) {
-  console.log('Block chain loaded');
-  res.json('{"status" : "success"}');
+  var args = [];
+  args.push('InitState')
+  chaincode.query('read', args, false, function (err, results) {
+    if (results == 'ready!') {
+      res.json('{"status" : "success"}');
+    }
+  });
 });
 
-/* Get request for current user */
+/* Get request for current user logged in */
 router.get('/user', function (req, res) {
   var user = req.session.name;
   console.log('Fetching current user: ' + user);

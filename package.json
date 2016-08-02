@@ -17,6 +17,7 @@
     "nodemailer": "^0.7.1",
     "pug": "~2.0.0-beta2",
     "serve-favicon": "~2.3.0",
-    "session-file-store": "^0.2.0"
+    "session-file-store": "^0.2.0",
+    "highcharts": "^4.2.5"
   }
 }

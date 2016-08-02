@@ -6,18 +6,26 @@
  */
 $(document).ready(function () {
   $('.hidden').hide();
-
+  console.log('Querying if chaincode has deployed...');
+  var intervalVar = setInterval(function() {
   $.get('/api/load-chain', function (data, status) {
     data = JSON.parse(data);
     if (data.status == "success") {
+      console.log('Chaincode loaded!');
+      //clearInterval(intervalVar);
       $('#loading-screen').remove();
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();
       $('#open-register').fadeIn();
     } else {
-      //TODO display err
+      console.log('Chaincode failed!');
+      $('#loading-screen').fadeIn();
+      $('#content-header').hide();
+      $('#content-block').hide();
+      $('#open-register').hide();
     }
   });
+  }, 2000);
 
   //Animation for register info box.
   $('#open-register').click(function() {
@@ -25,7 +33,7 @@ $(document).ready(function () {
   });
   // Hides menus when user clicks out of them.
   $(document).click(function(event){
-    if(!$(event.target).is('#register-box') && !$(event.target).is('#open-register') && !$(event.target).is('.input')){
+    if(!$(event.target).is('.info-box') && !$(event.target).is('.info-box h1') && !$(event.target).is('.info-box p') && !$(event.target).is('#open-register') && !$(event.target).is('.reg-info')){
       $('.info-box').fadeOut('fast');
     }     
   });
@@ -42,9 +50,8 @@ $(document).ready(function () {
     };
     $.post('/api/login', user, function (data, status) {
       data = JSON.parse(data);
-      // Handle response.
+      // Handle respse "clonse.
       if (data.status === 'success') {
-        console.log('login success');
         // Redirect user.
         if(data.type === 'user') {
           window.location.replace("../topics");
@@ -53,27 +60,42 @@ $(document).ready(function () {
           window.location.replace("../manager");
         }
       } else {
-        console.log('Error: ' + data.status);
         $('#error-msg').html('Error: ' + data.status);
       }
     });
   });
 
-  $('#reg-usr').click(function (e) {
-    console.log('Sending request');
-    // Create request object.
-    var newUser = {
-      'name': $('#name').val(),
-      'email': $('#email').val(),
-      'org': $('#organization').val()
-    };
-    console.log(newUser);
-    //Send request object.
-    $.post('/api/register', newUser, function (data, status) {
-      if (status.status == 'success') {
-        $('#register-box').hide();
-        $('#error-msg').html('New account request has been sent.');
+
+  //
+  // Request to register as a new user.
+  //
+  $('#register-user').click(function() {
+    var errFlag = false;
+    $('.reg-info').each(function(){
+      var index = $(".reg-info").index(this);
+      if ($(this).val() == '' && errFlag == false) {
+        errFlag = true;
+        alert('Error: Input fields can not be left empty.');
       }
     });
+    if(!errFlag){
+      // Create request object.
+      var newUser = {
+        'name': $('#name').val(),
+        'email': $('#email').val(),
+        'org': $('#orginization').val()
+      };
+      //Send request object.
+      $.post('/api/register', newUser, function (data, status) {
+        if (status == 'success') {
+          $('#register-box').fadeOut();
+          $('#error-msg').html('New account request has been sent.');
+        }
+      });
+    }
+  });
+
+  $('#title').click(function() {
+    window.location.replace('../topics');
   });
 });
