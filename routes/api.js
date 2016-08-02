@@ -189,7 +189,7 @@ router.get('/manager', function (req, res) {
 router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
-  console.log(req.body.ID)
+  console.log(req.body.Name)
   var args = [
     'approved',
     req.body.Name,

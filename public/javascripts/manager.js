@@ -15,7 +15,7 @@ $(document).ready(function () {
     console.log($(this).parent().parent().find('.vote-ammount').val());
     //TODO approve the user
     var user = {
-      ID: $(this).attr("name"),
+      Name: $(this).attr("name"),
       VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
       Email: $(this).attr("email")
     }
