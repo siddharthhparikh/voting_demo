@@ -197,6 +197,8 @@ router.post('/approved', function (req, res) {
     req.session.name,
     req.body.VoteCount
   ]
+  console.log("In approved args")
+  console.log(args)
   chaincode.invoke('change_status', args, function (data, err) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
