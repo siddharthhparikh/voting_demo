@@ -410,7 +410,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		fmt.Println(userID)
 		manager := args[3]
 		votes, _ := strconv.ParseUint(args[4], 10, 64)
-		_, err := stub.InsertRow("AccountRequests",
+		_, err := stub.InsertRow("ApprovedAccounts",
 			shim.Row{
 				Columns: []*shim.Column{
 					&shim.Column{Value: &shim.Column_String_{String_: userID}},
@@ -426,14 +426,14 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		if err != nil {
 			return nil, errors.New("Failed inserting row.")
 		}
-		
-		row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
+		rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
 		if rowErr != nil {
 			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 			return nil, rowErr
 		}
-		fmt.Println("In approved table:")
-		fmt.Println(row)
+		for chanValue := range rowChan {
+			fmt.Println(chanValue)	
+		}
 	}
 	return nil, nil
 }
