@@ -21,7 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
+	//"strings"
 	"time"
     //"reflect"
 	"math/rand"
@@ -144,27 +144,43 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 }
 
 func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	fmt.Println("inside create account args")
+	fmt.Println(args)
 	if len(args) != 3 {
 		fmt.Println("Could not obtain username passed to createAcount")
 		return nil, errors.New("Incorrect number of arguments. Expecting 3")
 	}
 	
 	username := args[0]
-	votes, e := strconv.ParseUint(args[2], 10, 64)
-	if e != nil {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not parse the votes to a number: %s", e))
-	}
+	//votes, e := strconv.ParseUint(args[2], 10, 64)
+	//if e != nil {
+	//	fmt.Println(fmt.Sprintf("[ERROR] Could not parse the votes to a number: %s", e))
+	//}
 	email := args[1]
 
 	fmt.Println("In request Account username= " + username + " email= "+ email);
 	
-	var account = Account{ID: username, Email: email, VoteCount: votes}
+	//var account = Account{ID: username, Email: email, VoteCount: votes}
+	
+	//find if account exist or not
+	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
+	if rowErr != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+		return nil, rowErr
+	}
+	for chanValue := range rowChan {
+		fmt.Println(chanValue)	
+	}
+	
+
+	/*
 	accountBytes, err := json.Marshal(&account)
 	if err != nil {
 		fmt.Println("Error creating account " + account.ID)
 		return nil, err
 	}
-
+	*/
+	/*
 	fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
 	existingBytes, err := stub.GetState(accountHeader + account.ID)
 	if err != nil {
@@ -179,7 +195,8 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 		fmt.Println("Failed to initialize an account for " + account.ID)
 		return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
 	}
-
+	*/
+	/*
 	var existingAccount Account
 	err = json.Unmarshal(existingBytes, &existingAccount)
 	if err != nil {
@@ -205,6 +222,8 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 
 	fmt.Println("Account already exists for " + account.ID)
 	return nil, errors.New("Can't reinitialize existing user " + account.ID)
+	*/
+	return nil, nil
 }
 
 func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -247,20 +266,6 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger mostly because email is already registered: %s", rowErr))
 		return nil, nil
 	}
-	
-	//remove this code
-	/*
-	row1, rowErr1 := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
-	if rowErr1 != nil {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr1))
-		return nil, rowErr1
-	}
-	fmt.Println("Email inside request account:")
-	fmt.Println(account.Email)
-	fmt.Println("In request account row:")
-	fmt.Println(row1)
-	*/
-	//delete
 	return nil, nil
 }
 
@@ -369,7 +374,7 @@ func generateUserID() string {
    		letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
    		letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits	
 	)
-	n := 16
+	n := 6
 	var src = rand.NewSource(time.Now().UnixNano())
     b := make([]byte, n)
     // A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
@@ -401,6 +406,8 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 	
 	if(status == "approved") {
 		userID := generateUserID()
+		fmt.Println("My random ID is:")
+		fmt.Println(userID)
 		manager := args[3]
 		votes, _ := strconv.ParseUint(args[4], 10, 64)
 		_, err := stub.InsertRow("AccountRequests",
