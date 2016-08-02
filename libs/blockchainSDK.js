@@ -4,18 +4,18 @@
  * provides functions for interacting with chaincode SDK
  */
 
-var hlc = require('hlc');
+var hfc = require('hfc');
 
 var exports = module.exports;
 
 // Create a client chain
 var chaincodeName = 'marble_chaincode'
-var chain = hlc.newChain("voting");
+var chain = hfc.newChain("voting");
 var chaincodeID = null;
 
 // Configure the KeyValStore which is used to store sensitive keys
 // as so it is important to secure this storage
-chain.setKeyValStore(hlc.newFileKeyValStore('/tmp/keyValStore'));
+chain.setKeyValStore(hfc.newFileKeyValStore('/tmp/keyValStore'));
 
 var peerURLs = [];
 var caURL = null;

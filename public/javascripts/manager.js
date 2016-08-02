@@ -1,6 +1,6 @@
 $(document).ready(function () {
   $.get('/api/manager', function (data, status) {
-    if (data) {
+    if (data.AllAccReq) {
       // Create a <tr> for each request that exists.
       data.AllAccReq.forEach(function (entry) {
         // This was fun to write.
