@@ -17,11 +17,7 @@ block content
     h1(class='welcome' id='welcome-end') me
     i(class="material-icons md-48" class='header-icons' id='open-user-info') account_circle
     i(class="material-icons md-48" class='header-icons' id='new-topic') playlist_add
-    i(class="material-icons" class='header-icons' id='refresh-topics') refresh  
-
-  #content-header
-    h1(id='open-topics' class='active') Open Topics
-    h1(id='closed-topics' class='inactive') Closed Topics
+    i(class="material-icons" class='header-icons' id='refresh-topics') refresh 
 
   #topic-creation(class='info-box' class='hidden')
     h1(id='create-header') Create a Topic
@@ -31,11 +27,13 @@ block content
       p(class='form-label') Expire Date:
       input(type='text' class='topic-input' id='datepicker' placeholder='MM/DD/YYYY')
       p(class='form-label') Candidates:
-      input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
-      input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
+      div(class='candidate-div')
+        input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
+      div(class='candidate-div')
+        input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
       #candidate-append
       i(class="material-icons" id='add-cand') add
-    input(type='submit' class='button' id='topic-submit' value='Submit' )
+    input(type='submit' class='button' id='topic-submit' value='Submit')
 
   #user-info(class='info-box' class='hidden')
     h1(class='user-info-header') My Account
@@ -47,8 +45,12 @@ block content
     p
     form(action='/logout' method='get')
       input(type='submit' class='button' id='logout' value='Logout')
+
+  #master-content
+    #content-header
+      h1(id='open-topics' class='active') Open Topics
+      h1(id='closed-topics' class='inactive') Closed Topics  
+    #content-block 
+      #topics
       
-  #content-block 
-    #topics
-     
 
