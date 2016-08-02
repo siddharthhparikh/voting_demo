@@ -335,7 +335,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 			return "a", rowErr
 		}
-		if row.Columns[0] != nil {
+		if row.Columns != nil {
 			break
 		}
 		fmt.Println("Attempt" + string(i) + "failed.")
