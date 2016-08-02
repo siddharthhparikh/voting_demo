@@ -237,7 +237,6 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 	fmt.Println("In request Account username= " + args[0] + " email = " + args[1] + " org = " + args[2])
 	var account = Account{ID: "", Name: args[0], Email: args[1], VoteCount: 0, Org: args[2]}
-
 	//Check if request already exists
 	//user email must be unique in all the accounts
 
@@ -245,9 +244,9 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	column = append(column, shim.Column{Value: &shim.Column_String_{String_: account.Email}})
 	row, errGetRow := stub.GetRow("AccountRequests", column)
 
-	fmt.Println(errGetRow)
-	fmt.Println(row)
-	
+	if(len(row.Columns)!=0 || errGetRow != nil) {
+		return nil, fmt.Errorf("Email ID [%s] already exist. Please click on forgot password to recover account. ERR: [%s]", account.Email, errGetRow)
+	}
 	//TODO check if row does not exist then only execute this code
 	//right npw fmt.println(row) is giving {[]} but its not giving any error so ask dale. 
 	/*if !row {
@@ -304,9 +303,8 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	for chanValue := range rowChan {
 		if chanValue.Columns[2].GetString_() == "open" {
 			openRequest = append(openRequest, Account{
-				ID:		chanValue.Columns[0].GetString_(), 
-				Email:	chanValue.Columns[1].GetString_(), 
-				Name:	chanValue.Columns[2].GetString_(),
+				Email:	chanValue.Columns[0].GetString_(), 
+				Name:	chanValue.Columns[1].GetString_(),
 				Org:	chanValue.Columns[3].GetString_(),
 				VoteCount: 0,
 			})

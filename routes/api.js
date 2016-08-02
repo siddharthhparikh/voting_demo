@@ -170,7 +170,7 @@ router.post('/register', function (req, res) {
     }
     console.log("\n\n\nrequest account result:")
     console.log(results);
-    //res.json('{"status" : "success"}');
+    res.json('{"status" : "success"}');
   });
 });
 
@@ -178,11 +178,14 @@ router.get('/manager', function (req, res) {
   console.log(req.session.name)
   if (req.session.name.indexOf('manager') > -1) {
     chaincode.query('get_open_requests', [], function (err, data) {
+      if(err!=null) {
+        res.json('{"status" : "failure", "Error": err}');
+      }
       console.log(data);
       res.json(data);
     });
   } else {
-    res.send(null);
+    res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
   }
 });
 
