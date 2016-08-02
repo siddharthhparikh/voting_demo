@@ -7,25 +7,31 @@
 $(document).ready(function () {
   $('.hidden').hide();
   console.log('Querying if chaincode has deployed...');
-  var intervalVar = setInterval(function() {
-  $.get('/api/load-chain', function (data, status) {
-    data = JSON.parse(data);
-    if (data.status == "success") {
-      console.log('Chaincode loaded!');
-      //clearInterval(intervalVar);
-      $('#loading-screen').remove();
-      $('#content-header').fadeIn();
-      $('#content-block').fadeIn();
-      $('#open-register').fadeIn();
-    } else {
-      console.log('Chaincode failed!');
-      $('#loading-screen').fadeIn();
-      $('#content-header').remove();
-      $('#content-block').remove();
-      $('#open-register').remove();
-    }
-  });
-  }, 2000);
+  //var intervalVar = setInterval(function() {
+  // $.get('/api/load-chain', function (data, status) {
+  //   data = JSON.parse(data);
+  //   if (data.status == "success") {
+  //     console.log('Chaincode loaded!');
+  //     //clearInterval(intervalVar);
+  //     $('#loading-screen').remove();
+  //     $('#content-header').fadeIn();
+  //     $('#content-block').fadeIn();
+  //     $('#open-register').fadeIn();
+  //   } else {
+  //     console.log('Chaincode failed!');
+  //     $('#loading-screen').fadeIn();
+  //     $('#content-header').hide();
+  //     $('#content-block').hide();
+  //     $('#open-register').hide();
+  //   }
+  // });
+  // }, 2000);
+
+  $('#loading-screen').remove();
+  $('#content-header').fadeIn();
+  $('#content-block').fadeIn();
+  $('#open-register').fadeIn();
+
   //Animation for register info box.
   $('#open-register').click(function() {
     $('#register-box').animate({ height: 'toggle'}, 'fast');
@@ -80,7 +86,7 @@ $(document).ready(function () {
       //Send request object.
       $.post('/api/register', newUser, function (data, status) {
         if (status == 'success') {
-          $('#register-box').hide();
+          $('#register-box').fadeOut();
           $('#error-msg').html('New account request has been sent.');
         }
       });

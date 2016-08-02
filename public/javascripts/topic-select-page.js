@@ -108,10 +108,10 @@ $(document).ready(function () {
   });
 
   // Hides menus when user clicks out of them.
-  $(document).click(function (event) {
-    if (!$(event.target).is('.info-box') && !$(event.target).is('.info-box h1') && !$(event.target).is('.info-box p') && !$(event.target).is('.header-icons') && !$(event.target).is('.topic-input')) {
+  $('#master-content').click(function (event) {
+    //if (!$(event.target).is('.info-box') && !$(event.target).is('.delete-candidate') && !$(event.target).is('#add-cand') && !$(event.target).is('.info-box h1') && !$(event.target).is('.info-box p') && !$(event.target).is('.header-icons') && !$(event.target).is('.topic-input')) {
       $('.info-box').fadeOut('fast');
-    }
+    //}
   });
 
   // Set click action for refresh button.
@@ -206,12 +206,12 @@ $(document).ready(function () {
   // Add new candidate button.
   //
   $('#add-cand').click(function () {
-    var html = '<input type="text" class="topic-candidate" placeholder="Candidate"/>';
+    var html = '<div class="candidate-div"><input type="text" class="topic-candidate" placeholder="Candidate"/><i class="material-icons delete-candidate">close</i></div>';
     $('#candidate-append').append(html);
   });
 
   //
-  // Onclick event for topic buttons.
+  // Onclick events for buttons.
   //
   $(document).on('click', '.topic', function () {
     // Voted topics will not redirect.
@@ -221,6 +221,11 @@ $(document).ready(function () {
     } else {
       alert('Topics you have voted on can not be viewed until the voting period has ended.');
     }
+  });
+  
+  // Delete topic candidate
+  $(document).on('click', '.delete-candidate', function() {
+    $(this).parent().remove();
   });
 
   // Home button
