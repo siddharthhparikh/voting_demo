@@ -202,7 +202,7 @@ router.post('/approved', function (req, res) {
       res.json('{"status" : "failure", "Error": err}');
     }
     console.log(data)
-    chaincode.registerAndEnroll(data, "user", function (err, cred) {
+    chaincode.registerAndEnroll(req.body.Email, "user", function (err, cred) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
@@ -212,7 +212,7 @@ router.post('/approved', function (req, res) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
-        //res.json('{"status" : "success"}');
+        res.json('{"status" : "success"}');
       });
     });
   });
