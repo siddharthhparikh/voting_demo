@@ -38,10 +38,10 @@ module.exports.email = function (email, creds, cb) {
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log(error);
-            cb(error);
+            return cb(error);
             //return console.log(error);
         }
         //console.log('Message sent: ' + info.response);
-        cb(null);
+        return cb(null);
     });
 }
