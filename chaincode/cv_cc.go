@@ -325,10 +325,11 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	fmt.Println("Account inside replece row")
 	fmt.Println(account)
 	row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
-	if rowErr != nil {
+	if rowErr != nil || len(row.Columns) == 0 {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 		return "a", rowErr
 	}
+	/*
 	for i := 0; i < 10; i++ {
 		row, rowErr = stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
 		if rowErr != nil {
@@ -339,11 +340,12 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 			break
 		}
 		fmt.Println("Attempt" + string(i) + "failed.")
-	}
-	if row.Columns[0] == nil {
+		time.sleep
+	}*/
+	/*if row.Columns[0] == nil {
 		fmt.Println("Cannot Find row. try again in sometime")
 		return "a", errors.New("Failed to find row")
-	}
+	}*/
 	var requestTime string
 	fmt.Println("Email inside replaceRowRequest:")
 	fmt.Println(account.Email)
