@@ -415,7 +415,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 	fmt.Println("Inside change status args are: ")
 	fmt.Println(args)
 	status := args[0]
-	account := Account{Name: args[1], Email: args[2]}
+	account := Account{Name: args[1], Email: args[2], Org: args[3]}
 	reqTime, errReplceRow := t.replaceRowRequest(stub, args)
 	if(errReplceRow != nil) {
 		return nil, errReplceRow
