@@ -249,6 +249,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	}
 	
 	//remove this code
+	/*
 	row1, rowErr1 := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
 	if rowErr1 != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr1))
@@ -258,6 +259,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	fmt.Println(account.Email)
 	fmt.Println("In request account row:")
 	fmt.Println(row1)
+	*/
 	//delete
 	return nil, nil
 }
