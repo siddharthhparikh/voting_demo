@@ -214,7 +214,7 @@ router.post('/approved', function (req, res) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
-        res.json('{"status" : "success"}');
+        //res.json('{"status" : "success"}');
       });
     });
   });
