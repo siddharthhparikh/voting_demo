@@ -7,30 +7,25 @@
 $(document).ready(function () {
   $('.hidden').hide();
   console.log('Querying if chaincode has deployed...');
-  //var intervalVar = setInterval(function() {
-  // $.get('/api/load-chain', function (data, status) {
-  //   data = JSON.parse(data);
-  //   if (data.status == "success") {
-  //     console.log('Chaincode loaded!');
-  //     //clearInterval(intervalVar);
-  //     $('#loading-screen').remove();
-  //     $('#content-header').fadeIn();
-  //     $('#content-block').fadeIn();
-  //     $('#open-register').fadeIn();
-  //   } else {
-  //     console.log('Chaincode failed!');
-  //     $('#loading-screen').fadeIn();
-  //     $('#content-header').hide();
-  //     $('#content-block').hide();
-  //     $('#open-register').hide();
-  //   }
-  // });
-  // }, 2000);
-
-  $('#loading-screen').remove();
-  $('#content-header').fadeIn();
-  $('#content-block').fadeIn();
-  $('#open-register').fadeIn();
+  var intervalVar = setInterval(function() {
+  $.get('/api/load-chain', function (data, status) {
+    data = JSON.parse(data);
+    if (data.status == "success") {
+      console.log('Chaincode loaded!');
+      //clearInterval(intervalVar);
+      $('#loading-screen').remove();
+      $('#content-header').fadeIn();
+      $('#content-block').fadeIn();
+      $('#open-register').fadeIn();
+    } else {
+      console.log('Chaincode failed!');
+      $('#loading-screen').fadeIn();
+      $('#content-header').hide();
+      $('#content-block').hide();
+      $('#open-register').hide();
+    }
+  });
+  }, 2000);
 
   //Animation for register info box.
   $('#open-register').click(function() {

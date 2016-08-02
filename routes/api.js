@@ -46,21 +46,21 @@ router.get('/get-account', function (req, res, next) {
   });
 })
 
-//clears all topics on blockchain
-//TODO this is just for debugging!
-router.get('/o', function (req, res) {
-  console.log('deleting all topics...');
-  console.log('hope you know what you\'re doing...');
-  chaincode.invoke('clear_all_topics', [], function (err, data) {
-    if (err) {
-      console.log('ERROR: ' + err);
-      res.json('{"status" : "failure"}');
-    } else {
-      console.log('delete of all topics successful!');
-      res.json('{"status" : "success"}');
-    }
-  });
-});
+// Clears all topics on blockchain
+// TODO this is just for debugging!
+// router.get('/o', function (req, res) {
+//   console.log('deleting all topics...');
+//   console.log('hope you know what you\'re doing...');
+//   chaincode.invoke('clear_all_topics', [], function (err, data) {
+//     if (err) {
+//       console.log('ERROR: ' + err);
+//       res.json('{"status" : "failure"}');
+//     } else {
+//       console.log('delete of all topics successful!');
+//       res.json('{"status" : "success"}');
+//     }
+//   });
+// });
 
 /* Get all voting topics from blockchain */
 router.get('/get-topics', function (req, res) {
@@ -74,7 +74,7 @@ router.get('/get-topics', function (req, res) {
 
 /* Get specific voting topic from blockchain */
 router.get('/get-topic', function (req, res) {
-  console.log('getting topic...');
+  console.log('Getting topic...');
   var args = [];
   args.push(req.query.topicID);
   args.push(req.session.name);
@@ -84,6 +84,7 @@ router.get('/get-topic', function (req, res) {
   });
 });
 
+/* Checks the validity of the given topic */
 router.get('/topic-check', function (req, res, next) {
   // Get the topic id from the post
   var args = [];
@@ -124,6 +125,7 @@ router.post('/vote-submit', function (req, res, next) {
   })
 });
 
+/* Used to let the client know when the Chaincode is finished loading */
 router.get('/load-chain', function (req, res) {
   var args = [];
   args.push('InitState')
@@ -134,7 +136,7 @@ router.get('/load-chain', function (req, res) {
   });
 });
 
-/* Get request for current user */
+/* Get request for current user logged in */
 router.get('/user', function (req, res) {
   var user = req.session.name;
   console.log('Fetching current user: ' + user);
