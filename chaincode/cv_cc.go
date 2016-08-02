@@ -308,7 +308,7 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 				Org:	chanValue.Columns[3].GetString_(),
 				VoteCount: 0,
 			})
-			timings = append(timings, chanValue.Columns[3].GetString_())
+			timings = append(timings, chanValue.Columns[4].GetString_())
 		}
 	}
 	return openRequest, timings, nil
@@ -431,8 +431,9 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 			return nil, rowErr
 		}
+		fmt.Println("chanValue:")
 		for chanValue := range rowChan {
-			fmt.Println(chanValue)	
+			fmt.Println(chanValue.Columns[1])	
 		}
 	}
 	return nil, nil

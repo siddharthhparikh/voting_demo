@@ -28,7 +28,7 @@ module.exports.email = function (email, creds, cb) {
             from: '"Siddharth Parikh" <siddharthparikh1993@gmail.com>', // sender address
             to: email, // list of receivers
             subject: '[Confidential] Vote Chain Password', // Subject line
-            text: 'username:' + creds.id + 'Your password is' + creds.secret, // plaintext body
+            text: 'username: ' + creds.id + '\npassword: ' + creds.secret, // plaintext body
             html: 'username: ' + creds.id + '\npassword: ' + creds.secret // html body
 
         };
