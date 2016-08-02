@@ -12,7 +12,7 @@ $(document).ready(function () {
     data = JSON.parse(data);
     if (data.status == "success") {
       console.log('Chaincode loaded!');
-      //clearInterval(intervalVar);
+      clearInterval(intervalVar);
       $('#loading-screen').remove();
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();
