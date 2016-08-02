@@ -86,6 +86,7 @@ $(document).ready(function () {
         'org': $('#orginization').val()
       };
       //Send request object.
+      console.log(newUser)
       $.post('/api/register', newUser, function (data, status) {
         if (status == 'success') {
           $('#register-box').fadeOut();
