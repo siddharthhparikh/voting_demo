@@ -324,8 +324,13 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	//getrow to save request time before deleting
 	fmt.Println("Account inside replece row")
 	fmt.Println(account)
+	row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
+	if rowErr != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+		return "a", rowErr
+	}
 	for i := 0; i < 10; i++ {
-		row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
+		row, rowErr = stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
 		if rowErr != nil {
 			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 			return "a", rowErr
