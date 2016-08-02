@@ -204,7 +204,7 @@ router.post('/approved', function (req, res) {
         'approved',
         req.body.Name,
         req.body.Email,
-        req.body.manager,
+        req.session.name,
         req.body.VoteCount
       ]
       chaincode.invoke('change_status', args, function (data, err) {

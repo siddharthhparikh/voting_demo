@@ -419,6 +419,14 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		if err != nil {
 			return nil, errors.New("Failed inserting row.")
 		}
+		
+		row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
+		if rowErr != nil {
+			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+			return nil, rowErr
+		}
+		fmt.Println("In approved table:")
+		fmt.Println(row)
 	}
 	return nil, nil
 }
