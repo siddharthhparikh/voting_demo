@@ -35,16 +35,8 @@
 /* User welcome message */
 
 .welcome {
-  display: inline-block;
   margin: 22px 0px 0px;
-}
-
-#welcome-start {
   margin-left: 2%;
-}
-
-#welcome-o {
-  margin: 0px;
 }
 
 /* Header-icons */
