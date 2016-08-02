@@ -310,6 +310,8 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 		return "a", rowErr
 	}
 	var requestTime string
+	fmt.Println("Email inside replaceRowRequest:")
+	fmt.Println(account.Email)
 	fmt.Println("In replace row:")
 	fmt.Println(row)
 	fmt.Println(t.readStringSafe(row.Columns[4]))
