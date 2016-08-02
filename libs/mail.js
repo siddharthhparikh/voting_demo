@@ -33,6 +33,8 @@ module.exports.email = function (email, creds, cb) {
 
         };
     }
+    console.log("Mail Options:")
+    console.log(mailOptions);
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log(error);

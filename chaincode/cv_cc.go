@@ -158,7 +158,7 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 	//}
 	email := args[1]
 
-	fmt.Println("In request Account username= " + username + " email= "+ email);
+	fmt.Println("In create Account username= " + username + " email= "+ email);
 	
 	//var account = Account{ID: username, Email: email, VoteCount: votes}
 	
