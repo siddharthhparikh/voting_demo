@@ -326,8 +326,8 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	fmt.Println(account)
 	row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
 	if rowErr != nil || len(row.Columns) == 0 {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return "a", rowErr
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
+		return "a", errors.New("Failed to find row")
 	}
 	/*
 	for i := 0; i < 10; i++ {
