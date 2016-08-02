@@ -465,6 +465,7 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 			}
 	*/
 
+
 	if len(args) != 1 {
 		fmt.Println("Incorrect number of arguments. Expecting 1: json object of topic being issued")
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: json object of topic being issued")
