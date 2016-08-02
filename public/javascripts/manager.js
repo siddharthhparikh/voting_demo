@@ -20,7 +20,7 @@ $(document).ready(function () {
       Name: $(this).attr("name"),
       VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
       Email: $(this).attr("email"),
-      Org: $(this).attr("org")
+      //Org: $(this).attr("org")
     }
     console.log(user);
     $.post('/api/approved', user, function (data, status) {
@@ -36,7 +36,7 @@ $(document).ready(function () {
       Name: $(this).attr("name"),
       VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
       Email: $(this).attr("email"),
-      Org: $(this).attr("org")
+      //Org: $(this).attr("org")
     }
     console.log("inside on click decline");
     $.post('/api/declined', user, function (data, status) {
