@@ -37,6 +37,7 @@
 .welcome {
   margin: 22px 0px 0px;
   margin-left: 2%;
+  display: inline-block;
 }
 
 /* Header-icons */

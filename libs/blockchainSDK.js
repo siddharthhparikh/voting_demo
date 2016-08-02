@@ -103,7 +103,7 @@ exports.deploy = function (path, args, cb) {
 
 //invokes function on chaincode (cb in form of cb(err, result))
 exports.invoke = function (fcn, args, cb) {
-    if (chaincodeID == "") {
+    if (chaincodeID == "" || chaincodeID == null) {
         return new Error("No chaincode ID implies chaincode has not yet deployed");
     }
 
@@ -134,7 +134,7 @@ exports.invoke = function (fcn, args, cb) {
 
 //queries on chaincode (cb in form of cb(err, result))
 exports.query = function (fcn, args, expectJSON, cb) {
-    if (chaincodeID == "") {
+    if (chaincodeID == "" || chaincodeID == null) {
         return new Error("No chaincode ID implies chaincode has not yet deployed");
     }
 

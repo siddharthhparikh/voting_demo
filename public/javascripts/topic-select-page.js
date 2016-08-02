@@ -42,7 +42,6 @@ function loadTopics() {
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var i in data) {
-        console.log(data[i].Topic)
         // Load Closed topics.
         if (showClosedTopics) {
           if (data[i].Status == "closed" || data[i].Status == "voted") {
