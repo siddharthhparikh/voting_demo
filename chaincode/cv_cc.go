@@ -254,9 +254,9 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr1))
 		return nil, rowErr1
 	}
-	fmt.Println("Email inside replaceRowRequest:")
+	fmt.Println("Email inside request account:")
 	fmt.Println(account.Email)
-	fmt.Println("In replace row:")
+	fmt.Println("In request account row:")
 	fmt.Println(row1)
 	//delete
 	return nil, nil
