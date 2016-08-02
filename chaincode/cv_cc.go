@@ -168,10 +168,12 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 		return nil, rowErr
 	}
+	fmt.Prinln("chanValue inside create account")
 	for chanValue := range rowChan {
 		fmt.Println(chanValue)	
 	}
-	
+
+
 
 	/*
 	accountBytes, err := json.Marshal(&account)
