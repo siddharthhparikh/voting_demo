@@ -160,6 +160,7 @@ exports.query = function (fcn, args, expectJSON, cb) {
                 var data = String.fromCharCode.apply(String, results.result);
                 if (expectJSON) {
                     if (data.length > 0) cb(null, JSON.parse(data));
+                    else cb(null, null);
                 } else {
                     cb(null, data)
                 }
