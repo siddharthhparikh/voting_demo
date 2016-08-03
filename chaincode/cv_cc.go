@@ -348,6 +348,23 @@ func generateUserID() string {
     return string(b)
 }
 
+func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (string, error) {
+	email := args[0]
+	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
+	if rowErr != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+		return "", rowErr
+	}
+	fmt.Println("chanValue:")
+	for chanValue := range rowChan {
+		if(t.readStringSafe(chanValue.Columns[2]) == email)
+		{
+			return t.readStringSafe(chanValue.Columns[0]), nil
+		}	
+	}
+	return "", errors.New("Can not find email. Are you sure you are registred?")	
+}
+
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	fmt.Println("Inside change status args are: ")
 	fmt.Println(args)
@@ -390,7 +407,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 			fmt.Println(chanValue.Columns[1])	
 		}
 	}
-	return []byte(userID), nil
+	return nil, nil
 }
 
 func (t *SimpleChaincode) getAllRequests(stub *shim.ChaincodeStub, accountID string) (Account, error) {
@@ -864,8 +881,6 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 	case "request_account":
 		return t.requestAccount(stub, args)
 	case "change_status":
-		fmt.Println("For change status args are: ")
-		fmt.Println(args)
 		return t.changeStatus(stub, args)
 	case "cast_vote":
 		return t.castVote(stub, args)
