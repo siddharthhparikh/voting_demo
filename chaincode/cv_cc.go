@@ -265,14 +265,14 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		fmt.Println(errTimeParse)
 		return nil, errTimeParse
 	}
-	console.log(requestTime)
+	//console.log(requestTime.String())
 	rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
 		Columns: []*shim.Column{
 			&shim.Column{Value: &shim.Column_String_{String_: account.Email}},
 			&shim.Column{Value: &shim.Column_String_{String_: account.Name}},
 			&shim.Column{Value: &shim.Column_String_{String_: "open"}},
 			&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
-			&shim.Column{Value: &shim.Column_String_{String_: requestTime}},	
+			&shim.Column{Value: &shim.Column_String_{String_: requestTime.String()}},	
 		},
 	})
 	if rowErr != nil || !rowAdded {
