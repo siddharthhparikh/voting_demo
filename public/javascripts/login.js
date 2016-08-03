@@ -7,35 +7,39 @@
 $(document).ready(function () {
   $('.hidden').hide();
   console.log('Querying if chaincode has deployed...');
-  var intervalVar = setInterval(function() {
-  $.get('/api/load-chain', function (data, status) {
-    data = JSON.parse(data);
-    if (data.status == "success") {
-      console.log('Chaincode loaded!');
-      //clearInterval(intervalVar);
-      $('#loading-screen').remove();
+  // var intervalVar = setInterval(function() {
+  // $.get('/api/load-chain', function (data, status) {
+  //   data = JSON.parse(data);
+  //   if (data.status == "success") {
+  //     console.log('Chaincode loaded!');
+  //     //clearInterval(intervalVar);
+  //     $('#loading-screen').remove();
+  //     $('#content-header').fadeIn();
+  //     $('#content-block').fadeIn();
+  //     $('#open-register').fadeIn();
+  //   } else {
+  //     console.log('Chaincode failed!');
+  //     $('#loading-screen').fadeIn();
+  //     $('#content-header').hide();
+  //     $('#content-block').hide();
+  //     $('#open-register').hide();
+  //   }
+  // });
+  // }, 2000);
+
+        $('#loading-screen').remove();
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();
       $('#open-register').fadeIn();
-    } else {
-      console.log('Chaincode failed!');
-      $('#loading-screen').fadeIn();
-      $('#content-header').hide();
-      $('#content-block').hide();
-      $('#open-register').hide();
-    }
-  });
-  }, 2000);
 
   //Animation for register info box.
   $('#open-register').click(function() {
     $('#register-box').animate({ height: 'toggle'}, 'fast');
   });
   // Hides menus when user clicks out of them.
-  $(document).click(function(event){
-    if(!$(event.target).is('.info-box') && !$(event.target).is('.info-box h1') && !$(event.target).is('.info-box p') && !$(event.target).is('#open-register') && !$(event.target).is('.reg-info')){
-      $('.info-box').fadeOut('fast');
-    }     
+  // Hides menus when user clicks out of them.
+  $('#master-content').click(function() {
+    $('.info-box').fadeOut('fast');
   });
 
   //
@@ -64,8 +68,8 @@ $(document).ready(function () {
   //
   $('#register-user').click(function() {
     var errFlag = false;
-    $('.reg-info').each(function(){
-      var index = $(".reg-info").index(this);
+    $('.registration-info').each(function(){
+      var index = $(".registration-info").index(this);
       if ($(this).val() == '' && errFlag == false) {
         errFlag = true;
         alert('Error: Input fields can not be left empty.');

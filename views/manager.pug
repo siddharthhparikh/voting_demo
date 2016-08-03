@@ -1,12 +1,15 @@
 extend layout
-
+//
+  Manager view to approve and decline user account requests requests.
 block content
   script(src='/javascripts/manager.js')
   link(rel='stylesheet', href='/stylesheets/manager.css')
-
+  //
+    Green title bar.
   #header
     h1(id='title')= title
-
+  //
+    Main content block. Displays a table of all user requests.
   #table
     table(id='request-table')
       tr(id='request-header')
@@ -16,14 +19,5 @@ block content
         th Date issued
         th Votes
         th Approval
-      tr(class='request')
-        td Gennaro Cuomo
-        td gennaroccuomo@gmail.com
-        td 
-          input(type='number' class='vote-ammount' class='request-info' value='5')
-        td
-          i(class='button' class='approve' class='material-icons') check
-          i(class='material-icons' class='button' class='decline') close
-
     
     

@@ -1,23 +1,35 @@
 extends layout
-
 block content
-
+  //
+    Main viewing pages for Chain Vote displays all voting topics for users to vote on.
+    Also allows contains topic creation and account settings/details.
   script(src='/javascripts/topic-select-page.js')
-  script(src='https://code.jquery.com/jquery-1.12.4.js')
-  script(src='https://code.jquery.com/ui/1.12.0/jquery-ui.js')
   link(rel='stylesheet', href='/stylesheets/topic-select.css')
   link(rel='stylesheet', href='/stylesheets/loader.css')
   link(rel='stylesheet' href='//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css')
   link(rel='stylesheet', href='/stylesheets/info-box.css')
-
+  link(rel='stylesheet', href='/stylesheets/button.css')
+  //
+    Green title bar. Also contains several action buttons which activate info-box divs
   #header
     h1(id='title')= title
     h1(class='welcome' id='welcome') Welcome
-    i(class="material-icons md-48" class='header-icons' id='open-user-info') account_circle
-    i(class="material-icons md-48" class='header-icons' id='new-topic') playlist_add
-    i(class="material-icons" class='header-icons' id='refresh-topics') refresh 
-
-  #topic-creation(class='info-box' class='hidden')
+    i(class='material-icons md-48 header-icons' id='open-user-info') account_circle
+    i(class='material-icons md-48 header-icons hidden' id='new-topic') playlist_add
+    i(class='material-icons header-icons' id='refresh-topics') refresh 
+    i(class='material-icons header-icons hidden' id='manage-users') verified_user
+  //
+    Main content block. Master content encompases whole screen while content block displays actual content.
+    Master content is used to handel click events with info-box divs.
+  #master-content
+    #content-header
+      h1(id='open-topics' class='active') Open Topics
+      h1(id='closed-topics' class='inactive') Closed Topics  
+    #content-block 
+      #topics
+  //
+    Info-box div for topic creation. Contains several input forms for user.
+  #topic-creation(class='info-box hidden')
     h1(id='create-header') Create a Topic
     #topic-input
       p(class='form-label') Vote Description:
@@ -26,14 +38,15 @@ block content
       input(type='text' class='topic-input' id='datepicker' placeholder='MM/DD/YYYY')
       p(class='form-label') Candidates:
       div(class='candidate-div')
-        input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
+        input(type='text' class='topic-input topic-candidate' placeholder='Candidate')
       div(class='candidate-div')
-        input(type='text' class='topic-input' class='topic-candidate' placeholder='Candidate')
+        input(type='text' class='topic-input topic-candidate' placeholder='Candidate')
       #candidate-append
-      i(class="material-icons" id='add-cand') add
+      i(class='material-icons' id='add-cand') add
     input(type='submit' class='button' id='topic-submit' value='Submit')
-
-  #user-info(class='info-box' class='hidden')
+  //
+    Info-box div for user details/settings
+  #user-info(class='info-box hidden')
     h1(class='user-info-header') My Account
     h1 You are logged in as:
     p(class='user-info' id='username')
@@ -41,14 +54,7 @@ block content
     h1 Available votes per topic: 
     p(class='user-info' id='user-votes') 5
     p
+    button(class='button' id='request-upgrade') Request Upgrade
+    i(class='material-icons' id='upgrade-help') help
     form(action='/logout' method='get')
       input(type='submit' class='button' id='logout' value='Logout')
-
-  #master-content
-    #content-header
-      h1(id='open-topics' class='active') Open Topics
-      h1(id='closed-topics' class='inactive') Closed Topics  
-    #content-block 
-      #topics
-      
-

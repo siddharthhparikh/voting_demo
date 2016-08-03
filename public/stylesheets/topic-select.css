@@ -1,3 +1,7 @@
+#content-header {
+  display: inline-block;
+}
+
 /* Special button size for topics */
 
 #content-block .button {
@@ -56,7 +60,7 @@
   color: #313131;
 }
 
-/* Add candidate button */
+/* Add/Remove Candidate buttons */
 
 #add-cand {
   font-size: 30px;
@@ -75,35 +79,6 @@
   border: none;
 }
 
-#logout {
-  margin-top: 15px;
-}
-
-#loading-msg {
-  margin: 0px;
-}
-
-#content-header {
-  display: inline-block;
-}
-
-.inactive {
-  font-size: 15px; 
-  cursor: pointer; 
-}
-
-.active {
-  font-size: 30px;
-}
-
-.voted {
-  background-color: #64D4E5;
-}
-
-.voted:hover {
-  color: #313131;
-}
-
 .delete-candidate {
   margin-left: -25px;
   font-size: 24px;
@@ -114,3 +89,55 @@
   color: #C20900;
   cursor: pointer;
 }
+
+/* User Setting buttons */
+
+#logout {
+  margin-top: 15px;
+}
+
+#loading-msg {
+  margin: 0px;
+}
+
+#request-upgrade {
+  margin-top: 60px;
+}
+
+#upgrade-help {
+  color: #F7F7F7;
+  margin-right: -22px;
+}
+
+#upgrade-help:hover {
+  color: #313131;
+  cursor: pointer;
+}
+
+#upgrade-help:active {
+  color: #141414;
+  cursor: pointer;
+}
+
+/* Open/Closed topic styling */
+
+.inactive {
+  font-size: 15px; 
+  cursor: pointer; 
+}
+
+.active {
+  font-size: 30px;
+}
+
+/* Styling for voted topics */
+
+.voted {
+  background-color: #64D4E5;
+}
+
+.voted:hover {
+  color: #313131;
+}
+
+
