@@ -78,6 +78,7 @@ $(document).ready(function () {
         alert('Error: Input fields can not be left empty.');
       }
     });
+    console.log(errFlag)
     if(!errFlag){
       // Create request object.
       var newUser = {
