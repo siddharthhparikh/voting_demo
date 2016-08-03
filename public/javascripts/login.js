@@ -83,7 +83,7 @@ $(document).ready(function () {
       var newUser = {
         'name': $('#name').val(),
         'email': $('#email').val(),
-        'org': $('#orginization').val()
+        'org': $('#organization').val()
       };
       //Send request object.
       console.log(newUser)
