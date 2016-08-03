@@ -65,7 +65,7 @@ function Login(id, secret, cb) {
                             console.log("Failed to store client token for " + usr.getName() + " ---> " + err);
                         }
                     });
-                    cb && cb(null);
+                    cb(null);
                 }
             });
         }

@@ -22,7 +22,7 @@ router.post('/login', function (req, res, next) {
   var username = user.account_id;
   var password = user.account_pass;
   console.log("inside /login");
-  chaincode.query('check_account', [username], function (data, err) {
+  chaincode.query('check_account', [username], function (err, data) {
     console.log("error = " + err)
     if(err != null) {
       console.log("Account does not exist. Please register");
