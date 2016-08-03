@@ -861,8 +861,6 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.issueTopic(stub, args)
 	case "clear_all_topics":
 		return t.clearTopics(stub, args)
-	case "check_account":
-		return t.checkAccount(stub, args)
 	case "request_account":
 		return t.requestAccount(stub, args)
 	case "change_status":
@@ -884,6 +882,10 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 	// Handle different functions
 	switch function {
+
+	case "check_account":
+		return t.checkAccount(stub, args)
+	
 	case "read": //read a variable
 		return t.read(stub, args)
 
