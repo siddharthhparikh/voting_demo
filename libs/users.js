@@ -77,6 +77,7 @@ function registerUSer(user, role, cb) {
     chain.getMember(user, function (err, usr) {
         if (!usr.isRegistered()) {
             console.log("registering user..........");
+            console.log(user)
             var registrationRequest = {
                 enrollmentID: user,
                 account: "bank_a",
