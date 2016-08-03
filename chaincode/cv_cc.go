@@ -159,6 +159,7 @@ func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) 
 	
 	userID := args[0]
 	if(userID == "master-manager") {
+		fmt.Println("Got Manager")
 		return nil, nil
 	}
 	//find if account exist or not
