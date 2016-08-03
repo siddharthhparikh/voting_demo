@@ -261,7 +261,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	*/
 	//Account does not exists
 	requestTime := time.Now().Format("02 Jan 06 15:04 MST")
-	fmt.println(requestTime)
+	fmt.Println(requestTime)
 	rowAdded, rowErr := stub.InsertRow("AccountRequests", shim.Row{
 		Columns: []*shim.Column{
 			&shim.Column{Value: &shim.Column_String_{String_: account.Email}},
