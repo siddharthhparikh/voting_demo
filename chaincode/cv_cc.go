@@ -348,11 +348,13 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 			requestTime = t.readStringSafe(row.Columns[4])
 			break
 		}
-	}
-	if rowErr != nil || len(row.Columns) == 0 {
+		if (rowErr != nil || len(row.Columns) == 0) && i==9 {
 			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
 			return "a", errors.New("Failed to find row")
+		}
+		fmt.Println("trying to read row. Failed Attempt" + string(i))
 	}
+	
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
