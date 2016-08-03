@@ -153,6 +153,8 @@ exports.query = function (fcn, args, expectJSON, cb) {
 
     transactionContext.on('complete', function (results) {
         if (cb) {
+            console.log("query completed with results:")
+            console.log(results)
             if (results.result) { //is result is not null
                 //parse data from buffer to json
                 var data = String.fromCharCode.apply(String, results.result);
@@ -169,6 +171,8 @@ exports.query = function (fcn, args, expectJSON, cb) {
 
     transactionContext.on('error', function (err) {
         if (cb) {
+            console.log("query completed with error:")
+            console.log(err)
             cb(err, null);
         }
     });
