@@ -9,6 +9,7 @@ var express = require('express');
 var router = express.Router();
 var session = require('express-session');
 var chaincode = require('../libs/blockchainSDK');
+var mail = require('../libs/mail')
 
 var DEFAULT_VOTES = 5;
 
@@ -18,8 +19,25 @@ router.post('/login', function (req, res, next) {
   var user = req.body;
   // TODO check if the user already exsits in db.
 
-  var args = user.account_id;
-  chaincode.query('get_account', args, function (err, data) {
+  var username = user.account_id;
+  var password = user.account_pass;
+  console.log("inside /login");
+  chaincode.login(username, password, "abcd", "10", function (err) {
+    if (err != null) {
+      res.json('{"status" : "Invalid login."}');
+    }
+    req.session.name = user.account_id;
+    console.log('Logging in as.....');
+    console.log(req.session.name);
+    // Send response.
+    if (username.indexOf('manager') > -1) {
+      res.json('{"status" : "success", "type": "manager"}');
+    }
+    else {
+      res.json('{"status" : "success", "type": "user"}');
+    }
+  });
+  /*chaincode.query('get_account', args, function (err, data) {
     if (data) {
       // Create user session
       req.session.name = user.account_id;
@@ -31,7 +49,7 @@ router.post('/login', function (req, res, next) {
     } else {
       res.json('{"status" : "Invalid login."}');
     }
-  });
+  });*/
   // TODO Create user string queryin chaincode.
 });
 
@@ -74,6 +92,7 @@ router.get('/get-topics', function (req, res) {
 });
 
 /* Get specific voting topic from blockchain */
+
 router.get('/get-topic', function (req, res) {
   console.log('Getting topic...');
   var args = [];
@@ -146,8 +165,85 @@ router.get('/user', function (req, res) {
 });
 
 /* Regiister a user */
-router.get('/register', function (req, res) {
-  res.json('{"status" : "success"}');
+router.post('/register', function (req, res) {
+  console.log(req.body);
+  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org], function (err, results) {
+    if (err != null) {
+      res.json('{"status" : "failure", "Error": err}');
+    }
+    console.log("\n\n\nrequest account result:")
+    console.log(results);
+    res.json('{"status" : "success"}');
+  });
+});
+
+router.get('/manager', function (req, res) {
+  console.log(req.session.name)
+  if (req.session.name.indexOf('manager') > -1) {
+    chaincode.query('get_open_requests', [], function (err, data) {
+      if (err != null) {
+        res.json('{"status" : "failure", "Error": err}');
+      }
+      console.log(data);
+      res.json(data);
+    });
+  } else {
+    res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
+  }
+});
+
+router.post('/approved', function (req, res) {
+  console.log("request approved")
+  console.log(req.body)
+  console.log(req.body.Email)
+  var args = [
+    "approved",
+    req.body.Name,
+    req.body.Email,
+    req.body.Org,
+    req.session.name,
+    req.body.VoteCount
+  ]
+  console.log("In approved args")
+  console.log(args)
+  chaincode.invoke('change_status', args, function (data, err) {
+    if (err != null) {
+      res.json('{"status" : "failure", "Error": err}');
+    }
+    console.log(data)
+    chaincode.registerAndEnroll(req.body.Email, "user", function (err, cred) {
+      if (err != null) {
+        res.json('{"status" : "failure", "Error": err}');
+      }
+      console.log("\n\n\ncreate account result:")
+      console.log(cred);
+      mail.email(req.body.Email, cred, function (err) {
+        if (err != null) {
+          res.json('{"status" : "failure", "Error": err}');
+        }
+        //res.json('{"status" : "success"}');
+      });
+    });
+  });
+});
+
+router.post('/declined', function (req, res) {
+  console.log("request declined")
+  console.log(req.body)
+  console.log(req.body.Email)
+  var args = ["declined", req.body.Name, req.body.Email, req.body.Org];
+  console.log("Email sent");
+  console.log("For changing status ars are: ")
+  console.log(args)
+  chaincode.invoke('change_status', args, function (data, err) {
+    console.log("status changed");
+    mail.email(req.body.Email, "declined", function (err) {
+      if (err != null) {
+        res.json('{"status" : "failure", "Error": err}');
+      }
+      //res.json('{"status" : "success"}');
+    });
+  });
 });
 
 module.exports = router;

@@ -4,34 +4,32 @@
  * provides functions for interacting with chaincode SDK
  */
 
-var hlc = require('hlc');
+var hfc = require('hfc');
 
 var exports = module.exports;
 
 // Create a client chain
 var chaincodeName = 'marble_chaincode'
-var chain = hlc.newChain("voting");
-var chaincodeID = "";
+var chain = hfc.newChain("voting");
+var chaincodeID = null;
+
 
 // Configure the KeyValStore which is used to store sensitive keys
 // as so it is important to secure this storage
-chain.setKeyValStore(hlc.newFileKeyValStore('./keyValStore'));
+chain.setKeyValStore(hfc.newFileKeyValStore('/tmp/keyValStore'));
 
 var peerURLs = [];
 var caURL = null;
 var users = null;
-
+var user_manager = require("./users")
 var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
-caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
-peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
-peerURLs.push('grpc://ethan-p2.rtp.raleigh.ibm.com:30303');
-peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
+caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
 
 registrar = {
-    'username': 'ethanicus',
-    'secret': 'trainisland'
+    'username': 'WebAppAdmin',
+    'secret': 'DJY27pEnl16d'
 }
 
 // Set the URL for member services
@@ -39,10 +37,7 @@ console.log('adding ca: \'' + caURL + '\'');
 chain.setMemberServicesUrl(caURL);
 
 // Add all peers' URL
-for (var i in peerURLs) {
-    console.log('adding peer: \'' + peerURLs[i] + '\'');
-    chain.addPeer(peerURLs[i]);
-}
+chain.addPeer('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
 
 console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
 chain.enroll(registrar.username, registrar.secret, function (err, user) {
@@ -53,7 +48,10 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
     registrar = user;
 
-    exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], cb_deployed);
+    exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function(chaincodeID){
+        user_manager.setup(chaincodeID, chain, cb_deployed);
+    });
+
 });
 
 function cb_deployed() {
@@ -73,7 +71,7 @@ exports.deploy = function (path, args, cb) {
 
     var deployRequest = {
         args: args,
-        chaincodeID: chaincodeName,
+        //chaincodeID: chaincodeName,
         fcn: 'init',
         chaincodePath: path
     }
@@ -85,10 +83,9 @@ exports.deploy = function (path, args, cb) {
         console.log('chaincode-ID: %s', results.chaincodeID);
 
         chaincodeID = results.chaincodeID;
-
         //chaincode has been deployed
 
-        if (cb) cb(null);
+        if (cb) cb(chaincodeID);
     });
 
     transactionContext.on('error', function (err) {
@@ -118,6 +115,9 @@ exports.invoke = function (fcn, args, cb) {
     transactionContext.on('complete', function (results) {
         if (cb) {
             if (results.result) {
+                console.log("In invoke results on complete")
+                console.log(results)
+                console.log(results.result)
                 cb(null, results.result)
             } else {
                 cb(null, null);
@@ -172,4 +172,13 @@ exports.query = function (fcn, args, expectJSON, cb) {
             cb(err, null);
         }
     });
+}
+
+module.exports.registerAndEnroll = function (username, role, cb) {
+    return user_manager.registerUser(username, role, cb);
+}
+
+module.exports.login = function (username, secret, email, votes, cb) {
+    console.log("I am inside blockchainsdk.js login function")
+    return user_manager.login(username, secret, email, votes, cb);
 }

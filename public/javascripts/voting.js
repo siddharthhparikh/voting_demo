@@ -19,6 +19,7 @@ $(document).ready(function () {
   //
   // Get current topic info
   //
+
   // Query the server for a the topic so that it can be loaded to the page
   $.get('/api/get-topic', { 'topicID': $('#topicID').html() }, function (data, status) {
     // If there is a response.
