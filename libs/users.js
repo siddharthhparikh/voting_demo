@@ -101,6 +101,7 @@ function Login(id, secret, email, votes, cb) {
                             console.log("Failed to store client token for " + usr.getName() + " ---> " + err);
                         }
                     });
+                    /*
                     var Request = {
                         chaincodeID: chaincodeID,
                         fcn: 'create_account',
@@ -116,7 +117,7 @@ function Login(id, secret, email, votes, cb) {
                         // Invoke transaction submission failed
                         console.log(util.format("Failed to submit chaincode invoke transaction: request=%j, error=%j", Request, err));
                         cb && cb(err);
-                    });
+                    });*/
                 }
             });
         }

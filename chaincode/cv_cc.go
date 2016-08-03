@@ -179,6 +179,7 @@ func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string)
 		fmt.Println(chanValue)	
 	}
 
+	
 
 
 	/*
@@ -353,28 +354,6 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	fmt.Println(row)
 	fmt.Println(t.readStringSafe(row.Columns[4]))
 	requestTime = t.readStringSafe(row.Columns[4])
-	/*for i := 0; i < 10; i++ {
-		row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
-		//if rowErr != nil || len(row.Columns) == 0 {
-		//	fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
-		//	return "a", errors.New("Failed to find row")
-		//}
-		if rowErr == nil && len(row.Columns) != 0 {
-			fmt.Println("Email inside replaceRowRequest:")
-			fmt.Println(account.Email)
-			fmt.Println("In replace row:")
-			fmt.Println(row)
-			fmt.Println(t.readStringSafe(row.Columns[4]))
-			requestTime = t.readStringSafe(row.Columns[4])
-			break
-		}
-		if (rowErr != nil || len(row.Columns) == 0) && i==9 {
-			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
-			return "a", errors.New("Failed to find row")
-		}
-		fmt.Println("trying to read row. Failed Attempt" + string(i))
-	}
-	*/
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
