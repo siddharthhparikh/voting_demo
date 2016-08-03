@@ -205,7 +205,7 @@ router.post('/approved', function (req, res) {
   ]
   console.log("In approved args")
   console.log(args)
-  chaincode.invoke('change_status', args, function (data, err) {
+  chaincode.invoke('change_status', args, function (err, data) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
