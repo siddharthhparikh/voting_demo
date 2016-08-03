@@ -884,10 +884,10 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	switch function {
 
 	case "check_account":
-		a := t.checkAccount(stub, args)
+		a,err := t.checkAccount(stub, args)
 		fmt.Println("in check account I am returning")
 		fmt.Println(a)
-		return a
+		return a, err
 	
 	case "read": //read a variable
 		return t.read(stub, args)
