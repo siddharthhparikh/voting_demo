@@ -230,8 +230,6 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string) (Account, error) {
 	var account Account
-
-	accountBytes, err := stub.GetState(accountHeader + accountID)
 	if err != nil {
 		fmt.Println("Could not find account " + accountID)
 		return account, err
@@ -1090,7 +1088,6 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		}
 
 		accountID := args[0]
-
 		account, err1 := t.getAccount(stub, accountID)
 
 		if err1 != nil {

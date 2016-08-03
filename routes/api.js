@@ -45,6 +45,7 @@ router.post('/login', function (req, res, next) {
     });
   });
 });
+
 router.get('/get-account', function (req, res, next) {
   var args = req.body.account_id;
   chaincode.query('get_account', args, function (err, data) {
@@ -182,14 +183,6 @@ router.get('/manager', function (req, res) {
     res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
   }
 });
-
-function bin2String(array) {
-  var result = "";
-  for (var i = 0; i < array.length; i++) {
-    result += String.fromCharCode(parseInt(array[i], 2));
-  }
-  return result;
-}
 
 router.post('/approved', function (req, res) {
   console.log("request approved")

@@ -124,9 +124,14 @@ module.exports.setup = function (ccID, ch, cb) {
         console.log(TAG, "user manager properly configured");
         chaincodeID = ccID;
         chain = ch;
-        registerUSer("master-manager", "manager", function (){
+        registerUSer("master-manager", "manager", function (err, cred){
+            if(err) {
+                console.log("ERROR = " + err);
+                cb(err, null);
+            }
+            console.log(cred);
             cb(null, null);
-        })
+        });
     } else {
         console.error(TAG, "user manager requires all of its setup parameters to function")
         cb(new Error("user manager requires all of its setup parameters to function"), null);
