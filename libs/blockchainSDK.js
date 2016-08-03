@@ -4,7 +4,7 @@
  * provides functions for interacting with chaincode SDK
  */
 
-var hfc = require('hfc');
+var hfc = require('hlc'); //TODO this should be hfc
 
 var exports = module.exports;
 
