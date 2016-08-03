@@ -74,10 +74,11 @@ function Login(id, secret, cb) {
 
 function registerUSer(user, role, cb) {
     console.log(typeof user)
+    console.log("user = "+user)
     chain.getMember(user, function (err, usr) {
         if (!usr.isRegistered()) {
             console.log("registering user..........");
-            console.log(user)
+            console.log("user = "+user)
             var registrationRequest = {
                 enrollmentID: user,
                 account: "bank_a",
