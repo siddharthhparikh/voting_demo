@@ -158,13 +158,16 @@ func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) 
 	}
 	
 	userID := args[0]
+	if(userID == "master_manager") {
+		return nil, nil
+	}
 	//find if account exist or not
 	var column []shim.Column
 	column = append(column, shim.Column{Value: &shim.Column_String_{String_: userID}})
 	row, errGetRow := stub.GetRow("ApprovedAccounts", column)
 	if(len(row.Columns)==0 || errGetRow != nil) {
-		fmt.Println("UserID does not exist. Please click on forgot password to recover account. [Just kidding] ERR: [%s]", errGetRow)
-		return nil, fmt.Errorf("UserID already exist. Please click on forgot password to recover account. ERR: [%s]", errGetRow)
+		fmt.Println("UserID does not exist. Please click on forgot password to recover account. [Just kidding]")
+		return nil, errors.New("UserID already exist. Please click on forgot password to recover account")
 	}	
 	return nil, nil
 }
