@@ -23,6 +23,7 @@ router.post('/login', function (req, res, next) {
   var password = user.account_pass;
   console.log("inside /login");
   chaincode.invoke('check_account', [username], function (data, err) {
+    console.log(err)
     if(err != null) {
       console.log("Account does not exist. Please register");
       res.json('{"status" : "Account does not exist. Please register."}');
