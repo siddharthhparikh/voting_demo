@@ -80,7 +80,7 @@ $(document).ready(function () {
     });
     console.log(errFlag)
     if(!errFlag){
-      console.log(('#organization').val());
+      console.log($('#organization').val());
       // Create request object.
       var newUser = {
         'name': $('#name').val(),
