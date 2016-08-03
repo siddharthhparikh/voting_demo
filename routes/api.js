@@ -58,6 +58,7 @@ router.get('/get-account-info', function (req, res) {
   args.push(req.session.name);
   chaincode.query('get_account', args, function (err, data) {
     if (data) {
+      console.log("[ACCOUNT]", data);
       res.json(data);
     } else {
       res.json('{"status" : "could not retrieve user"}');

@@ -9,7 +9,7 @@ var hfc = require('hfc');
 var exports = module.exports;
 
 // Create a client chain
-var chaincodeName = 'marble_chaincode'
+var chaincodeName = 'voting_chaincode'
 var chain = hfc.newChain("voting");
 var chaincodeID = null;
 
@@ -25,11 +25,13 @@ var user_manager = require("./users")
 var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
-caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
+caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+peerURLs = []
+peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
 
 registrar = {
-    'username': 'WebAppAdmin',
-    'secret': 'DJY27pEnl16d'
+    'username': 'ethanicus',
+    'secret': 'trainisland'
 }
 
 // Set the URL for member services
@@ -37,7 +39,10 @@ console.log('adding ca: \'' + caURL + '\'');
 chain.setMemberServicesUrl(caURL);
 
 // Add all peers' URL
-chain.addPeer('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
+for (var i in peerURLs) {
+    console.log('adding ca: \'' + peerURLs[i] + '\'');
+    chain.addPeer(peerURLs[i]);
+}
 
 console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
 chain.enroll(registrar.username, registrar.secret, function (err, user) {
@@ -48,7 +53,7 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
     registrar = user;
 
-    exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function(chaincodeID){
+    exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function (chaincodeID) {
         user_manager.setup(chaincodeID, chain, cb_deployed);
     });
 
