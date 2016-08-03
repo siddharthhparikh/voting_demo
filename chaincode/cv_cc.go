@@ -353,9 +353,9 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 	if(errReplceRow != nil) {
 		return nil, errReplceRow
 	}	
-	
+	var userID string
 	if(status == "approved") {
-		userID := generateUserID()
+		userID = generateUserID()
 		fmt.Println("My random ID is:")
 		fmt.Println(userID)
 		manager := args[3]
