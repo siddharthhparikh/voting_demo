@@ -24,7 +24,7 @@ router.post('/login', function (req, res, next) {
   console.log("inside /login");
   chaincode.query('check_account', [username], function (err, data) {
     console.log("error = " + err)
-    if(err != null) {
+    if (err != null) {
       console.log("Account does not exist. Please register");
       res.json('{"status" : "Account does not exist. Please register."}');
     }
@@ -209,19 +209,21 @@ router.post('/approved', function (req, res) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
-    console.log(data)
-    console.log(bin2String(data))
-    chaincode.registerAndEnroll(bin2String(data), "user", function (err, cred) {
-      if (err != null) {
-        res.json('{"status" : "failure", "Error": err}');
-      }
-      console.log("\n\n\ncreate account result:")
-      console.log(cred);
-      mail.email(req.body.Email, cred, function (err) {
+    chaincode.query('get_UserID', [req.body.Email], function (err, data) {
+      console.log(data)
+      console.log(bin2String(data))
+      chaincode.registerAndEnroll(bin2String(data), "user", function (err, cred) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
-        //res.json('{"status" : "success"}');
+        console.log("\n\n\ncreate account result:")
+        console.log(cred);
+        mail.email(req.body.Email, cred, function (err) {
+          if (err != null) {
+            res.json('{"status" : "failure", "Error": err}');
+          }
+          //res.json('{"status" : "success"}');
+        });
       });
     });
   });

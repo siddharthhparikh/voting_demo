@@ -899,11 +899,28 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 	case "check_account":
 		a,err := t.checkAccount(stub, args)
-		fmt.Println("in check account I am returning")
-		fmt.Println(a)
-		fmt.Println(err)
 		return a, err
 	
+	case "get_UserID":
+		userID, err := t.getUserID(stub, args)
+		
+		if(err != nil) {
+			return nil, err
+		}
+		type JSONcapsule struct {
+            AllAccReq string
+        }
+        AccReqJSON := JSONcapsule{
+            AllAccReq: userID,
+        }
+		fmt.Println("AccReqJSON")
+		fmt.Println(AccReqJSON)
+		userIDJSON, err1 := json.Marshal(&AccReqJSON);
+		if(err1 != nil) {
+			return nil, err1
+		}
+		return userIDJSON, nil
+
 	case "read": //read a variable
 		return t.read(stub, args)
 
