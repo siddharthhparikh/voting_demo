@@ -17,8 +17,15 @@ $(document).ready(function () {
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();
       $('#open-register').fadeIn();
+    } else {
+      console.log('Chaincode failed!');
+      $('#loading-screen').fadeIn();
+      $('#content-header').hide();
+      $('#content-block').hide();
+      $('#open-register').hide();
     }
-  });}, 2000);
+  });
+  }, 2000);
 
   //Animation for register info box.
   $('#open-register').click(function() {
@@ -42,6 +49,7 @@ $(document).ready(function () {
     };
     $.post('/api/login', user, function (data, status) {
       data = JSON.parse(data);
+      console.log("[DATA]", data);
       // Handle respse "clonse.
       if (data.status === 'success') {
         // Redirect user.
@@ -49,6 +57,7 @@ $(document).ready(function () {
           window.location.replace("../topics");
         }
         else if(data.type === 'manager') {
+          console.log("redirecting to manager...");
           window.location.replace("../manager");
         }
       } else {
