@@ -8,8 +8,8 @@
 /* New topic info-box content styling */
 
 #topic-input {
-  height: 72%;
-  overflow: auto;
+  height: 75%;
+  overflow-y: auto;
 }
 
 #create-header {
@@ -25,7 +25,7 @@
 }
 
 #topic-submit {
-  margin-top: 35px;
+  margin-top: 25px;
 }
 
 .user-info-header {
@@ -36,15 +36,7 @@
 
 .welcome {
   display: inline-block;
-  margin: 22px 0px 0px;
-}
-
-#welcome-start {
-  margin-left: 2%;
-}
-
-#welcome-o {
-  margin: 0px;
+  margin: 22px 0px 0px 2%;
 }
 
 /* Header-icons */
@@ -67,13 +59,13 @@
 /* Add candidate button */
 
 #add-cand {
+  font-size: 30px;
   color: #313131;
 }
 
 #add-cand:hover{
   cursor: pointer;
-  border-left: 1px solid #313131;
-  border-right: 1px solid #313131;
+  border-bottom: 1px solid #313131;
 }
 
 #add-cand:active{
@@ -102,4 +94,23 @@
 
 .active {
   font-size: 30px;
+}
+
+.voted {
+  background-color: #64D4E5;
+}
+
+.voted:hover {
+  color: #313131;
+}
+
+.delete-candidate {
+  margin-left: -25px;
+  font-size: 24px;
+  color: #313131;
+}
+
+.delete-candidate:hover{
+  color: #C20900;
+  cursor: pointer;
 }
