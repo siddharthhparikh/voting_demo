@@ -330,39 +330,29 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	//getrow to save request time before deleting
 	fmt.Println("Account inside replece row")
 	fmt.Println(account)
-	row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
-	if rowErr != nil || len(row.Columns) == 0 {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
-		return "a", errors.New("Failed to find row")
-	}
-	/*
+
+	
+	var requestTime string
 	for i := 0; i < 10; i++ {
-		row, rowErr = stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
-		if rowErr != nil {
-			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-			return "a", rowErr
-		}
-		if row.Columns != nil {
+		row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
+		/*if rowErr != nil || len(row.Columns) == 0 {
+			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
+			return "a", errors.New("Failed to find row")
+		}*/
+		if rowErr == nil && len(row.Columns) != 0 {
+			fmt.Println("Email inside replaceRowRequest:")
+			fmt.Println(account.Email)
+			fmt.Println("In replace row:")
+			fmt.Println(row)
+			fmt.Println(t.readStringSafe(row.Columns[4]))
+			requestTime = t.readStringSafe(row.Columns[4])
 			break
 		}
-		fmt.Println("Attempt" + string(i) + "failed.")
-		time.sleep
-	}*/
-	/*if row.Columns[0] == nil {
-		fmt.Println("Cannot Find row. try again in sometime")
-		return "a", errors.New("Failed to find row")
-	}*/
-	var requestTime string
-	fmt.Println("Email inside replaceRowRequest:")
-	fmt.Println(account.Email)
-	fmt.Println("In replace row:")
-	fmt.Println(row)
-	fmt.Println(t.readStringSafe(row.Columns[4]))
-	requestTime = t.readStringSafe(row.Columns[4])
-	/*for chanValue := range rowChan {
-		requestTime = chanValue.Columns[3].GetString_()
-		fmt.Println(chanValue)
-	}*/
+	}
+	if rowErr != nil || len(row.Columns) == 0 {
+			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
+			return "a", errors.New("Failed to find row")
+	}
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
