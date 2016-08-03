@@ -84,12 +84,14 @@ function registerUSer(username, role, cb) {
             };
             usr.register(registrationRequest, function (err, enrollsecret) {
                 if (err) {
+                    console.log("error= " + err)
                     cb(err, null);
                 } else {
                     var cred = {
                         id: username,
                         secret: enrollsecret
                     }
+                    console.log("Credentials in registration")
                     console.log(cred)
                     Login(cred.id, cred.secret, function (err){
                         if(err != null) {
