@@ -39,6 +39,7 @@ type Account struct {
 	VoteCount uint64 `json:"vote_count"`
 	Email     string `json:"email"`
 	Org		  string `json:"org"`
+	ReqTime	  string `json:"req_time"`
 }
 
 var accountHeader = "account::"
@@ -296,27 +297,28 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string)
 }
 
 
-func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, []string, error) {
+func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, error) {
 	
 	rowChan, rowErr := stub.GetRows("AccountRequests", []shim.Column{})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return nil, nil, rowErr
+		return nil, rowErr
 	}
 	var openRequest []Account
 	var timings []string
 	for chanValue := range rowChan {
 		if chanValue.Columns[2].GetString_() == "open" {
 			openRequest = append(openRequest, Account{
-				Email:	chanValue.Columns[0].GetString_(), 
-				Name:	chanValue.Columns[1].GetString_(),
-				Org:	chanValue.Columns[3].GetString_(),
-				VoteCount: 0,
+				Email:		chanValue.Columns[0].GetString_(), 
+				Name:		chanValue.Columns[1].GetString_(),
+				Org:		chanValue.Columns[3].GetString_(),
+				VoteCount: 	0,
+				ReqTime:	chanValue.Columns[4].GetString_(),
 			})
-			timings = append(timings, chanValue.Columns[4].GetString_())
+			//timings = append(timings, chanValue.Columns[4].GetString_())
 		}
 	}
-	return openRequest, timings, nil
+	return openRequest, nil
 }
 	
 func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []string) (string, error) {
@@ -1161,11 +1163,10 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		
 	case "get_open_requests":
 		fmt.Println("I am in get open requests")
-		allOpenRequests, timings, err := t.getOpenRequests(stub)
+		allOpenRequests, err := t.getOpenRequests(stub)
 		
 		fmt.Println("All open Reqs:")
 		fmt.Println(allOpenRequests)
-		fmt.Println(timings)
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
