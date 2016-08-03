@@ -210,9 +210,9 @@ router.post('/approved', function (req, res) {
       res.json('{"status" : "failure", "Error": err}');
     }
     chaincode.query('get_UserID', [req.body.Email], function (err, data) {
-      console.log(data)
-      console.log(bin2String(data))
-      chaincode.registerAndEnroll(bin2String(data), "user", function (err, cred) {
+      console.log(data.AllAccReq)
+      console.log(bin2String(data.AllAccReq))
+      chaincode.registerAndEnroll(bin2String(data.AllAccReq), "user", function (err, cred) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
