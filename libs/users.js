@@ -72,16 +72,17 @@ function Login(id, secret, cb) {
     });
 }
 
-function registerUSer(username, role, cb) {
-    console.log(username)
-    chain.getMember(username, function (err, usr) {
+function registerUSer(user, role, cb) {
+    console.log(typeof user)
+    chain.getMember(user, function (err, usr) {
         if (!usr.isRegistered()) {
             console.log("registering user..........");
             var registrationRequest = {
-                enrollmentID: username,
+                enrollmentID: user,
                 account: "bank_a",
                 affiliation: "00001"
             };
+            console.log(registrationRequest);
             usr.register(registrationRequest, function (err, enrollsecret) {
                 if (err) {
                     console.log("error= " + err)
