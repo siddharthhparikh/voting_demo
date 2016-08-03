@@ -214,8 +214,8 @@ router.post('/approved', function (req, res) {
           res.json('{"status" : "failure", "Error": err}');
       }
       console.log(data.AllAccReq)
-      console.log(bin2String(data.AllAccReq))
-      chaincode.registerAndEnroll(bin2String(data.AllAccReq), "user", function (err, cred) {
+      //console.log(bin2String(data.AllAccReq))
+      chaincode.registerAndEnroll(data.AllAccReq, "user", function (err, cred) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
