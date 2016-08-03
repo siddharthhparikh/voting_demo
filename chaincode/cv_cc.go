@@ -337,17 +337,24 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	account := Account{Name: args[1], Email: args[2]}
 
 	//getrow to save request time before deleting
-	fmt.Println("Account inside replece row")
-	fmt.Println(account)
-
-	
+	fmt.Println("Account Email inside replece row")
+	fmt.Println(account.Email)	
 	var requestTime string
-	for i := 0; i < 10; i++ {
+
+	var column []shim.Column
+	column = append(column, shim.Column{Value: &shim.Column_String_{String_: account.Email}})
+	row, errGetRow := stub.GetRow("AccountRequests", column)
+
+	if errGetRow != nil || len(row.Columns) == 0 {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
+		return "a", errors.New("Failed to find row")
+	}
+	/*for i := 0; i < 10; i++ {
 		row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
-		/*if rowErr != nil || len(row.Columns) == 0 {
-			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
-			return "a", errors.New("Failed to find row")
-		}*/
+		//if rowErr != nil || len(row.Columns) == 0 {
+		//	fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
+		//	return "a", errors.New("Failed to find row")
+		//}
 		if rowErr == nil && len(row.Columns) != 0 {
 			fmt.Println("Email inside replaceRowRequest:")
 			fmt.Println(account.Email)
@@ -363,7 +370,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 		}
 		fmt.Println("trying to read row. Failed Attempt" + string(i))
 	}
-	
+	*/
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
