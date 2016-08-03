@@ -13,22 +13,20 @@ $(document).ready(function () {
   // Events for the approve/decline buttons.
   $(document).on('click', '.approve', function () {
     $(this).parent().parent().fadeOut();
-    console.log($(this).attr("name"));
-    console.log($(this).parent().parent().find('.vote-ammount').val());
-    //TODO approve the user
     var user = {
       Name: $(this).attr("name"),
       VoteCount: $(this).parent().parent().find('.vote-ammount').val(),
       Email: $(this).attr("email"),
       Org: $(this).attr("org")
     }
-    console.log(user);
+    console.log("inside on click approve");
     $.post('/api/approved', user, function (data, status) {
-      //console.log($(this).parent().children());
       //$(this).parent().remove();
+      console.log("after finishing approving");
       location.reload();
     });
   });
+
   $(document).on('click', '.decline', function () {
     $(this).parent().parent().fadeOut();
     //TODO Maybe send notification to user.

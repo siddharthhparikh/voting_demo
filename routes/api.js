@@ -180,7 +180,7 @@ router.get('/manager', function (req, res) {
   console.log(req.session.name)
   if (req.session.name.indexOf('manager') > -1) {
     chaincode.query('get_open_requests', [], function (err, data) {
-      if(err!=null) {
+      if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
       console.log(data);
@@ -194,7 +194,7 @@ router.get('/manager', function (req, res) {
 router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
-  console.log(req.body.Name)
+  console.log(req.body.Email)
   var args = [
     "approved",
     req.body.Name,
@@ -229,13 +229,14 @@ router.post('/approved', function (req, res) {
 router.post('/declined', function (req, res) {
   console.log("request declined")
   console.log(req.body)
-  mail.email(req.body.Email, "declined", function (err) {
-    var args = ["declined", req.body.Name, req.body.Email, req.body.Org];
-    console.log("Email sent");
-    console.log("For changing status ars are: ")
-    console.log(args)
-    chaincode.invoke('change_status', args, function (data, err) {
-      console.log("status changed");
+  console.log(req.body.Email)
+  var args = ["declined", req.body.Name, req.body.Email, req.body.Org];
+  console.log("Email sent");
+  console.log("For changing status ars are: ")
+  console.log(args)
+  chaincode.invoke('change_status', args, function (data, err) {
+    console.log("status changed");
+    mail.email(req.body.Email, "declined", function (err) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
