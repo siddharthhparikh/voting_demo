@@ -207,6 +207,7 @@ router.post('/approved', function (req, res) {
   console.log(args)
   chaincode.invoke('change_status', args, function (err, data) {
     if (err != null) {
+      console.log("error="+err)
       res.json('{"status" : "failure", "Error": err}');
     }
     chaincode.query('get_UserID', [req.body.Email], function (err, data) {

@@ -93,7 +93,7 @@ function registerUSer(user, role, cb) {
                     cb(err, null);
                 } else {
                     var cred = {
-                        id: username,
+                        id: user,
                         secret: enrollsecret
                     }
                     console.log("Credentials in registration")
