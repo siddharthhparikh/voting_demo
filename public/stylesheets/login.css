@@ -62,5 +62,24 @@
   width: 100px;
 }
 
+/* Styling for the loading splash screen which is displayed at the launch of the app */
+#loading-screen {
+  width: 450px;
+  height: 350px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 2px solid #00C26A;
+  border-radius: 10px;
+  margin: 100px auto 0px auto;
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.loading-msg{
+  color: #313131;
+  font-size: 36px;
+  line-height: 36px;
+  margin: 30px 0px 10px 0px;
+}
+
+
 
 

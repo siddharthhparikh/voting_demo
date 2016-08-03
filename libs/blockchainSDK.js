@@ -125,7 +125,7 @@ exports.invoke = function (fcn, args, cb) {
                 console.log(results.result)
                 cb(null, results.result)
             } else {
-                cb(null, null);
+                cb(new Error("no data retrieved from invoke"), null);
             }
         }
     });
@@ -144,8 +144,8 @@ exports.query = function (fcn, args, expectJSON, cb) {
     }
 
     if (typeof expectJSON === 'function') { //only 3 parameters passed, expectJSON defaults to true
-        cb = expectJSON
-        expectJSON = true
+        cb = expectJSON;
+        expectJSON = true;
     }
 
     var queryRequest = {
@@ -167,7 +167,7 @@ exports.query = function (fcn, args, expectJSON, cb) {
                     cb(null, data)
                 }
             } else {
-                cb(null, null);
+                cb(new Error("no data retrieved from query"), null);
             }
         }
     });

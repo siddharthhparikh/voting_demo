@@ -1,21 +1,20 @@
 extends layout
-
+//
+  Displays all voting options for a specified topic.
 block content
-
-  script(src="/javascripts/voting.js")
-  script(src="https://code.highcharts.com/highcharts.js")
+  script(src='/javascripts/voting.js')
+  script(src='https://code.highcharts.com/highcharts.js')
   link(rel='stylesheet', href='/stylesheets/topic.css')
- 
+  // Green header bar. Also displays remaining votes left for user.
   #header
-    h1(id="title")= title   
+    h1(id='title')= title   
     h1(class='vote-header' id='remaining-votes')
-    h1(class='vote-header' id='remaining-votes-header') Remaining Votes:
-
+    h1(class='vote-header') Remaining Votes:
+  // Header for content-block displays topic description
   #content-header
-    h1(id="topic-description" )=topicName
+    h1(id='topic-description' )=topicName
     p(id='topicID' class='hidden')=topicID
-    
-   
+  // Vote options are dynamicly loaded into the content-block in a nested table.
   #content-block
     #table
       table(id='candidates')

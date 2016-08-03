@@ -2,24 +2,16 @@
 
 .button {
   font-family: "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
-
   word-wrap: normal;
-
   width: 90%;
   height: auto;
-
   color: #313131;
   background-color: #F7F7F7;
-
   font-size: 20px;
-
   cursor: pointer;
-
   border-radius: 5px;
   border: none;
-
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-
   margin: 3px auto 3px auto;  
 }
 

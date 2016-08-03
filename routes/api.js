@@ -26,6 +26,7 @@ router.post('/login', function (req, res, next) {
     if (err != null) {
       res.json('{"status" : "Invalid login."}');
     }
+    console.log(user);
     req.session.name = user.account_id;
     console.log('Logging in as.....');
     console.log(req.session.name);
