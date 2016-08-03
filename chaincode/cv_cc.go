@@ -229,7 +229,9 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 // getAccount returns the account matching the given username
 
 func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string) (Account, error) {
+	
 	var account Account
+	/*
 	if err != nil {
 		fmt.Println("Could not find account " + accountID)
 		return account, err
@@ -240,7 +242,7 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string)
 		fmt.Println("Error unmarshalling account " + accountID + "\n err: " + err.Error())
 		return account, err
 	}
-
+	*/
 	return account, nil
 }
 
