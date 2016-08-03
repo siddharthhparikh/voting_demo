@@ -149,89 +149,23 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 	return nil, nil
 }
 
-func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	fmt.Println("inside create account args")
+func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	fmt.Println("inside check account args")
 	fmt.Println(args)
-	if len(args) != 3 {
+	if len(args) != 1 {
 		fmt.Println("Could not obtain username passed to createAcount")
 		return nil, errors.New("Incorrect number of arguments. Expecting 3")
 	}
 	
-	username := args[0]
-	//votes, e := strconv.ParseUint(args[2], 10, 64)
-	//if e != nil {
-	//	fmt.Println(fmt.Sprintf("[ERROR] Could not parse the votes to a number: %s", e))
-	//}
-	email := args[1]
-
-	fmt.Println("In create Account username= " + username + " email= "+ email);
-	
-	//var account = Account{ID: username, Email: email, VoteCount: votes}
-	
+	userID := args[0]
 	//find if account exist or not
-	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
-	if rowErr != nil {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return nil, rowErr
-	}
-	fmt.Println("chanValue inside create account")
-	for chanValue := range rowChan {
-		fmt.Println(chanValue)	
-	}
-
-	
-
-
-	/*
-	accountBytes, err := json.Marshal(&account)
-	if err != nil {
-		fmt.Println("Error creating account " + account.ID)
-		return nil, err
-	}
-	*/
-	/*
-	fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
-	existingBytes, err := stub.GetState(accountHeader + account.ID)
-	if err != nil {
-		fmt.Println("No existing account found for " + account.ID + ", initializing account")
-		err = stub.PutState(accountHeader+account.ID, accountBytes)
-		//errRequestAccount, Account := requestAccount(account_id)
-		if err == nil {
-			fmt.Println("Created account " + account.ID)
-			return nil, nil
-		}
-
-		fmt.Println("Failed to initialize an account for " + account.ID)
-		return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
-	}
-	*/
-	/*
-	var existingAccount Account
-	err = json.Unmarshal(existingBytes, &existingAccount)
-	if err != nil {
-		fmt.Println("Error unmarshalling account " + account.ID + "\n--->: " + err.Error())
-
-		if strings.Contains(err.Error(), "unexpected end") {
-			fmt.Println("No data means existing account found for " + account.ID + ", initializing account.")
-			err = stub.PutState(accountHeader+account.ID, accountBytes)
-			//err, account = t.requestAccount(account.ID)
-			if err == nil {
-				fmt.Println("Created account " + account.ID)
-				return nil, nil
-			}
-
-			fmt.Println("Failed to create initialize account for " + account.ID)
-			return nil, err
-		}
-
-		return nil, errors.New("Error unmarshalling existing account " + account.ID)
-	}
-
-	fmt.Println("existing account bytes: " + string([]byte(existingBytes)))
-
-	fmt.Println("Account already exists for " + account.ID)
-	return nil, errors.New("Can't reinitialize existing user " + account.ID)
-	*/
+	var column []shim.Column
+	column = append(column, shim.Column{Value: &shim.Column_String_{String_: userID}})
+	row, errGetRow := stub.GetRow("ApprovedAccounts", column)
+	if(len(row.Columns)==0 || errGetRow != nil) {
+		fmt.Println("UserID does not exist. Please click on forgot password to recover account. [Just kidding] ERR: [%s]", errGetRow)
+		return nil, fmt.Errorf("UserID already exist. Please click on forgot password to recover account. ERR: [%s]", errGetRow)
+	}	
 	return nil, nil
 }
 
@@ -452,7 +386,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 			fmt.Println(chanValue.Columns[1])	
 		}
 	}
-	return nil, nil
+	return []byte(userID), nil
 }
 
 func (t *SimpleChaincode) getAllRequests(stub *shim.ChaincodeStub, accountID string) (Account, error) {
@@ -923,8 +857,8 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.issueTopic(stub, args)
 	case "clear_all_topics":
 		return t.clearTopics(stub, args)
-	case "create_account":
-		return t.createAccount(stub, args)
+	case "check_account":
+		return t.checkAccount(stub, args)
 	case "request_account":
 		return t.requestAccount(stub, args)
 	case "change_status":

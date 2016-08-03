@@ -22,37 +22,28 @@ router.post('/login', function (req, res, next) {
   var username = user.account_id;
   var password = user.account_pass;
   console.log("inside /login");
-  chaincode.login(username, password, "abcd", "10", function (err) {
-    if (err != null) {
-      res.json('{"status" : "Invalid login."}');
+  chaincode.invoke('check_account', [username], function (data, err) {
+    if(err != null) {
+      console.log("Account does not exist. Please register");
+      res.json('{"status" : "Account does not exist. Please register."}');
     }
-    req.session.name = user.account_id;
-    console.log('Logging in as.....');
-    console.log(req.session.name);
-    // Send response.
-    if (username.indexOf('manager') > -1) {
-      res.json('{"status" : "success", "type": "manager"}');
-    }
-    else {
-      res.json('{"status" : "success", "type": "user"}');
-    }
-  });
-  /*chaincode.query('get_account', args, function (err, data) {
-    if (data) {
-      // Create user session
+    chaincode.login(username, password, function (err) {
+      if (err != null) {
+        res.json('{"status" : "Invalid login."}');
+      }
       req.session.name = user.account_id;
       console.log('Logging in as.....');
       console.log(req.session.name);
-
       // Send response.
-      res.json('{"status" : "success"}');
-    } else {
-      res.json('{"status" : "Invalid login."}');
-    }
-  });*/
-  // TODO Create user string queryin chaincode.
+      if (username.indexOf('manager') > -1) {
+        res.json('{"status" : "success", "type": "manager"}');
+      }
+      else {
+        res.json('{"status" : "success", "type": "user"}');
+      }
+    });
+  });
 });
-
 router.get('/get-account', function (req, res, next) {
   var args = req.body.account_id;
   chaincode.query('get_account', args, function (err, data) {
@@ -191,6 +182,14 @@ router.get('/manager', function (req, res) {
   }
 });
 
+function bin2String(array) {
+  var result = "";
+  for (var i = 0; i < array.length; i++) {
+    result += String.fromCharCode(parseInt(array[i], 2));
+  }
+  return result;
+}
+
 router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
@@ -210,7 +209,8 @@ router.post('/approved', function (req, res) {
       res.json('{"status" : "failure", "Error": err}');
     }
     console.log(data)
-    chaincode.registerAndEnroll(req.body.Email, "user", function (err, cred) {
+    console.log(bin2String(data))
+    chaincode.registerAndEnroll(bin2String(data), "user", function (err, cred) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }

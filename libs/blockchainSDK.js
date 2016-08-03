@@ -178,7 +178,7 @@ module.exports.registerAndEnroll = function (username, role, cb) {
     return user_manager.registerUser(username, role, cb);
 }
 
-module.exports.login = function (username, secret, email, votes, cb) {
+module.exports.login = function (username, secret, cb) {
     console.log("I am inside blockchainsdk.js login function")
-    return user_manager.login(username, secret, email, votes, cb);
+    return user_manager.login(username, secret, cb);
 }
