@@ -90,8 +90,10 @@ function registerUSer(username, role, cb) {
                         id: username,
                         secret: enrollsecret
                     }
+                    console.log(cred)
                     Login(cred.id, cred.secret, function (err){
                         if(err != null) {
+                            console.log(err)
                             cb(err, null);
                         } else {
                             cb(null, cred);

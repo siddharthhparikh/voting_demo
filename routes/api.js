@@ -210,6 +210,9 @@ router.post('/approved', function (req, res) {
       res.json('{"status" : "failure", "Error": err}');
     }
     chaincode.query('get_UserID', [req.body.Email], function (err, data) {
+      if (err != null) {
+          res.json('{"status" : "failure", "Error": err}');
+      }
       console.log(data.AllAccReq)
       console.log(bin2String(data.AllAccReq))
       chaincode.registerAndEnroll(bin2String(data.AllAccReq), "user", function (err, cred) {
@@ -222,7 +225,7 @@ router.post('/approved', function (req, res) {
           if (err != null) {
             res.json('{"status" : "failure", "Error": err}');
           }
-          //res.json('{"status" : "success"}');
+          res.json('{"status" : "success"}');
         });
       });
     });
@@ -243,7 +246,7 @@ router.post('/declined', function (req, res) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
-      //res.json('{"status" : "success"}');
+      res.json('{"status" : "success"}');
     });
   });
 });

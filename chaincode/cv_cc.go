@@ -907,6 +907,9 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		if(err != nil) {
 			return nil, err
 		}
+
+		//change these names
+		//they are no good
 		type JSONcapsule struct {
             AllAccReq string
         }
