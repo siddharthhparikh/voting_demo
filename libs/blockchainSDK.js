@@ -158,11 +158,14 @@ exports.query = function (fcn, args, expectJSON, cb) {
 
     transactionContext.on('complete', function (results) {
         if (cb) {
+            console.log("query completed with results:")
+            console.log(results)
             if (results.result) { //is result is not null
                 //parse data from buffer to json
                 var data = String.fromCharCode.apply(String, results.result);
                 if (expectJSON) {
                     if (data.length > 0) cb(null, JSON.parse(data));
+                    else cb(null, null);
                 } else {
                     cb(null, data)
                 }
@@ -174,6 +177,8 @@ exports.query = function (fcn, args, expectJSON, cb) {
 
     transactionContext.on('error', function (err) {
         if (cb) {
+            console.log("query completed with error:")
+            console.log(err)
             cb(err, null);
         }
     });
@@ -183,7 +188,7 @@ module.exports.registerAndEnroll = function (username, role, cb) {
     return user_manager.registerUser(username, role, cb);
 }
 
-module.exports.login = function (username, secret, email, votes, cb) {
+module.exports.login = function (username, secret, cb) {
     console.log("I am inside blockchainsdk.js login function")
-    return user_manager.login(username, secret, email, votes, cb);
+    return user_manager.login(username, secret, cb);
 }

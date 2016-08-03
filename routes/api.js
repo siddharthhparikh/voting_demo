@@ -22,10 +22,13 @@ router.post('/login', function (req, res, next) {
   var username = user.account_id;
   var password = user.account_pass;
   console.log("inside /login");
-  chaincode.login(username, password, "abcd", "10", function (err) {
+  chaincode.query('check_account', [username], function (err, data) {
+    console.log("error = " + err)
     if (err != null) {
-      res.json('{"status" : "Invalid login."}');
+      console.log("Account does not exist. Please register");
+      res.json('{"status" : "Account does not exist. Please register."}');
     }
+    
     console.log(user);
     req.session.name = user.account_id;
     console.log('Logging in as.....');
@@ -38,23 +41,9 @@ router.post('/login', function (req, res, next) {
       res.json('{"status" : "success", "type": "user"}');
     }
   });
-  /*chaincode.query('get_account', args, function (err, data) {
-    if (data) {
-      // Create user session
-      req.session.name = user.account_id;
-      console.log('Logging in as.....');
-      console.log(req.session.name);
-
-      // Send response.
-      res.json('{"status" : "success"}');
-    } else {
-      res.json('{"status" : "Invalid login."}');
-    }
-  });*/
-  // TODO Create user string queryin chaincode.
 });
 
-router.get('/get-account-info', function (req, res) {
+router.get('/get-account', function (req, res) {
   var args = [];
   args.push(req.session.name);
   chaincode.query('get_account', args, function (err, data) {
@@ -194,6 +183,14 @@ router.get('/manager', function (req, res) {
   }
 });
 
+function bin2String(array) {
+  var result = "";
+  for (var i = 0; i < array.length; i++) {
+    result += String.fromCharCode(parseInt(array[i], 2));
+  }
+  return result;
+}
+
 router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
@@ -208,22 +205,29 @@ router.post('/approved', function (req, res) {
   ]
   console.log("In approved args")
   console.log(args)
-  chaincode.invoke('change_status', args, function (data, err) {
+  chaincode.invoke('change_status', args, function (err, data) {
     if (err != null) {
+      console.log("error="+err)
       res.json('{"status" : "failure", "Error": err}');
     }
-    console.log(data)
-    chaincode.registerAndEnroll(req.body.Email, "user", function (err, cred) {
+    chaincode.query('get_UserID', [req.body.Email], function (err, data) {
       if (err != null) {
-        res.json('{"status" : "failure", "Error": err}');
+          res.json('{"status" : "failure", "Error": err}');
       }
-      console.log("\n\n\ncreate account result:")
-      console.log(cred);
-      mail.email(req.body.Email, cred, function (err) {
+      console.log(data.AllAccReq)
+      //console.log(bin2String(data.AllAccReq))
+      chaincode.registerAndEnroll(data.AllAccReq, "user", function (err, cred) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
         }
-        //res.json('{"status" : "success"}');
+        console.log("\n\n\ncreate account result:")
+        console.log(cred);
+        mail.email(req.body.Email, cred, function (err) {
+          if (err != null) {
+            res.json('{"status" : "failure", "Error": err}');
+          }
+          res.json('{"status" : "success"}');
+        });
       });
     });
   });
@@ -243,7 +247,7 @@ router.post('/declined', function (req, res) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
-      //res.json('{"status" : "success"}');
+      res.json('{"status" : "success"}');
     });
   });
 });

@@ -151,86 +151,27 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 	return nil, nil
 }
 
-func (t *SimpleChaincode) createAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	fmt.Println("inside create account args")
+func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	fmt.Println("inside check account args")
 	fmt.Println(args)
-	if len(args) != 3 {
+	if len(args) != 1 {
 		fmt.Println("Could not obtain username passed to createAcount")
 		return nil, errors.New("Incorrect number of arguments. Expecting 3")
 	}
 
-	username := args[0]
-	//votes, e := strconv.ParseUint(args[2], 10, 64)
-	//if e != nil {
-	//	fmt.Println(fmt.Sprintf("[ERROR] Could not parse the votes to a number: %s", e))
-	//}
-	email := args[1]
-
-	fmt.Println("In create Account username= " + username + " email= " + email)
-
-	//var account = Account{ID: username, Email: email, VoteCount: votes}
-
+	userID := args[0]
+	if userID == "master-manager" {
+		fmt.Println("Got Manager")
+		return nil, nil
+	}
 	//find if account exist or not
-	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
-	if rowErr != nil {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return nil, rowErr
+	var column []shim.Column
+	column = append(column, shim.Column{Value: &shim.Column_String_{String_: userID}})
+	row, errGetRow := stub.GetRow("ApprovedAccounts", column)
+	if len(row.Columns) == 0 || errGetRow != nil {
+		fmt.Println("UserID does not exist. Please click on forgot password to recover account. [Just kidding]")
+		return nil, errors.New("UserID already exist. Please click on forgot password to recover account")
 	}
-	fmt.Println("chanValue inside create account")
-	for chanValue := range rowChan {
-		fmt.Println(chanValue)
-	}
-
-	/*
-		accountBytes, err := json.Marshal(&account)
-		if err != nil {
-			fmt.Println("Error creating account " + account.ID)
-			return nil, err
-		}
-	*/
-	/*
-		fmt.Println("Attempting to get state of any existing account for " + account.ID + "...")
-		existingBytes, err := stub.GetState(accountHeader + account.ID)
-		if err != nil {
-			fmt.Println("No existing account found for " + account.ID + ", initializing account")
-			err = stub.PutState(accountHeader+account.ID, accountBytes)
-			//errRequestAccount, Account := requestAccount(account_id)
-			if err == nil {
-				fmt.Println("Created account " + account.ID)
-				return nil, nil
-			}
-
-			fmt.Println("Failed to initialize an account for " + account.ID)
-			return nil, errors.New("Failed to initialize an account for " + account.ID + " => " + err.Error())
-		}
-	*/
-	/*
-		var existingAccount Account
-		err = json.Unmarshal(existingBytes, &existingAccount)
-		if err != nil {
-			fmt.Println("Error unmarshalling account " + account.ID + "\n--->: " + err.Error())
-
-			if strings.Contains(err.Error(), "unexpected end") {
-				fmt.Println("No data means existing account found for " + account.ID + ", initializing account.")
-				err = stub.PutState(accountHeader+account.ID, accountBytes)
-				//err, account = t.requestAccount(account.ID)
-				if err == nil {
-					fmt.Println("Created account " + account.ID)
-					return nil, nil
-				}
-
-				fmt.Println("Failed to create initialize account for " + account.ID)
-				return nil, err
-			}
-
-			return nil, errors.New("Error unmarshalling existing account " + account.ID)
-		}
-
-		fmt.Println("existing account bytes: " + string([]byte(existingBytes)))
-
-		fmt.Println("Account already exists for " + account.ID)
-		return nil, errors.New("Can't reinitialize existing user " + account.ID)
-	*/
 	return nil, nil
 }
 
@@ -353,28 +294,6 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	fmt.Println(row)
 	fmt.Println(t.readStringSafe(row.Columns[4]))
 	requestTime = t.readStringSafe(row.Columns[4])
-	/*for i := 0; i < 10; i++ {
-		row, rowErr := stub.GetRow("AccountRequests", []shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}})
-		//if rowErr != nil || len(row.Columns) == 0 {
-		//	fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
-		//	return "a", errors.New("Failed to find row")
-		//}
-		if rowErr == nil && len(row.Columns) != 0 {
-			fmt.Println("Email inside replaceRowRequest:")
-			fmt.Println(account.Email)
-			fmt.Println("In replace row:")
-			fmt.Println(row)
-			fmt.Println(t.readStringSafe(row.Columns[4]))
-			requestTime = t.readStringSafe(row.Columns[4])
-			break
-		}
-		if (rowErr != nil || len(row.Columns) == 0) && i==9 {
-			fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
-			return "a", errors.New("Failed to find row")
-		}
-		fmt.Println("trying to read row. Failed Attempt" + string(i))
-	}
-	*/
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
@@ -430,6 +349,22 @@ func generateUserID() string {
 	return string(b)
 }
 
+func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (string, error) {
+	email := args[0]
+	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
+	if rowErr != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+		return "", rowErr
+	}
+	fmt.Println("chanValue:")
+	for chanValue := range rowChan {
+		if t.readStringSafe(chanValue.Columns[2]) == email {
+			return t.readStringSafe(chanValue.Columns[0]), nil
+		}
+	}
+	return "", errors.New("Can not find email. Are you sure you are registred?")
+}
+
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	fmt.Println("Inside change status args are: ")
 	fmt.Println(args)
@@ -440,8 +375,9 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		return nil, errReplceRow
 	}
 
+	var userID string
 	if status == "approved" {
-		userID := generateUserID()
+		userID = generateUserID()
 		fmt.Println("My random ID is:")
 		fmt.Println(userID)
 		manager := args[3]
@@ -943,13 +879,9 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.issueTopic(stub, args)
 	case "clear_all_topics":
 		return t.clearTopics(stub, args)
-	case "create_account":
-		return t.createAccount(stub, args)
 	case "request_account":
 		return t.requestAccount(stub, args)
 	case "change_status":
-		fmt.Println("For change status args are: ")
-		fmt.Println(args)
 		return t.changeStatus(stub, args)
 	case "cast_vote":
 		return t.castVote(stub, args)
@@ -966,6 +898,34 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 	// Handle different functions
 	switch function {
+
+	case "check_account":
+		a, err := t.checkAccount(stub, args)
+		return a, err
+
+	case "get_UserID":
+		userID, err := t.getUserID(stub, args)
+
+		if err != nil {
+			return nil, err
+		}
+
+		//change these names
+		//they are no good
+		type JSONcapsule struct {
+			AllAccReq string
+		}
+		AccReqJSON := JSONcapsule{
+			AllAccReq: userID,
+		}
+		fmt.Println("AccReqJSON")
+		fmt.Println(AccReqJSON)
+		userIDJSON, err1 := json.Marshal(&AccReqJSON)
+		if err1 != nil {
+			return nil, err1
+		}
+		return userIDJSON, nil
+
 	case "read": //read a variable
 		return t.read(stub, args)
 
