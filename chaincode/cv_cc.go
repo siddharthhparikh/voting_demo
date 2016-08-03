@@ -251,6 +251,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	row, errGetRow := stub.GetRow("AccountRequests", column)
 
 	if(len(row.Columns)!=0 || errGetRow != nil) {
+		fmt.Println("Email ID [%s] already exist. Please click on forgot password to recover account. ERR: [%s]", account.Email, errGetRow)
 		return nil, fmt.Errorf("Email ID [%s] already exist. Please click on forgot password to recover account. ERR: [%s]", account.Email, errGetRow)
 	}
 	//TODO check if row does not exist then only execute this code
@@ -275,7 +276,15 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 		fmt.Println(fmt.Sprintf("[ERROR] Could not insert a message into the ledger mostly because email is already registered: %s", rowErr))
 		return nil, nil
 	}
-	return nil, nil
+	
+	row, errGetRow = stub.GetRow("AccountRequests", column)
+	if(len(row.Columns)!=0 && errGetRow == nil) {
+		fmt.Println("Row is added in request account")
+		fmt.Println(row)
+		return nil, nil	
+	}
+
+	return nil, errors.New("Can not add row in account request table")
 }
 
 // getAccount returns the account matching the given username
