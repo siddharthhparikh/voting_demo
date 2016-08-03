@@ -101,6 +101,7 @@ function Login(id, secret, email, votes, cb) {
                             console.log("Failed to store client token for " + usr.getName() + " ---> " + err);
                         }
                     });
+                    cb && cb(err);
                     /*
                     var Request = {
                         chaincodeID: chaincodeID,
