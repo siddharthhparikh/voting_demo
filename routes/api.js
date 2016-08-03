@@ -64,7 +64,6 @@ router.get('/get-account', function (req, res, next) {
 
 /* Get all voting topics from blockchain */
 router.get('/get-topics', function (req, res) {
-  if(req.)
   var args = [];
   args.push(req.session.name);
   chaincode.query('get_all_topics', args, function (err, data) {

@@ -83,7 +83,7 @@ $(document).ready(function () {
    $('.hidden').hide();
   loadTopics();
   // Get account data and access data.
-  $.get('/api/account', function (data, status) {
+  $.get('/api/get-account', function (data, status) {
     // Display username in user settings and header.
     $('#welcome-end').append(', ' + data.account_id);
     $('#username').append(data.account_id);
