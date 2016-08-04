@@ -263,15 +263,6 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 		return Account{}, errors.New("UserID already exist. Please click on forgot password to recover account")
 	}	
 	
-	&shim.ColumnDefinition{Name: "userID", Type: shim.ColumnDefinition_STRING, Key: true},
-		&shim.ColumnDefinition{Name: "full_name", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "org", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_UINT64, Key: false},
-		&shim.ColumnDefinition{Name: "req_time", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "appr_time", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "appr_manager", Type: shim.ColumnDefinition_STRING, Key: false},
-
 	account.Name = t.readStringSafe(row.Columns[1])
 	account.Email = args[0]
 	account.Org = t.readStringSafe(row.Columns[3])
@@ -685,7 +676,7 @@ func (t *SimpleChaincode) hasUserVoted(stub *shim.ChaincodeStub, args []string) 
 	topicID := args[0]
 	email := args[1]
 
-	account, errGetAccount := t.getAccount(stub, email)
+	account, errGetAccount := t.getAccount(stub, []string{email})
 	if errGetAccount != nil {
 		fmt.Println("Error retrieving account: ", errGetAccount)
 		return true, errGetAccount
