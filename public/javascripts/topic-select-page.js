@@ -84,14 +84,14 @@ $(document).ready(function () {
   // Get account data and access data.
   $.get('/api/get-account', function (data, status) {
     // Display username in user settings and header.
-    $('#welcome-end').append(', ' + data.account_id);
-    $('#username').append(data.account_id);
+    $('#welcome').append(', ' + data.name);
+    $('#username').append(data.email);
     // Get user privileges
-    if(data.privileges.includes('manager')) {
+    /*if(data.privileges.includes('manager')) {
       $('#manage-users').show();
     } else if(data.privileges.includes('creator')) {
       $('#new-topic').show();
-    }
+    }*/
   });
   // // // // // // // // //
   // Init page animations //

@@ -19,26 +19,30 @@ router.post('/login', function (req, res, next) {
   var user = req.body;
   // TODO check if the user already exsits in db.
 
+  console.log("[USER]", user);
+
   var username = user.account_id;
-  var password = user.account_pass;
+  var password = user.password;
   console.log("inside /login");
-  chaincode.query('check_account', [username], function (err, data) {
-    console.log("error = " + err)
+  var args = [];
+  args.push(password);
+  chaincode.query('check_account', args, function (err, data) {
+    console.log("[ERROR]", err)
     if (err != null) {
       console.log("Account does not exist. Please register");
-      res.json('{"status" : "Account does not exist. Please register."}');
+      res.end('{"status" : "Account does not exist. Please register."}');
     }
     
     console.log(user);
     req.session.name = user.account_id;
     console.log('Logging in as.....');
     console.log(req.session.name);
-    // Send response.
+    //Send response.
     if (username.indexOf('manager') > -1) {
-      res.json('{"status" : "success", "type": "manager"}');
+      res.end('{"status" : "success", "type": "manager"}');
     }
     else {
-      res.json('{"status" : "success", "type": "user"}');
+      res.end('{"status" : "success", "type": "user"}');
     }
   });
 });
@@ -218,7 +222,7 @@ router.post('/approved', function (req, res) {
           if (err != null) {
             res.json('{"status" : "failure", "Error": err}');
           }
-          res.json('{"status" : "success"}');
+          //res.json('{"status" : "success"}');
         });
       });
     });
@@ -239,7 +243,7 @@ router.post('/declined', function (req, res) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
-      res.json('{"status" : "success"}');
+      //res.json('{"status" : "success"}');
     });
   });
 });

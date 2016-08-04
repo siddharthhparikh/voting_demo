@@ -47,6 +47,7 @@ $(document).ready(function () {
       'account_id': $('#username').val(),
       'password': $('#password').val()
     };
+    console.log(user);
     $.post('/api/login', user, function (data, status) {
       data = JSON.parse(data);
       console.log("[DATA]", data);
