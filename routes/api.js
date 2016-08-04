@@ -183,14 +183,6 @@ router.get('/manager', function (req, res) {
   }
 });
 
-function bin2String(array) {
-  var result = "";
-  for (var i = 0; i < array.length; i++) {
-    result += String.fromCharCode(parseInt(array[i], 2));
-  }
-  return result;
-}
-
 router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
