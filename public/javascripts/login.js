@@ -27,7 +27,6 @@ $(document).ready(function () {
   });
   }, 2000);
 
-
   //Animation for register info box.
   $('#open-register').click(function() {
     $('#register-box').animate({ height: 'toggle'}, 'fast');
