@@ -250,7 +250,7 @@ func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (st
 func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, email string) (Account, error) {
 
 	var account Account
-	account.ID = t.getUserID(stub, email)
+	account.ID, err = t.getUserID(stub, []string(email))
 
 	var column []shim.Column
 	column = append(column, shim.Column{Value: &shim.Column_String_{String_: account.ID}})
@@ -376,22 +376,6 @@ func generateUserID() string {
 	fmt.Println("Randmly generated String:")
 	fmt.Println(string(b))
 	return string(b)
-}
-
-func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (string, error) {
-	email := args[0]
-	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
-	if rowErr != nil {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return "", rowErr
-	}
-	fmt.Println("chanValue:")
-	for chanValue := range rowChan {
-		if t.readStringSafe(chanValue.Columns[2]) == email {
-			return t.readStringSafe(chanValue.Columns[0]), nil
-		}
-	}
-	return "", errors.New("Can not find email. Are you sure you are registred?")
 }
 
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
