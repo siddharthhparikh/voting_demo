@@ -226,23 +226,54 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	return nil, errors.New("Can not add row in account request table")
 }
 
+
+func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (string, error) {
+	email := args[0]
+	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
+	if rowErr != nil {
+		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
+		return "", rowErr
+	}
+	fmt.Println("chanValue:")
+	for chanValue := range rowChan {
+		if t.readStringSafe(chanValue.Columns[2]) == email {
+			return t.readStringSafe(chanValue.Columns[0]), nil
+		}	
+	}
+	return "", errors.New("Can not find email. Are you sure you are registred?")	
+}
+
+
 // getAccount returns the account matching the given username
 
-func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, accountID string) (Account, error) {
+func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, email string) (Account, error) {
 	
 	var account Account
-	/*
-	if err != nil {
-		fmt.Println("Could not find account " + accountID)
-		return account, err
-	}
+	account.ID = t.getUserID(stub,email)
+	
+	var column []shim.Column
+	column = append(column, shim.Column{Value: &shim.Column_String_{String_: account.ID}})
+	row, errGetRow := stub.GetRow("ApprovedAccounts", column)
+	if (len(row.Columns)==0 || errGetRow != nil) {
+		fmt.Println("UserID does not exist. Please click on forgot password to recover account. [Just kidding]")
+		return Account{}, errors.New("UserID already exist. Please click on forgot password to recover account")
+	}	
+	
+	&shim.ColumnDefinition{Name: "userID", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "full_name", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "org", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_UINT64, Key: false},
+		&shim.ColumnDefinition{Name: "req_time", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "appr_time", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "appr_manager", Type: shim.ColumnDefinition_STRING, Key: false},
 
-	err = json.Unmarshal(accountBytes, &account)
-	if err != nil {
-		fmt.Println("Error unmarshalling account " + accountID + "\n err: " + err.Error())
-		return account, err
-	}
-	*/
+	account.Name = t.readStringSafe(row.Columns[1])
+	account.Email = email
+	account.Org = t.readStringSafe(row.Columns[3])
+	account.VoteCount = t.readUint64Safe(row.Columns[4])
+	account.ReqTime = t.readStringSafe(row.Columns[5])
+
 	return account, nil
 }
 
@@ -346,22 +377,6 @@ func generateUserID() string {
 	fmt.Println("Randmly generated String:")
 	fmt.Println(string(b))
     return string(b)
-}
-
-func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (string, error) {
-	email := args[0]
-	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
-	if rowErr != nil {
-		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
-		return "", rowErr
-	}
-	fmt.Println("chanValue:")
-	for chanValue := range rowChan {
-		if t.readStringSafe(chanValue.Columns[2]) == email {
-			return t.readStringSafe(chanValue.Columns[0]), nil
-		}	
-	}
-	return "", errors.New("Can not find email. Are you sure you are registred?")	
 }
 
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -664,9 +679,9 @@ func (t *SimpleChaincode) hasUserVoted(stub *shim.ChaincodeStub, args []string) 
 	fmt.Println("Checking whether user " + args[1] + " has voted on topic " + args[0] + "...")
 
 	topicID := args[0]
-	accountID := args[1]
+	email := args[1]
 
-	account, errGetAccount := t.getAccount(stub, accountID)
+	account, errGetAccount := t.getAccount(stub, email)
 	if errGetAccount != nil {
 		fmt.Println("Error retrieving account: ", errGetAccount)
 		return true, errGetAccount
