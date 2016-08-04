@@ -246,11 +246,15 @@ func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (st
 
 // getAccount returns the account matching the given username
 
-func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, email string) (Account, error) {
+func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (Account, error) {
 	
 	var account Account
-	account.ID = t.getUserID(stub,email)
+	var err error
+	account.ID, err = t.getUserID(stub, args)
 	
+	if(err != nil)	{
+		return Account{}, err
+	}
 	var column []shim.Column
 	column = append(column, shim.Column{Value: &shim.Column_String_{String_: account.ID}})
 	row, errGetRow := stub.GetRow("ApprovedAccounts", column)
@@ -269,7 +273,7 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, email string) (Ac
 		&shim.ColumnDefinition{Name: "appr_manager", Type: shim.ColumnDefinition_STRING, Key: false},
 
 	account.Name = t.readStringSafe(row.Columns[1])
-	account.Email = email
+	account.Email = args[0]
 	account.Org = t.readStringSafe(row.Columns[3])
 	account.VoteCount = t.readUint64Safe(row.Columns[4])
 	account.ReqTime = t.readStringSafe(row.Columns[5])
