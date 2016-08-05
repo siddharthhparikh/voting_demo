@@ -185,7 +185,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 	fmt.Println("In request Account username= " + args[0] + " email = " + args[1] + " org = " + args[2])
 	var privileges []string
-	var account = Account{ID: "", Name: args[0], Email: args[1], VoteCount: 0, Org: args[2], Privileges: privileges}
+	var account = Account{ID: "", Name: args[0], Email: args[1], VoteCount: 0, Org: args[2], Privileges: privileges, PubKey: args[3]}
 	//Check if request already exists
 	//user email must be unique in all the accounts
 
@@ -213,6 +213,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 			&shim.Column{Value: &shim.Column_String_{String_: "open"}},
 			&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
 			&shim.Column{Value: &shim.Column_String_{String_: requestTime}},
+			&shim.Column{Value: &shim.Column_String_{String_: account.PubKey}},
 		},
 	})
 	if rowErr != nil || !rowAdded {
@@ -299,10 +300,10 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	return openRequest, nil
 }
 
-func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []string) (string, error) {
+func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []string) (string, string, error) {
 	status := args[0]
 	//votes, _ := strconv.ParseUint(args[2], 10, 64)
-	account := Account{Name: args[1], Email: args[2]}
+	account := Account{Name: args[1], Email: args[2], PubKey: args[3]}
 
 	//getrow to save request time before deleting
 	fmt.Println("Account Email inside replece row")
@@ -315,12 +316,13 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 
 	if errGetRow != nil || len(row.Columns) == 0 {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", errors.New("Failed to find row")))
-		return "a", errors.New("Failed to find row")
+		return "a", "a", errors.New("Failed to find row")
 	}
 	fmt.Println("In replace row:")
 	fmt.Println(row)
 	fmt.Println(t.readStringSafe(row.Columns[4]))
 	requestTime = t.readStringSafe(row.Columns[4])
+	PubKey := t.readStringSafe(row.Columns[5])
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
@@ -328,7 +330,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 		[]shim.Column{shim.Column{Value: &shim.Column_String_{String_: account.Email}}},
 	)
 	if err != nil {
-		return "a", errors.New("Failed deliting row.")
+		return "a","a", errors.New("Failed deliting row.")
 	}
 
 	//inster new row with new status
@@ -340,12 +342,13 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 				&shim.Column{Value: &shim.Column_String_{String_: status}},
 				&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
 				&shim.Column{Value: &shim.Column_String_{String_: requestTime}},
+				&shim.Column{Value: &shim.Column_String_{String_: PubKey}},
 			},
 		})
 	if err != nil {
-		return "a", errors.New("Failed inserting row.")
+		return "a","a", errors.New("Failed inserting row.")
 	}
-	return requestTime, nil
+	return requestTime, PubKey, nil
 }
 
 func generateUserID() string {
@@ -381,7 +384,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 	fmt.Println(args)
 	status := args[0]
 	account := Account{Name: args[1], Email: args[2], Org: args[3]}
-	reqTime, errReplceRow := t.replaceRowRequest(stub, args)
+	reqTime, PubKey, errReplceRow := t.replaceRowRequest(stub, args)
 	if errReplceRow != nil {
 		return nil, errReplceRow
 	}
@@ -393,7 +396,6 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		fmt.Println(userID)
 		manager := args[3]
 		votes, _ := strconv.ParseUint(args[4], 10, 64)
-		PubKey := args[5]
 		_, err := stub.InsertRow("ApprovedAccounts",
 			shim.Row{
 				Columns: []*shim.Column{
@@ -1225,6 +1227,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "org", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "time", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "pub_key", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	// Handle table creation errors
 	if errAccountRequest != nil {

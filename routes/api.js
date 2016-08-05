@@ -165,13 +165,18 @@ router.get('/user', function (req, res) {
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
-  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org], function (err, results) {
+  var keys = ursa.generatePrivateKey();
+  var privPem = keys.toPrivatePem('base64');
+  var pubPem = keys.toPublicPem('base64');
+    
+  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org, pubPem], function (err, results) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
+
     console.log("\n\n\nrequest account result:")
     console.log(results);
-    res.json('{"status" : "success"}');
+    res.end('{"status" : "success", "privatekey": privpem}');
   });
 });
 
@@ -191,26 +196,8 @@ router.get('/manager', function (req, res) {
 });
 
 router.post('/approved', function (req, res) {
-  console.log("request approved")
-  console.log(req.body)
-  console.log(req.body.Email)
 
-  var keys = ursa.generatePrivateKey();
-  //console.log('keys:', keys);
-
-  // reconstitute the private key from a base64 encoding  
-  var privPem = keys.toPrivatePem('base64');
-  //console.log('privPem:', privPem);
-
-  //var priv = ursa.createPrivateKey(privPem, '', 'base64');
-
-  // make a public key, to be used for encryption
-  var pubPem = keys.toPublicPem('base64');
-  //console.log('pubPem:', pubPem);
-
-  //var pub = ursa.createPublicKey(pubPem, 'base64');
-  
-  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubPem]
+  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount]
   console.log("In approved args")
   console.log(args)
   chaincode.invoke('change_status', args, function (err, data) {
@@ -229,7 +216,6 @@ router.post('/approved', function (req, res) {
           res.end('{"status" : "failure", "Error": err}');
         }
         console.log("\n\n\ncreate account result:")
-        cred.privKey = privPem
         mail.email(req.body.Email, cred, function (err) {
           if (err != null) {
             res.end('{"status" : "failure", "Error": err}');

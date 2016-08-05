@@ -93,6 +93,7 @@ $(document).ready(function () {
       console.log(newUser)
       $.post('/api/register', newUser, function (data, status) {
         if (status == 'success') {
+          console.log(data)
           $('#register-box').fadeOut();
           $('#error-msg').html('New account request has been sent.');
         }
