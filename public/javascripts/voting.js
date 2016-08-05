@@ -5,24 +5,21 @@
  * Handles voting events including the remaining vote count.
  */
 
-function setMaxVotes() {
-  $.get('/api/get-account', function(status, data){
-    if(data){
-      return data.vote_count;
+$(document).ready(function () {
+  var maxVotes;
+  $.get('/api/get-account-info', function (data, status) {
+    if (data) {
+      maxVotes = data.vote_count;
+      $('#remaining-votes').append(maxVotes);
+      $('.hidden').hide();
     }
     return 0;
   });
-}
 
-
-$(document).ready(function () {
-
-  var maxVotes = setMaxVotes();
-  $('#remaining-votes').append(maxVotes);
-  $('.hidden').hide();
   //
   // Get current topic info
   //
+
   // Query the server for a the topic so that it can be loaded to the page
   $.get('/api/get-topic', { 'topicID': $('#topicID').html() }, function (data, status) {
     // If there is a response.
@@ -82,63 +79,77 @@ $(document).ready(function () {
     }
   });
 
+  var currentVotesCast = 0; //represents sum of votes in voting boxes
+
   //
   // Submit user votes
   //
   $('#submit').click(function (e) {
     e.preventDefault(e);
-    $.get('/api/get-topic', { "topicID": $('#topicID').html() }, function (data, status) {
-      if (data) {
-        data = data.Topic;
 
-        var votesArray = [];
-        var votes = document.getElementsByClassName('votes');
-        $('.votes').each(function () {
-          var val = this.value.toString();
-          if (val == "") val = "0";
-          votesArray.push(val);
-        });
+    if (currentVotesCast > maxVotes) {
+      alert('You cannot cast more votes that you have available to you, please fix this and try again.');
+    } else {
+      $.get('/api/get-topic', { "topicID": $('#topicID').html() }, function (data, status) {
+        if (data) {
+          data = data.Topic;
 
-        var voteJSON = {
-          "topic": data.topic_id,
-          "choices[]": data["choices[]"],
-          "votes[]": votesArray,
-          "voter": null, //TODO this should be username
-          "castDate": (new Date()).toString() //TODO should this be done on chaincode side of things?
-        }
-        
-        // Submit the vote object to the server.
-        $.post('/api/vote-submit', voteJSON, function (data, status) {
-          // Handle response
-          data = JSON.parse(data);
-          if (data.status == 'success') {
-            console.log('Votes Submitted');
-            // Reroute the user back to the home page.
-            window.location.replace('/topics');
-          } else {
-            console.log('Error: ' + data.status);
+          var votesArray = [];
+          var votes = document.getElementsByClassName('votes');
+          $('.votes').each(function () {
+            var val = this.value.toString();
+            if (val == "") val = "0";
+            votesArray.push(val);
+          });
+
+          var voteJSON = {
+            "topic": data.topic_id,
+            "choices[]": data["choices[]"],
+            "votes[]": votesArray,
+            "voter": null, //TODO this should be username
+            "castDate": (new Date()).toString() //TODO should this be done on chaincode side of things?
           }
-        });
-      }
-    });
+
+          // Submit the vote object to the server.
+          $.post('/api/vote-submit', voteJSON, function (data, status) {
+            // Handle response
+            data = JSON.parse(data);
+            if (data.status == 'success') {
+              console.log('Votes Submitted');
+              // Reroute the user back to the home page.
+              window.location.replace('/topics');
+            } else {
+              console.log('Error: ' + data.status);
+            }
+          });
+        }
+      });
+    }
   });
 
   // Remaining votes
-  $(document).on('change', '.votes', function(e) {
+  $(document).on('change', '.votes', function (e) {
     e.preventDefault();
     var sum = 0;
     // Collect sum of all votes applied.
-    $('.votes').each(function(){
+    $('.votes').each(function () {
       var index = $(".votes").index(this);
-      sum += $(this).val();
+      sum += parseInt($(this).val());
     });
-    if(maxVotes > sum){
-      $('#remaining-votes').html(maxVotes - sum);
-      $(this).val() += 1;
+
+    currentVotesCast = sum;
+
+    $('#remaining-votes').html(maxVotes - sum);
+    if (maxVotes >= sum) {
+      document.getElementById("remaining-votes").style.color = "#005C34";
+      document.getElementById("remaining-votes-header").style.color = "#005C34";
+    } else {
+      document.getElementById("remaining-votes").style.color = "#C20900";
+      document.getElementById("remaining-votes-header").style.color = "#C20900";
     }
-  })
-  
-  $('#title').click(function() {
+  });
+
+  $('#title').click(function () {
     window.location.replace('../topics');
   });
 });

@@ -42,15 +42,14 @@ function loadTopics() {
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var i in data) {
-        console.log(data[i].Topic)
         // Load Closed topics.
         if (showClosedTopics) {
           if (data[i].Status == "closed" || data[i].Status == "voted") {
             var disabledStr = "";//(data[i].Status == "voted") ? " disabled" : ""; //TODO commented out for DEBUGGING
             var html;
             // Give voted topics a specialized background color.
-            if(data[i].Status == "voted") {
-              html = '<button class="topic button voted" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';  
+            if (data[i].Status == "voted") {
+              html = '<button class="topic button voted" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             } else {
               html = '<button class="topic button closed" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             }
@@ -85,14 +84,14 @@ $(document).ready(function () {
   // Get account data and access data.
   $.get('/api/get-account', function (data, status) {
     // Display username in user settings and header.
-    $('#welcome-end').append(', ' + data.account_id);
-    $('#username').append(data.account_id);
+    $('#welcome').append(', ' + data.name);
+    $('#username').append(data.email);
     // Get user privileges
-    if(data.privileges.includes('manager')) {
+    /*if(data.privileges.includes('manager')) {
       $('#manage-users').show();
     } else if(data.privileges.includes('creator')) {
       $('#new-topic').show();
-    }
+    }*/
   });
   // // // // // // // // //
   // Init page animations //
@@ -183,7 +182,7 @@ $(document).ready(function () {
         if (!countdown || (countdown < 0)) {
           console.log('Could not create unique ID for topic, sorry!')
           return;
-        } 
+        }
 
         var id = generateID(Math.max($('#topic-name').val().length, MIN_ID_LENGTH));
         $.get('/api/topic-check', { "topicID": id }, function (data, status) {
@@ -225,5 +224,42 @@ $(document).ready(function () {
     }
     // Fade out info-box element
     $('#topic-creation').fadeOut();
+  });
+
+  //
+  // Add new candidate button.
+  //
+  $('#add-cand').click(function () {
+    var html = '<div class="candidate-div"><input type="text" class="topic-candidate" placeholder="Candidate"/><i class="material-icons delete-candidate">close</i></div>';
+    $('#candidate-append').append(html);
+  });
+
+  //
+  // Onclick events for buttons.
+  //
+  $(document).on('click', '.topic', function () {
+    // Voted topics will not redirect.
+    if (!$(this).hasClass('voted')) {
+      // Reroute the user to the topic page with a string query.
+      window.location.replace("../topic/id?=" + $(this).context.id);
+    } else {
+      $.get('/api/get-topic', { 'topicID': $(this).context.id }, function (data, status) {
+        if (data) {
+          alert('You have already voted for this topic; results will be available one the voting period has ended (' + data.Topic.expire_date.substring(0, 10) + ')');
+        } else {
+          alert('Error retrieving topic info');
+        }
+      });
+    }
+  });
+  
+  // Delete topic candidate
+  $(document).on('click', '.delete-candidate', function() {
+    $(this).parent().remove();
+  });
+
+  // Home button
+  $('#title').click(function () {
+    window.location.replace('../topics');
   });
 });
