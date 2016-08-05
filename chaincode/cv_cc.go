@@ -178,8 +178,8 @@ func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) 
 
 func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 
-	if len(args) != 3 {
-		fmt.Println("Not enough arguments passed to createAcount")
+	if len(args) != 4 {
+		fmt.Println("Not enough arguments passed to requestAcount")
 		return nil, errors.New("Incorrect number of arguments. Expecting 3: username, email, org")
 	}
 
