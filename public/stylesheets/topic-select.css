@@ -102,12 +102,17 @@
 }
 
 #request-upgrade {
-  margin-top: 32px;
+  margin-top: 15px;
 }
 
 #upgrade-help {
   color: #F7F7F7;
   margin-right: -22px;
+  text-shadow:
+   -1px -1px 0 #313131,
+   1px -1px 0 #313131,
+   -1px 1px 0 #313131,
+   1px 1px 0 #313131;
 }
 
 #upgrade-help:hover {

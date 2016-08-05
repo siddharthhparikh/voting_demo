@@ -37,6 +37,7 @@
 
 /* Textbox styling for div */
 .info-box input[type='text'] {
-  height: 35px;
+  height: 40px;
+  width: 88%;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }

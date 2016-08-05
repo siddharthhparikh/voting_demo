@@ -87,7 +87,8 @@ $(document).ready(function () {
       var newUser = {
         'name': $('#name').val(),
         'email': $('#email').val(),
-        'org': $('#organization').val()
+        'org': $('#orginization').val(),
+        'privileges':$('#priv-type')
       };
       //Send request object.
       console.log(newUser)

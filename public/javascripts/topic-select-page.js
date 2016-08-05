@@ -153,9 +153,9 @@ $(document).ready(function () {
     window.location.replace('../topics');
   });
 
-  // // / // // // // // // // / // // // // // // //
+  // // // // // // // // // // / // // // // // // // //
   // Topic generation for in the create topic info-box //
-  // // // // // // // // // // // // // // // // //
+  // // // // / // // // // // // // // // // // // // //
   $('#topic-submit').click(function () {
     var errFlag = false;
     // Check for blank input fields
