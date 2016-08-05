@@ -203,21 +203,22 @@ router.post('/approved', function (req, res) {
   var priv = ursa.createPrivateKey(privPem, '', 'base64');
   console.log('priv:', priv);
   var pubPem = keys.toPublicPem('base64');
-  console.log('pubPem:', pubPem);
+  //console.log('pubPem:', pubPem);
   var pub = ursa.createPublicKey(pubPem, 'base64');
-  console.log('pub:', pub);
+  //console.log('pub:', pub);
 
   //delete this code its not useful just for debugging
 
   var data = new Buffer('hello world');
   console.log('data:', data);
 
-  var enc = pub.encrypt(data);
+  var enc = priv.encrypt(data);
   console.log('enc:', enc);
-
-  var unenc = priv.decrypt(enc);
+  console.log('enc:', string(enc));
+  var unenc = pub.decrypt(enc);
   console.log('unenc:', unenc);
-
+  console.log('unenc:', string(unenc));
+  
   //End Here
   var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubPem]
   console.log("In approved args")
