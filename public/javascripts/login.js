@@ -7,33 +7,33 @@
 $(document).ready(function () {
   $('.hidden').hide();
   console.log('Querying if chaincode has deployed...');
-  var intervalVar = setInterval(function() {
-  $.get('/api/load-chain', function (data, status) {
-    data = JSON.parse(data);
-    if (data.status == "success") {
-      console.log('Chaincode loaded!');
-      clearInterval(intervalVar);
-      $('#loading-screen').remove();
-      $('#content-header').fadeIn();
-      $('#content-block').fadeIn();
-      $('#open-register').fadeIn();
-    } else {
-      console.log('Chaincode failed!');
-      $('#loading-screen').fadeIn();
-      $('#content-header').hide();
-      $('#content-block').hide();
-      $('#open-register').hide();
-    }
-  });
+  var intervalVar = setInterval(function () {
+    $.get('/api/load-chain', function (data, status) {
+      data = JSON.parse(data);
+      if (data.status == "success") {
+        console.log('Chaincode loaded!');
+        clearInterval(intervalVar);
+        $('#loading-screen').remove();
+        $('#content-header').fadeIn();
+        $('#content-block').fadeIn();
+        $('#open-register').fadeIn();
+      } else {
+        console.log('Chaincode failed!');
+        $('#loading-screen').fadeIn();
+        $('#content-header').hide();
+        $('#content-block').hide();
+        $('#open-register').hide();
+      }
+    });
   }, 2000);
 
   //Animation for register info box.
-  $('#open-register').click(function() {
-    $('#register-box').animate({ height: 'toggle'}, 'fast');
+  $('#open-register').click(function () {
+    $('#register-box').animate({ height: 'toggle' }, 'fast');
   });
   // Hides menus when user clicks out of them.
   // Hides menus when user clicks out of them.
-  $('#master-content').click(function() {
+  $('#master-content').click(function () {
     $('.info-box').fadeOut('fast');
   });
 
@@ -54,10 +54,10 @@ $(document).ready(function () {
       // Handle respse "clonse.
       if (data.status === 'success') {
         // Redirect user.
-        if(data.type === 'user') {
+        if (data.type === 'user') {
           window.location.replace("../topics");
         }
-        else if(data.type === 'manager') {
+        else if (data.type === 'manager') {
           console.log("redirecting to manager...");
           window.location.replace("../manager");
         }
@@ -71,9 +71,9 @@ $(document).ready(function () {
   //
   // Request to register as a new user.
   //
-  $('#register-user').click(function() {
+  $('#register-user').click(function () {
     var errFlag = false;
-    $('.registration-info').each(function(){
+    $('.registration-info').each(function () {
       var index = $(".registration-info").index(this);
       if ($(this).val() == '' && errFlag == false) {
         errFlag = true;
@@ -81,7 +81,7 @@ $(document).ready(function () {
       }
     });
     console.log(errFlag)
-    if(!errFlag){
+    if (!errFlag) {
       //console.log($('#organization').val());
       // Create request object.
       var newUser = {
@@ -94,6 +94,20 @@ $(document).ready(function () {
       $.post('/api/register', newUser, function (data, status) {
         if (status == 'success') {
           console.log(data)
+          
+          window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+          window.requestFileSystem(window.TEMPORARY, 1024 * 1024, function (fs) {
+            fs.root.getFile('C:/priv.pem', { create: true }, function (fileEntry) { // test.bin is filename
+              fileEntry.createWriter(function (fileWriter) {
+                var blob = new Blob(data);
+                fileWriter.addEventListener("writeend", function () {
+                  location.href = fileEntry.toURL();
+                }, false);
+                fileWriter.write(blob);
+              }, function () { });
+            }, function () { });
+          }, function () { });
+
           $('#register-box').fadeOut();
           $('#error-msg').html('New account request has been sent.');
         }
@@ -101,7 +115,7 @@ $(document).ready(function () {
     }
   });
 
-  $('#title').click(function() {
+  $('#title').click(function () {
     window.location.replace('../topics');
   });
 });
