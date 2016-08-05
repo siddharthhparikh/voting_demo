@@ -10,6 +10,8 @@ var router = express.Router();
 var session = require('express-session');
 var chaincode = require('../libs/blockchainSDK');
 var mail = require('../libs/mail')
+var ursa = require('ursa');
+var fs = require('fs');
 
 var DEFAULT_VOTES = 5;
 
@@ -192,14 +194,18 @@ router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
   console.log(req.body.Email)
-  var args = [
-    "approved",
-    req.body.Name,
-    req.body.Email,
-    req.body.Org,
-    req.session.name,
-    req.body.VoteCount
-  ]
+  
+  //Generate Public and Private key Pair
+  var keys = ursa.generatePrivateKey();
+  console.log('keys:', keys);
+  var privPem = keys.toPrivatePem('base64');
+  console.log('privPem:', privPem);
+  var priv = ursa.createPrivateKey(privPem, '', 'base64');
+  var pubPem = keys.toPublicPem('base64');
+  console.log('pubPem:', pubPem);
+  var pub = ursa.createPublicKey(pubPem, 'base64');
+
+  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount]
   console.log("In approved args")
   console.log(args)
   chaincode.invoke('change_status', args, function (err, data) {
