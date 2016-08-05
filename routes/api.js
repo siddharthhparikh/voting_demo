@@ -176,7 +176,7 @@ router.post('/register', function (req, res) {
 
     console.log("\n\n\nrequest account result:")
     console.log(results);
-    res.end('{"status" : "success", "privatekey": privpem}');
+    res.end(privPem);
   });
 });
 
