@@ -75,7 +75,8 @@ $(document).ready(function () {
       var newUser = {
         'name': $('#name').val(),
         'email': $('#email').val(),
-        'org': $('#orginization').val()
+        'org': $('#orginization').val(),
+        'privileges':$('#priv-type')
       };
       //Send request object.
       $.post('/api/register', newUser, function (data, status) {

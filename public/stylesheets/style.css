@@ -77,18 +77,24 @@ h1 {
 
 /* Styling for all input text feilds */
 
-input[type='text'] {
+input {
   font-family: "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
-  width: 85%;
+  font-size: 26px;
+  text-align: center;
+  width: 95%;
   height: 50px;
-  padding-left: 5%;
   margin: 3px auto 3px auto;  
   color: #313131;
   background-color: #F7F7F7;
-  font-size: 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 40px;
   border-top: 1px solid rgba(247, 247, 247, 0.5);
   border-right: 1px solid rgba(247, 247, 247, 0.5);
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2), 4px 6px 10px 0 rgba(0, 0, 0, 0.19);
+  
+}
+
+input:focus{
+  outline : none;
+  border: 1px solid #313131;
 }
