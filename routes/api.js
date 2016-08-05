@@ -195,34 +195,12 @@ router.post('/approved', function (req, res) {
   console.log(req.body)
   console.log(req.body.Email)
 
-  //Generate Public and Private key Pair
-  var keys = ursa.generatePrivateKey();
-  console.log('keys:', keys);
-  var privPem = keys.toPrivatePem('base64');
-  console.log('privPem:', privPem);
-  var priv = ursa.createPrivateKey(privPem, '', 'base64');
-  console.log('priv:', priv);
-  var pubPem = keys.toPublicPem('base64');
-  //console.log('pubPem:', pubPem);
-  var pub = ursa.createPublicKey(pubPem, 'base64');
-  //console.log('pub:', pub);
-
-  //delete this code its not useful just for debugging
-
-  var data = new Buffer('hello world');
-  console.log('data:', data);
-
-  var msg = "A GIRL HAS NO NAME"
-  sig = priv.hashAndSign('sha256', msg, 'utf8', 'base64');
-  console.log("signed:", sig);
-  var rsv;
-  rcv = new Buffer(sig).toString('base64');
-
-  if (!pub.hashAndVerify('sha256', rcv, sig, 'base64')) {
-    throw new Error("invalid signature");
-  }
+  var key = ursa.generatePrivateKey(1024, 65537);
+  var privpem = key.toPrivatePem();
+  var pubpem = key.toPublicPem();
+  //var priv = ursa.createPrivateKey(privpem)
+  //var pub = ursa.createPublicKey(pubpem)
   
-  //End Here
   var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubPem]
   console.log("In approved args")
   console.log(args)
@@ -242,7 +220,7 @@ router.post('/approved', function (req, res) {
           res.end('{"status" : "failure", "Error": err}');
         }
         console.log("\n\n\ncreate account result:")
-        console.log(cred);
+        cred.privKey = privpem
         mail.email(req.body.Email, cred, function (err) {
           if (err != null) {
             res.end('{"status" : "failure", "Error": err}');
