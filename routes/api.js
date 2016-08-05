@@ -190,6 +190,14 @@ router.get('/manager', function (req, res) {
   }
 });
 
+function bin2String(array) {
+  var result = "";
+  for (var i = 0; i < array.length; i++) {
+    result += String.fromCharCode(parseInt(array[i], 2));
+  }
+  return result;
+}
+
 router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
@@ -214,10 +222,10 @@ router.post('/approved', function (req, res) {
 
   var enc = priv.encrypt(data);
   console.log('enc:', enc);
-  console.log('enc:', string(enc));
+  console.log('enc:', bin2String(enc));
   var unenc = pub.decrypt(enc);
   console.log('unenc:', unenc);
-  console.log('unenc:', string(unenc));
+  console.log('unenc:', bin2String(unenc));
   
   //End Here
   var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubPem]
