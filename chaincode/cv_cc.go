@@ -1232,6 +1232,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		return nil, errAccountRequest
 	}
 
+
 	//create table to store all the user account requests
 	errApprovedAccount := stub.CreateTable("ApprovedAccounts", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "userID", Type: shim.ColumnDefinition_STRING, Key: true},
