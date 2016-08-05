@@ -28,8 +28,8 @@ module.exports.email = function (email, creds, cb) {
             from: '"Siddharth Parikh" <siddharthparikh1993@gmail.com>', // sender address
             to: email, // list of receivers
             subject: '[Confidential] Vote Chain Password', // Subject line
-            text: 'username: ' + creds.id + '\npassword: ' + creds.secret + '\nPublic Key:\n' + creds.privKey, // plaintext body
-            html: 'username: ' + creds.id + '\npassword: ' + creds.secret + '\nPublic Key:\n' + creds.privKey  // html body
+            text: 'username: ' + creds.id + '\npassword: ' + creds.secret + '\nPrivate Key: \n' + creds.privKey, // plaintext body
+            html: '<p>username: ' + creds.id + '</p><p>password: ' + creds.secret + '</p><p>Private Key:' + creds.privKey + '</p>'// html body
 
         };
     }
