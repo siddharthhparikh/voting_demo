@@ -4,30 +4,30 @@
  * provides functions for interacting with chaincode SDK
  */
 
-var hlc = require('hlc');
+var hfc = require('hlc'); //TODO this should be hfc
 
 var exports = module.exports;
 
 // Create a client chain
-var chaincodeName = 'marble_chaincode'
-var chain = hlc.newChain("voting");
-var chaincodeID = "";
+var chaincodeName = 'voting_chaincode'
+var chain = hfc.newChain("voting");
+var chaincodeID = null;
+
 
 // Configure the KeyValStore which is used to store sensitive keys
 // as so it is important to secure this storage
-chain.setKeyValStore(hlc.newFileKeyValStore('./keyValStore'));
+chain.setKeyValStore(hfc.newFileKeyValStore('/tmp/keyValStore'));
 
 var peerURLs = [];
 var caURL = null;
 var users = null;
-
+var user_manager = require("./users")
 var registrar = null; //user used to register other users and deploy chaincode
 
 console.log('loading hardcoding users and certificate authority...')
 caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+peerURLs = []
 peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
-peerURLs.push('grpc://ethan-p2.rtp.raleigh.ibm.com:30303');
-peerURLs.push('grpc://ethan-p3.rtp.raleigh.ibm.com:30303');
 
 registrar = {
     'username': 'ethanicus',
@@ -40,7 +40,7 @@ chain.setMemberServicesUrl(caURL);
 
 // Add all peers' URL
 for (var i in peerURLs) {
-    console.log('adding peer: \'' + peerURLs[i] + '\'');
+    console.log('adding ca: \'' + peerURLs[i] + '\'');
     chain.addPeer(peerURLs[i]);
 }
 
@@ -53,7 +53,10 @@ chain.enroll(registrar.username, registrar.secret, function (err, user) {
 
     registrar = user;
 
-    exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], cb_deployed);
+    exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function (chaincodeID) {
+        user_manager.setup(chaincodeID, chain, cb_deployed);
+    });
+
 });
 
 function cb_deployed() {
@@ -73,7 +76,7 @@ exports.deploy = function (path, args, cb) {
 
     var deployRequest = {
         args: args,
-        chaincodeID: chaincodeName,
+        //chaincodeID: chaincodeName,
         fcn: 'init',
         chaincodePath: path
     }
@@ -85,10 +88,9 @@ exports.deploy = function (path, args, cb) {
         console.log('chaincode-ID: %s', results.chaincodeID);
 
         chaincodeID = results.chaincodeID;
-
         //chaincode has been deployed
 
-        if (cb) cb(null);
+        if (cb) cb(chaincodeID);
     });
 
     transactionContext.on('error', function (err) {
@@ -103,7 +105,7 @@ exports.deploy = function (path, args, cb) {
 
 //invokes function on chaincode (cb in form of cb(err, result))
 exports.invoke = function (fcn, args, cb) {
-    if (chaincodeID == "") {
+    if (chaincodeID == "" || chaincodeID == null) {
         return new Error("No chaincode ID implies chaincode has not yet deployed");
     }
 
@@ -118,9 +120,12 @@ exports.invoke = function (fcn, args, cb) {
     transactionContext.on('complete', function (results) {
         if (cb) {
             if (results.result) {
+                console.log("In invoke results on complete")
+                console.log(results)
+                console.log(results.result)
                 cb(null, results.result)
             } else {
-                cb(null, null);
+                cb(new Error("no data retrieved from invoke"), null);
             }
         }
     });
@@ -134,13 +139,13 @@ exports.invoke = function (fcn, args, cb) {
 
 //queries on chaincode (cb in form of cb(err, result))
 exports.query = function (fcn, args, expectJSON, cb) {
-    if (chaincodeID == "") {
+    if (chaincodeID == "" || chaincodeID == null) {
         return new Error("No chaincode ID implies chaincode has not yet deployed");
     }
 
     if (typeof expectJSON === 'function') { //only 3 parameters passed, expectJSON defaults to true
-        cb = expectJSON
-        expectJSON = true
+        cb = expectJSON;
+        expectJSON = true;
     }
 
     var queryRequest = {
@@ -153,23 +158,37 @@ exports.query = function (fcn, args, expectJSON, cb) {
 
     transactionContext.on('complete', function (results) {
         if (cb) {
+            console.log("query completed with results:")
+            console.log(results)
             if (results.result) { //is result is not null
                 //parse data from buffer to json
                 var data = String.fromCharCode.apply(String, results.result);
                 if (expectJSON) {
                     if (data.length > 0) cb(null, JSON.parse(data));
+                    else cb(null, null);
                 } else {
                     cb(null, data)
                 }
             } else {
-                cb(null, null);
+                cb(new Error("no data retrieved from query"), null);
             }
         }
     });
 
     transactionContext.on('error', function (err) {
         if (cb) {
+            console.log("query completed with error:")
+            console.log(err)
             cb(err, null);
         }
     });
+}
+
+module.exports.registerAndEnroll = function (username, role, cb) {
+    return user_manager.registerUser(username, role, cb);
+}
+
+module.exports.login = function (username, secret, cb) {
+    console.log("I am inside blockchainsdk.js login function")
+    return user_manager.login(username, secret, cb);
 }

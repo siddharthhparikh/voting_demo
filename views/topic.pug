@@ -10,13 +10,11 @@ block content
     h1(id='title')= title   
     h1(class='vote-header' id='remaining-votes')
     h1(class='vote-header') Remaining Votes:
-  //
-    Header for content-block displays topic description
+  // Header for content-block displays topic description
   #content-header
     h1(id='topic-description' )=topicName
     p(id='topicID' class='hidden')=topicID
-  //
-    Vote options are dynamicly loaded into the content-block in a nested table.
+  // Vote options are dynamicly loaded into the content-block in a nested table.
   #content-block
     #table
       table(id='candidates')

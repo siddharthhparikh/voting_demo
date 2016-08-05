@@ -12,7 +12,7 @@ $(document).ready(function () {
     data = JSON.parse(data);
     if (data.status == "success") {
       console.log('Chaincode loaded!');
-      //clearInterval(intervalVar);
+      clearInterval(intervalVar);
       $('#loading-screen').remove();
       $('#content-header').fadeIn();
       $('#content-block').fadeIn();
@@ -42,21 +42,31 @@ $(document).ready(function () {
   //
   $('#submit').click(function (e) {
     e.preventDefault();
+
     var user = {
       'account_id': $('#username').val(),
       'password': $('#password').val()
     };
+    console.log(user);
     $.post('/api/login', user, function (data, status) {
       data = JSON.parse(data);
+      console.log("[DATA]", data);
       // Handle respse "clonse.
       if (data.status === 'success') {
         // Redirect user.
-        window.location.replace("../topics");
+        if(data.type === 'user') {
+          window.location.replace("../topics");
+        }
+        else if(data.type === 'manager') {
+          console.log("redirecting to manager...");
+          window.location.replace("../manager");
+        }
       } else {
         $('#error-msg').html('Error: ' + data.status);
       }
     });
   });
+
 
   //
   // Request to register as a new user.
@@ -70,7 +80,9 @@ $(document).ready(function () {
         alert('Error: Input fields can not be left empty.');
       }
     });
+    console.log(errFlag)
     if(!errFlag){
+      //console.log($('#organization').val());
       // Create request object.
       var newUser = {
         'name': $('#name').val(),
@@ -79,6 +91,7 @@ $(document).ready(function () {
         'privileges':$('#priv-type')
       };
       //Send request object.
+      console.log(newUser)
       $.post('/api/register', newUser, function (data, status) {
         if (status == 'success') {
           $('#register-box').fadeOut();

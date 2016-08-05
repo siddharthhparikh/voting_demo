@@ -39,8 +39,9 @@
 /* User welcome message */
 
 .welcome {
+  margin: 22px 0px 0px;
+  margin-left: 2%;
   display: inline-block;
-  margin: 22px 0px 0px 2%;
 }
 
 /* Header-icons */
@@ -138,11 +139,12 @@
 /* Styling for voted topics */
 
 .voted {
-  background-color: #64D4E5;
+  background-color: #ACACAC;
 }
 
 .voted:hover {
   color: #313131;
+  background-color: #ACACAC;
 }
 
 
