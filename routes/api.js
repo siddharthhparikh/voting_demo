@@ -211,25 +211,25 @@ router.post('/approved', function (req, res) {
   chaincode.invoke('change_status', args, function (err, data) {
     if (err != null) {
       console.log("error="+err)
-      res.json('{"status" : "failure", "Error": err}');
+      res.end('{"status" : "failure", "Error": err}');
     }
     chaincode.query('get_UserID', [req.body.Email], function (err, data) {
       if (err != null) {
-          res.json('{"status" : "failure", "Error": err}');
+          res.end('{"status" : "failure", "Error": err}');
       }
       console.log(data.AllAccReq)
       //console.log(bin2String(data.AllAccReq))
       chaincode.registerAndEnroll(data.AllAccReq, "user", function (err, cred) {
         if (err != null) {
-          res.json('{"status" : "failure", "Error": err}');
+          res.end('{"status" : "failure", "Error": err}');
         }
         console.log("\n\n\ncreate account result:")
         console.log(cred);
         mail.email(req.body.Email, cred, function (err) {
           if (err != null) {
-            res.json('{"status" : "failure", "Error": err}');
+            res.end('{"status" : "failure", "Error": err}');
           }
-          //res.json('{"status" : "success"}');
+          res.end('{"status" : "success"}');
         });
       });
     });
