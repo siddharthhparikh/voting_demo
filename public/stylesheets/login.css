@@ -16,16 +16,16 @@
   height: auto;
 
   margin-top: 15px;
-  padding: 25px;
+  padding: 0px 25px;
 }
 
 .info-box {
-  height: 350px;
+  height: 345px;
 }
 
 .info-box p {
   text-align: left;
-  margin: 10px 0px 5px 15px;
+  margin: 5px 0px 5px 15px;
 }
 
 #open-register {
@@ -78,33 +78,6 @@
   line-height: 36px;
   margin: 30px 0px 10px 0px;
 }
-
-#priv-type{
-  font-family: "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
-  font-size: 26px;
-  height: 40px;
-  width: 88%;
-  margin: 3px auto 3px auto; 
-  padding-left: 10px; 
-  color: #313131;
-  background-color: #F7F7F7;
-  border: none;
-  border-radius: 40px;
-
-  -webkit-transition: all 0.30s ease-in-out;
-  -moz-transition: all 0.30s ease-in-out;
-  -ms-transition: all 0.30s ease-in-out;
-  -o-transition: all 0.30s ease-in-out;
-  outline: none;
-}
-
-#prive-type:focus {
-  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
-  padding: 3px 0px 3px 3px;
-  margin: 5px 1px 3px 0px;
-  border: 1px solid rgba(81, 203, 238, 1);
-}
-
 
 
 
