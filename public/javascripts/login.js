@@ -94,20 +94,8 @@ $(document).ready(function () {
       $.post('/api/register', newUser, function (data, status) {
         if (status == 'success') {
           console.log(data)
-          
-          window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-          window.requestFileSystem(window.TEMPORARY, 1024 * 1024, function (fs) {
-            fs.root.getFile('C:/priv.pem', { create: true }, function (fileEntry) { // test.bin is filename
-              fileEntry.createWriter(function (fileWriter) {
-                var blob = new Blob(data);
-                fileWriter.addEventListener("writeend", function () {
-                  location.href = fileEntry.toURL();
-                }, false);
-                fileWriter.write(blob);
-              }, function () { });
-            }, function () { });
-          }, function () { });
-
+          var file = new File([data], "hello world.txt", {type: "text/plain;charset=utf-8"});
+          saveAs(file);
           $('#register-box').fadeOut();
           $('#error-msg').html('New account request has been sent.');
         }
