@@ -201,9 +201,11 @@ router.post('/approved', function (req, res) {
   var privPem = keys.toPrivatePem('base64');
   console.log('privPem:', privPem);
   var priv = ursa.createPrivateKey(privPem, '', 'base64');
+  console.log('priv:', priv);
   var pubPem = keys.toPublicPem('base64');
   console.log('pubPem:', pubPem);
   var pub = ursa.createPublicKey(pubPem, 'base64');
+  console.log('pub:', pub);
 
   var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount]
   console.log("In approved args")
