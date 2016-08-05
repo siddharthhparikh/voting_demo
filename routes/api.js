@@ -195,14 +195,22 @@ router.post('/approved', function (req, res) {
   console.log(req.body)
   console.log(req.body.Email)
 
-  var key = ursa.generatePrivateKey(1024, 65537);
-  var privpem = key.toPrivatePem();
-  var pubpem = key.toPublicPem();
-  var priv = ursa.createPrivateKey(privpem)
-  var pub = ursa.createPublicKey(pubpem)
-  console.log(pubpem);
-  console.log(pub);
-  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubpem]
+  var keys = ursa.generatePrivateKey();
+  //console.log('keys:', keys);
+
+  // reconstitute the private key from a base64 encoding  
+  var privPem = keys.toPrivatePem('base64');
+  //console.log('privPem:', privPem);
+
+  //var priv = ursa.createPrivateKey(privPem, '', 'base64');
+
+  // make a public key, to be used for encryption
+  var pubPem = keys.toPublicPem('base64');
+  //console.log('pubPem:', pubPem);
+
+  //var pub = ursa.createPublicKey(pubPem, 'base64');
+  
+  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubPem]
   console.log("In approved args")
   console.log(args)
   chaincode.invoke('change_status', args, function (err, data) {
@@ -221,7 +229,7 @@ router.post('/approved', function (req, res) {
           res.end('{"status" : "failure", "Error": err}');
         }
         console.log("\n\n\ncreate account result:")
-        cred.privKey = privpem
+        cred.privKey = privPem
         mail.email(req.body.Email, cred, function (err) {
           if (err != null) {
             res.end('{"status" : "failure", "Error": err}');
