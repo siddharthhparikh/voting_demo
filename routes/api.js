@@ -190,14 +190,6 @@ router.get('/manager', function (req, res) {
   }
 });
 
-function bin2String(array) {
-  var result = "";
-  for (var i = 0; i < array.length; i++) {
-    result += String.fromCharCode(parseInt(array[i], 2));
-  }
-  return result;
-}
-
 router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
@@ -223,12 +215,11 @@ router.post('/approved', function (req, res) {
   var msg = "A GIRL HAS NO NAME"
   sig = priv.hashAndSign('sha256', msg, 'utf8', 'base64');
   console.log("signed:", sig);
-  var enc = pub.encrypt(data);
-  console.log('enc:', enc);
-  console.log('enc:', bin2String(enc));
-  var unenc = priv.decrypt(enc);
-  console.log('unenc:', unenc);
-  console.log('unenc:', bin2String(unenc));
+  rcv = new Buffer(rsv).toString('base64');
+
+  if (!pub.hashAndVerify('sha256', rcv, sig, 'base64')) {
+    throw new Error("invalid signature");
+  }
   
   //End Here
   var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubPem]
