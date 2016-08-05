@@ -12,7 +12,7 @@ var exports = module.exports;
 // Create a client chain
 var chaincodeName = 'voting_chaincode'
 var chain = hfc.newChain("voting");
-chain.setDeployWaitTime(120);
+chain.setDeployWaitTime(300);
 var chaincodeID = null;
 
 
@@ -33,23 +33,26 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     chain.setECDSAModeForGRPC(true);
 
     console.log('loading hardcoding users and certificate authority...')
-    caURL = 'grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_ca.us.blockchain.ibm.com:30303';
+    //caURL = 'grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_ca.us.blockchain.ibm.com:30303';
+    caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
     peerURLs = []
-    peerURLs.push('grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_vp0.us.blockchain.ibm.com:30303');
+    //peerURLs.push('grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_vp0.us.blockchain.ibm.com:30303');
+    peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
 
     registrar = {
-        'username': 'WebAppAdmin',
-        'secret': 'a24f77ffbf'
+        'username': 'ethanicus',
+        'secret': 'trainisland'
+        //'secret': 'a24f77ffbf'
     }
 
     // Set the URL for member services
     console.log('adding ca: \'' + caURL + '\'');
-    chain.setMemberServicesUrl(caURL, { pem: pem });
+    chain.setMemberServicesUrl(caURL, {pem: pem});
 
     // Add all peers' URL
     for (var i in peerURLs) {
-        console.log('adding ca: \'' + peerURLs[i] + '\'');
-        chain.addPeer(peerURLs[i], { pem: pem });
+        console.log('adding peer: \'' + peerURLs[i] + '\'');
+        chain.addPeer(peerURLs[i], {pem: pem});
     }
 
     console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
@@ -67,7 +70,7 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
 
     });
 } else {
-    console.log('[ERROR] No permission file found')
+    console.log('[ERROR] us.blockchain.ibm.com.cert not found')
 }
 
 function cb_deployed() {
