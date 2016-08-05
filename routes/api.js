@@ -25,6 +25,7 @@ router.post('/login', function (req, res, next) {
   var password = user.password;
   console.log("inside /login");
   var args = [];
+  args.push(username);
   args.push(password);
   chaincode.query('check_account', args, function (err, data) {
     console.log("[ERROR]", err)

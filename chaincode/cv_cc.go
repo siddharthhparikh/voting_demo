@@ -154,12 +154,12 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	fmt.Println("inside check account args")
 	fmt.Println(args)
-	if len(args) != 1 {
-		fmt.Println("Could not obtain username passed to createAcount")
-		return nil, errors.New("Incorrect number of arguments. Expecting 3")
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2")
 	}
 
-	userID := args[0]
+	email := args[0]
+	userID := args[1]
 	if userID == "master-manager" {
 		fmt.Println("Got Manager")
 		return nil, nil
@@ -168,7 +168,7 @@ func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) 
 	var column []shim.Column
 	column = append(column, shim.Column{Value: &shim.Column_String_{String_: userID}})
 	row, errGetRow := stub.GetRow("ApprovedAccounts", column)
-	if len(row.Columns) == 0 || errGetRow != nil {
+	if len(row.Columns) == 0 || errGetRow != nil || t.readStringSafe(row.Columns[2]) != email {
 		fmt.Println("UserID does not exist. Please click on forgot password to recover account. [Just kidding, you can't]")
 		return nil, errors.New("UserID already exist. Please click on forgot password to recover account")
 	}
