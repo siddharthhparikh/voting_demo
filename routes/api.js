@@ -201,7 +201,7 @@ router.post('/approved', function (req, res) {
   //var priv = ursa.createPrivateKey(privpem)
   //var pub = ursa.createPublicKey(pubpem)
   
-  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubPem]
+  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubpem]
   console.log("In approved args")
   console.log(args)
   chaincode.invoke('change_status', args, function (err, data) {
