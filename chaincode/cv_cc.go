@@ -42,6 +42,7 @@ type Account struct {
 	Org        string   `json:"org"`
 	ReqTime    string   `json:"req_time"`
 	Privileges []string `json:"privileges[]"`
+	PubKey 	   string   `json:"pub_key"`
 }
 
 var accountHeader = "account::"
@@ -269,7 +270,7 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 	account.Org = t.readStringSafe(row.Columns[3])
 	account.VoteCount = t.readUint64Safe(row.Columns[4])
 	account.ReqTime = t.readStringSafe(row.Columns[5])
-
+	account.PubKey = t.readStringSafe(row.Columns[6])
 	account.ID = "****************" //blank out account ID so user cannot view it
 
 	return account, nil
@@ -392,6 +393,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		fmt.Println(userID)
 		manager := args[3]
 		votes, _ := strconv.ParseUint(args[4], 10, 64)
+		PubKey := args[5]
 		_, err := stub.InsertRow("ApprovedAccounts",
 			shim.Row{
 				Columns: []*shim.Column{
@@ -403,6 +405,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 					&shim.Column{Value: &shim.Column_String_{String_: reqTime}},
 					&shim.Column{Value: &shim.Column_String_{String_: time.Now().String()}},
 					&shim.Column{Value: &shim.Column_String_{String_: manager}},
+					&shim.Column{Value: &shim.Column_String_{String_: PubKey}},
 				},
 			})
 		if err != nil {
@@ -1239,6 +1242,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		&shim.ColumnDefinition{Name: "req_time", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "appr_time", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "appr_manager", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "pub_key", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	// Handle table creation errors
 	if errApprovedAccount != nil {

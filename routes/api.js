@@ -35,7 +35,7 @@ router.post('/login', function (req, res, next) {
       console.log("Account does not exist. Please register");
       res.end('{"status" : "Account does not exist. Please register."}');
     }
-    
+
     console.log(user);
     req.session.name = user.account_id;
     console.log('Logging in as.....');
@@ -194,7 +194,7 @@ router.post('/approved', function (req, res) {
   console.log("request approved")
   console.log(req.body)
   console.log(req.body.Email)
-  
+
   //Generate Public and Private key Pair
   var keys = ursa.generatePrivateKey();
   console.log('keys:', keys);
@@ -207,17 +207,29 @@ router.post('/approved', function (req, res) {
   var pub = ursa.createPublicKey(pubPem, 'base64');
   console.log('pub:', pub);
 
-  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount]
+  //delete this code its not useful just for debugging
+
+  var data = new Buffer('hello world');
+  console.log('data:', data);
+
+  var enc = pub.encrypt(data);
+  console.log('enc:', enc);
+
+  var unenc = priv.decrypt(enc);
+  console.log('unenc:', unenc);
+
+  //End Here
+  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount, pubPem]
   console.log("In approved args")
   console.log(args)
   chaincode.invoke('change_status', args, function (err, data) {
     if (err != null) {
-      console.log("error="+err)
+      console.log("error=" + err)
       res.end('{"status" : "failure", "Error": err}');
     }
     chaincode.query('get_UserID', [req.body.Email], function (err, data) {
       if (err != null) {
-          res.end('{"status" : "failure", "Error": err}');
+        res.end('{"status" : "failure", "Error": err}');
       }
       console.log(data.AllAccReq)
       //console.log(bin2String(data.AllAccReq))
