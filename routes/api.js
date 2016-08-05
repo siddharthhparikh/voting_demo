@@ -220,10 +220,13 @@ router.post('/approved', function (req, res) {
   var data = new Buffer('hello world');
   console.log('data:', data);
 
-  var enc = priv.encrypt(data);
+  var msg = "A GIRL HAS NO NAME"
+  sig = priv.hashAndSign('sha256', msg, 'utf8', 'base64');
+  console.log("signed:", sig);
+  var enc = pub.encrypt(data);
   console.log('enc:', enc);
   console.log('enc:', bin2String(enc));
-  var unenc = pub.decrypt(enc);
+  var unenc = priv.decrypt(enc);
   console.log('unenc:', unenc);
   console.log('unenc:', bin2String(unenc));
   
