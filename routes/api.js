@@ -216,7 +216,7 @@ router.post('/approved', function (req, res) {
   sig = priv.hashAndSign('sha256', msg, 'utf8', 'base64');
   console.log("signed:", sig);
   var rsv;
-  rcv = new Buffer(rsv).toString('base64');
+  rcv = new Buffer(sig).toString('base64');
 
   if (!pub.hashAndVerify('sha256', rcv, sig, 'base64')) {
     throw new Error("invalid signature");
