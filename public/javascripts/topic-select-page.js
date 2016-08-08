@@ -85,9 +85,8 @@ $(document).ready(function () {
   $.get('/api/get-account', function (data, status) {
     console.log("[CURRENT USER]", data);
     // Display username in user settings and header.
-    $('#welcome').append(', ' + data.name);
     $('#username').append(data.email);
-    // Get user privileges
+    // TODO Get user privileges
     /*if(data.privileges.includes('manager')) {
       $('#manage-users').show();
     } else if(data.privileges.includes('creator')) {
