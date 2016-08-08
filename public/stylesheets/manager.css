@@ -20,6 +20,7 @@ tr {
 
 .button {
     width: 25%;
+    height: auto;
     display: inline-block;
     margin: 2px;
 }
