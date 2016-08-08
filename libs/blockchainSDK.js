@@ -4,13 +4,15 @@
  * provides functions for interacting with chaincode SDK
  */
 
-var hfc = require('hlc'); //TODO this should be hfc
+var hfc = require('hfc');
+var fs = require('fs');
 
 var exports = module.exports;
 
 // Create a client chain
 var chaincodeName = 'voting_chaincode'
 var chain = hfc.newChain("voting");
+chain.setDeployWaitTime(300);
 var chaincodeID = null;
 
 
@@ -24,40 +26,52 @@ var users = null;
 var user_manager = require("./users")
 var registrar = null; //user used to register other users and deploy chaincode
 
-console.log('loading hardcoding users and certificate authority...')
-caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
-peerURLs = []
-peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
 
-registrar = {
-    'username': 'ethanicus',
-    'secret': 'trainisland'
-}
+if (fs.existsSync("us.blockchain.ibm.com.cert")) {
+    var pem = fs.readFileSync('us.blockchain.ibm.com.cert');
 
-// Set the URL for member services
-console.log('adding ca: \'' + caURL + '\'');
-chain.setMemberServicesUrl(caURL);
+    chain.setECDSAModeForGRPC(true);
 
-// Add all peers' URL
-for (var i in peerURLs) {
-    console.log('adding ca: \'' + peerURLs[i] + '\'');
-    chain.addPeer(peerURLs[i]);
-}
+    console.log('loading hardcoding users and certificate authority...')
+    //caURL = 'grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_ca.us.blockchain.ibm.com:30303';
+    caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+    peerURLs = []
+    //peerURLs.push('grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_vp0.us.blockchain.ibm.com:30303');
+    peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
 
-console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
-chain.enroll(registrar.username, registrar.secret, function (err, user) {
-    if (err) return console.log('Error: failed to enroll user: %s', err);
+    registrar = {
+        'username': 'ethanicus',
+        'secret': 'trainisland'
+        //'secret': 'a24f77ffbf'
+    }
 
-    console.log('successfully enrolled user \'%s\'!', registrar.username);
-    chain.setRegistrar(user);
+    // Set the URL for member services
+    console.log('adding ca: \'' + caURL + '\'');
+    chain.setMemberServicesUrl(caURL, {pem: pem});
 
-    registrar = user;
+    // Add all peers' URL
+    for (var i in peerURLs) {
+        console.log('adding peer: \'' + peerURLs[i] + '\'');
+        chain.addPeer(peerURLs[i], {pem: pem});
+    }
 
-    exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function (chaincodeID) {
-        user_manager.setup(chaincodeID, chain, cb_deployed);
+    console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
+    chain.enroll(registrar.username, registrar.secret, function (err, user) {
+        if (err) return console.log('Error: failed to enroll user: %s', err);
+
+        console.log('successfully enrolled user \'%s\'!', registrar.username);
+        chain.setRegistrar(user);
+
+        registrar = user;
+
+        exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function (chaincodeID) {
+            user_manager.setup(chaincodeID, chain, cb_deployed);
+        });
+
     });
-
-});
+} else {
+    console.log('[ERROR] us.blockchain.ibm.com.cert not found')
+}
 
 function cb_deployed() {
 

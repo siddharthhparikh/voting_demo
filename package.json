@@ -16,7 +16,7 @@
     "express": "~4.13.1",
     "express-session": "^1.14.0",
     "follow-redirects": "^0.2.0",
-    "grpc": "^0.15.0",
+    "grpc": "1.0.0-pre1",
     "hfc": "0.5.0",
     "highcharts": "^4.2.5",
     "hlc": "0.0.12",

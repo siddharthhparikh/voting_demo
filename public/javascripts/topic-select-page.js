@@ -83,6 +83,7 @@ $(document).ready(function () {
   loadTopics();
   // Get account data and access data.
   $.get('/api/get-account', function (data, status) {
+    console.log("[CURRENT USER]", data);
     // Display username in user settings and header.
     $('#username').append(data.email);
     // TODO Get user privileges

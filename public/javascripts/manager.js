@@ -45,7 +45,7 @@ $(document).ready(function () {
       location.reload();
     });
   });
-  $('#title').click(function() {
+  $('#title').click(function () {
     window.location.replace('../topics');
   });
 });
