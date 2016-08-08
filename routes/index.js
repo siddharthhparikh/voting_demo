@@ -19,7 +19,6 @@ router.get('/', function (req, res, next) {
 // Submits username and routes user to main topic page.
 router.get('/topics', function (req, res) {
   // If user doesnt not have a session id redirect them to the login page.
-  console.log("[REQ SESSION]", req.session);
   if(!req.session.name || req.session.name == null) {
     res.redirect('/');
   }
@@ -29,9 +28,9 @@ router.get('/topics', function (req, res) {
 // Routes user to selected topic page.
 router.get('/topic/:id', function (req, res) {
   // If user doesnt not have a session id redirect them to the login page.
-  // if(!req.session.name || req.session.name == null) {
-  //   res.redirect('/');
-  // }
+  if(!req.session.name || req.session.name == null) {
+    res.redirect('/');
+  }
   // Use the string query to aquire the topic id.
   var url_parts = url.parse(req.url, true);
   var id;

@@ -163,7 +163,7 @@ router.get('/user', function (req, res) {
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
-  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org], function (err, results) {
+  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org, req.body.privileges], function (err, results) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
