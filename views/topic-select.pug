@@ -13,15 +13,14 @@ block content
     Green title bar. Also contains several action buttons which activate info-box divs
   #header
     h1(id='title')= title
-    h1(class='welcome' id='welcome') Welcome
-    i(class='material-icons md-48 header-icons' id='open-user-info') account_circle
-      p(id='account-tooltip' class='tooltip') Account Info
-    i(class='material-icons md-48 header-icons hidden' id='new-topic') playlist_add
-      p(id='create-tooltip' class='tooltip') Create Topic
     i(class='material-icons header-icons' id='refresh-topics') refresh 
       p(id='refresh-tooltip' class='tooltip') Refresh Topics
+    i(class='material-icons md-48 header-icons hidden' id='new-topic') playlist_add
+      p(id='create-tooltip' class='tooltip') Create Topic
     i(class='material-icons header-icons hidden' id='manage-users') verified_user
-      p(id='manage-tooltip' class='tooltip') Manage
+      p(id='manage-tooltip' class='tooltip') Manage Users
+    i(class='material-icons md-48 header-icons' id='open-user-info') account_circle
+      p(id='account-tooltip' class='tooltip') Account Info
   //
     Main content block. Master content encompases whole screen while content block displays actual content.
     Master content is used to handel click events with info-box divs.
