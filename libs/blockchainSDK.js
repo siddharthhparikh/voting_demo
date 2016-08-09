@@ -131,7 +131,7 @@ exports.invoke = function (fcn, args, cb) {
 
     console.log("In blockchain sdk invoke args:");
     console.log(args)
-    
+
     var invokeRequest = {
         fcn: fcn,
         args: args,
@@ -140,6 +140,7 @@ exports.invoke = function (fcn, args, cb) {
 
     var transactionContext = registrar.invoke(invokeRequest);
 
+    console.log(invokeRequest);
     transactionContext.on('complete', function (results) {
         if (cb) {
             if (results.result) {
