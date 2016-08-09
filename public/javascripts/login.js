@@ -95,8 +95,8 @@ $(document).ready(function () {
       $.post('/api/register', newUser, function (data, status) {
         if (status == 'success') {
           console.log(data)
-          var file = new File([data], "hello world.txt", {type: "text/plain;charset=utf-8"});
-          saveAs(file);
+          //var file = new File([data], "hello world.txt", {type: "text/plain;charset=utf-8"});
+          //saveAs(file);
           $('#register-box').fadeOut();
           $('#error-msg').html('New account request has been sent.');
         }
