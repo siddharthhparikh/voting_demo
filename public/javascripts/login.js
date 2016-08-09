@@ -56,10 +56,10 @@ $(document).ready(function () {
       }
       document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
     }
-
+    console.log(output)
     document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
-    
+
     var user = {
       'account_id': $('#username').val(),
       'password': $('#password').val()
