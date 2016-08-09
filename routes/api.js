@@ -172,7 +172,7 @@ router.post('/register', function (req, res) {
   chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org, , req.body.privileges, pubPem], function (err, results) {
 
     if (err != null) {
-      res.json('{"status" : "failure", "Error": err}');
+      res.end('{"status" : "failure", "Error": err}');
     }
 
     console.log("\n\n\nrequest account result:")
