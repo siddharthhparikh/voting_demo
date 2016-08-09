@@ -26,11 +26,6 @@ var users = null;
 var user_manager = require("./users")
 var registrar = null; //user used to register other users and deploy chaincode
 
-console.log('loading hardcoding users and certificate authority...')
-caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
-peerURLs = []
-peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
-
 
 if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     var pem = fs.readFileSync('us.blockchain.ibm.com.cert');
@@ -39,10 +34,16 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
 
     console.log('loading hardcoding users and certificate authority...')
     //caURL = 'grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_ca.us.blockchain.ibm.com:30303';
-    caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
-    peerURLs = []
+    //caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+    //peerURLs = []
     //peerURLs.push('grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_vp0.us.blockchain.ibm.com:30303');
-    peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
+    //peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
+
+    
+    console.log('loading hardcoding users and certificate authority...')
+    caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051'; 
+    peerURLs = []
+    peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
 
     registrar = {
         'username': 'ethanicus',
