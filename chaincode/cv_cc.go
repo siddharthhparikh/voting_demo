@@ -186,8 +186,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	}
 
 	fmt.Println("In request Account username= " + args[0] + " email = " + args[1] + " org = " + args[2])
-	var privileges []string
-	var account = Account{ID: "", Name: args[0], Email: args[1], VoteCount: 0, Org: args[2], Privileges: privileges, PubKey: args[3]}
+	var account = Account{ID: "", Name: args[0], Email: args[1], VoteCount: 0, Org: args[2], Privileges: strings.Split(args[3],","), PubKey: args[4]}
 
 	//Check if request already exists
 	//user email must be unique in all the accounts

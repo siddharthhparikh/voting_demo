@@ -26,7 +26,7 @@ $(document).ready(function () {
       }
     });
   }, 2000);
-  
+
   //Animation for register info box.
   $('#open-register').click(function () {
     $('#register-box').animate({ height: 'toggle' }, 'fast');
@@ -43,6 +43,17 @@ $(document).ready(function () {
   $('#submit').click(function (e) {
     e.preventDefault();
 
+    document.getElementById('file').addEventListener('change', readFile, false);
+    function readFile(evt) {
+      var files = evt.target.files;
+      var file = files[0];
+      var reader = new FileReader();
+      reader.onload = function () {
+        console.log(this.result);
+      }
+      reader.readAsText(file)
+    }
+    readFile('/c/Users/IBM_ADMIN/Downloads/privKey')
     var user = {
       'account_id': $('#username').val(),
       'password': $('#password').val()
@@ -88,7 +99,7 @@ $(document).ready(function () {
         'name': $('#name').val(),
         'email': $('#email').val(),
         'org': $('#organization').val(),
-        'privileges':$('#priv-type').val()
+        'privileges': $('#priv-type').val()
       };
       //Send request object.
       //console.log(newUser)
