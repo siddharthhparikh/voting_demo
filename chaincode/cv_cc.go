@@ -161,7 +161,7 @@ func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) 
 
 	email := args[0]
 	userID := args[1]
-	if userID == "master-manager" {
+	if userID == "master-manager" && email == "manager" {
 		fmt.Println("Got Manager")
 		return nil, nil
 	}
