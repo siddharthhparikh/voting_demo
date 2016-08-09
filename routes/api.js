@@ -19,37 +19,41 @@ router.post('/login', function (req, res, next) {
   var user = req.body;
   // TODO check if the user already exsits in db.
 
+  console.log("[USER]", user);
+
   var username = user.account_id;
-  var password = user.account_pass;
+  var password = user.password;
   console.log("inside /login");
-  chaincode.query('check_account', [username], function (err, data) {
-    console.log("error = " + err)
+  var args = [];
+  args.push(username);
+  args.push(password);
+  chaincode.query('check_account', args, function (err, data) {
+    console.log("[ERROR]", err)
     if (err != null) {
       console.log("Account does not exist. Please register");
-      res.json('{"status" : "Account does not exist. Please register."}');
+      res.end('{"status" : "Account does not exist. Please register."}');
     }
-    chaincode.login(username, password, function (err) {
-      if (err != null) {
-        res.json('{"status" : "Invalid login."}');
-      }
-      req.session.name = user.account_id;
-      console.log('Logging in as.....');
-      console.log(req.session.name);
-      // Send response.
-      if (username.indexOf('manager') > -1) {
-        res.json('{"status" : "success", "type": "manager"}');
-      }
-      else {
-        res.json('{"status" : "success", "type": "user"}');
-      }
-    });
+    
+    console.log(user);
+    req.session.name = user.account_id;
+    console.log('Logging in as.....');
+    console.log(req.session.name);
+    //Send response.
+    if (username.indexOf('manager') > -1) {
+      res.end('{"status" : "success", "type": "manager"}');
+    }
+    else {
+      res.end('{"status" : "success", "type": "user"}');
+    }
   });
 });
 
-router.get('/get-account', function (req, res, next) {
-  var args = req.body.account_id;
+router.get('/get-account', function (req, res) {
+  var args = [];
+  args.push(req.session.name);
   chaincode.query('get_account', args, function (err, data) {
     if (data) {
+      console.log("[ACCOUNT]", data);
       res.json(data);
     } else {
       res.json('{"status" : "could not retrieve user"}');
@@ -159,7 +163,7 @@ router.get('/user', function (req, res) {
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
-  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org], function (err, results) {
+  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org, req.body.privileges], function (err, results) {
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
@@ -193,6 +197,7 @@ router.post('/approved', function (req, res) {
     req.body.Name,
     req.body.Email,
     req.body.Org,
+    req.body.Privileges,
     req.session.name,
     req.body.VoteCount
   ]
@@ -219,7 +224,7 @@ router.post('/approved', function (req, res) {
           if (err != null) {
             res.json('{"status" : "failure", "Error": err}');
           }
-          res.json('{"status" : "success"}');
+          //res.json('{"status" : "success"}');
         });
       });
     });
@@ -230,7 +235,7 @@ router.post('/declined', function (req, res) {
   console.log("request declined")
   console.log(req.body)
   console.log(req.body.Email)
-  var args = ["declined", req.body.Name, req.body.Email, req.body.Org];
+  var args = ["declined", req.body.Name, req.body.Email, req.body.Org, req.body.Privileges];
   console.log("Email sent");
   console.log("For changing status ars are: ")
   console.log(args)
@@ -240,7 +245,7 @@ router.post('/declined', function (req, res) {
       if (err != null) {
         res.json('{"status" : "failure", "Error": err}');
       }
-      res.json('{"status" : "success"}');
+      //res.json('{"status" : "success"}');
     });
   });
 });

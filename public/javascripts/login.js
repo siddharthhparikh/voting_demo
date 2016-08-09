@@ -26,16 +26,15 @@ $(document).ready(function () {
     }
   });
   }, 2000);
-
+  
   //Animation for register info box.
   $('#open-register').click(function() {
     $('#register-box').animate({ height: 'toggle'}, 'fast');
   });
   // Hides menus when user clicks out of them.
-  $(document).click(function(event){
-    if(!$(event.target).is('.info-box') && !$(event.target).is('.info-box h1') && !$(event.target).is('.info-box p') && !$(event.target).is('#open-register') && !$(event.target).is('.reg-info')){
-      $('.info-box').fadeOut('fast');
-    }     
+  // Hides menus when user clicks out of them.
+  $('#master-content').click(function() {
+    $('.info-box').fadeOut('fast');
   });
 
   //
@@ -48,8 +47,10 @@ $(document).ready(function () {
       'account_id': $('#username').val(),
       'password': $('#password').val()
     };
+    console.log(user);
     $.post('/api/login', user, function (data, status) {
       data = JSON.parse(data);
+      console.log("[DATA]", data);
       // Handle respse "clonse.
       if (data.status === 'success') {
         // Redirect user.
@@ -57,6 +58,7 @@ $(document).ready(function () {
           window.location.replace("../topics");
         }
         else if(data.type === 'manager') {
+          console.log("redirecting to manager...");
           window.location.replace("../manager");
         }
       } else {
@@ -71,8 +73,8 @@ $(document).ready(function () {
   //
   $('#register-user').click(function() {
     var errFlag = false;
-    $('.reg-info').each(function(){
-      var index = $(".reg-info").index(this);
+    $('.registration-info').each(function(){
+      var index = $(".registration-info").index(this);
       if ($(this).val() == '' && errFlag == false) {
         errFlag = true;
         alert('Error: Input fields can not be left empty.');
@@ -85,7 +87,8 @@ $(document).ready(function () {
       var newUser = {
         'name': $('#name').val(),
         'email': $('#email').val(),
-        'org': $('#organization').val()
+        'org': $('#organization').val(),
+        'privileges':$('#priv-type').val()
       };
       //Send request object.
       console.log(newUser)

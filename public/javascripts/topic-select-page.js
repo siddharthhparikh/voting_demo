@@ -42,15 +42,14 @@ function loadTopics() {
       // Create a lot of buttons from the topic list.
       var count = 0;
       for (var i in data) {
-        console.log(data[i].Topic)
         // Load Closed topics.
         if (showClosedTopics) {
           if (data[i].Status == "closed" || data[i].Status == "voted") {
             var disabledStr = "";//(data[i].Status == "voted") ? " disabled" : ""; //TODO commented out for DEBUGGING
             var html;
             // Give voted topics a specialized background color.
-            if(data[i].Status == "voted") {
-              html = '<button class="topic button voted" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';  
+            if (data[i].Status == "voted") {
+              html = '<button class="topic button voted" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             } else {
               html = '<button class="topic button closed" id="' + data[i].Topic.topic_id + '"' + disabledStr + '>' + data[i].Topic.topic + '</button>';
             }
@@ -77,71 +76,96 @@ function loadTopics() {
 }
 
 $(document).ready(function () {
-  // 
-  // Animation and page set up.
-  //
+  // // // // // // // // // //
+  // Page set up and queries //
+  // // // // // // // // // //
+   $('.hidden').hide();
   loadTopics();
-  // Display welcome msg and populate info-box.
-  $.get('/api/user', function (data, status) {
-    $('#welcome-end').append(', ' + data.user);
-    $('#username').append(data.user);
-    // TODO append votes to #user-votes
+  // Get account data and access data.
+  $.get('/api/get-account', function (data, status) {
+    console.log("[CURRENT USER]", data);
+    // Display username in user settings and header.
+    $('#username').append(data.email);
+    // TODO Get user privileges
+    if(data["privileges[]"].includes('manager')) {
+      $('#manage-users').show();
+    } else if(data["privileges[]"].includes('creator')) {
+      $('#new-topic').show();
+    }
   });
-  // Secret button.
-  $('.welcome-o').click(function () {
-    $.get('/api/o', function (data, status) { });
-  });
-
+  // // // // // // // // //
+  // Init page animations //
+  // // // // // // // // //
   // Hide all hidden elements
-  $('.hidden').hide();
-
   //Animation for new topic, info box.
   $('#new-topic').click(function () {
     $('#user-info').hide();
     $('#topic-creation').animate({ height: 'toggle' }, 'fast');
   });
-
-  //Animation for new topic, info box.
   $('#open-user-info').click(function () {
     $('#topic-creation').hide();
     $('#user-info').animate({ height: 'toggle' }, 'fast');
   });
-
+  // // // // // // // // // //
+  // Init page onclick events//
+  // // // // // // // // // //
   // Hides menus when user clicks out of them.
   $('#master-content').click(function (event) {
-    //if (!$(event.target).is('.info-box') && !$(event.target).is('.delete-candidate') && !$(event.target).is('#add-cand') && !$(event.target).is('.info-box h1') && !$(event.target).is('.info-box p') && !$(event.target).is('.header-icons') && !$(event.target).is('.topic-input')) {
       $('.info-box').fadeOut('fast');
-    //}
   });
-
   // Set click action for refresh button.
   $('#refresh-topics').click(loadTopics);
-
-  // For date picking
+  // Set click action for manage users button
+  $('#manage-users').click(function(){
+    window.location.replace('../manager');
+  });
+  // Clicke event for data picking
   $('#datepicker').click(function () {
     $("#datepicker").datepicker();
   });
-
-  // Tabs for open/closed topic switching
+  // Click events for open/closed topic tab switching
   $(document).on('click', '.inactive', function () {
     $('.active').removeClass('active').addClass('inactive');
     $(this).addClass('active').removeClass('inactive');
     loadTopics();
   });
+  // Click event to add new candidate button.
+  $('#add-cand').click(function () {
+    var html = '<div class="candidate-div"><input type="text" class="topic-candidate" placeholder="Candidate"/><i class="material-icons delete-candidate">close</i></div>';
+    $('#candidate-append').append(html);
+  });
+  // Click event to delete topic candidate
+  $(document).on('click', '.delete-candidate', function() {
+    $(this).parent().remove();
+  });
+  // Click event to redirect to a new topic
+  $(document).on('click', '.topic', function () {
+    // Voted topics will not redirect.
+    if(!$(this).hasClass('voted')) {
+      // Reroute the user to the topic page with a string query.
+      window.location.replace("../topic/id?=" + $(this).context.id);
+    } else {
+      alert('Topics you have voted on can not be viewed until the voting period has ended.');
+    }
+  });
+  // Click event for home button
+  $('#title').click(function() {
+    window.location.replace('../topics');
+  });
 
-  //
-  // Topic generation for in the 'create' info-box
-  //
+  // // // // // // // // // // / // // // // // // // //
+  // Topic generation for in the create topic info-box //
+  // // // // / // // // // // // // // // // // // // //
   $('#topic-submit').click(function () {
     var errFlag = false;
-    //TODO this doesn't work
-    // $('.form-label').each(function(key, value){
-    //   var index = $(".reg-info").index(this);
-    //   if ($(this).val() == '' && errFlag == false) {
-    //     errFlag = true;
-    //     alert('Error: Input fields can not be left empty.');
-    //   }
-    // });
+    // Check for blank input fields
+    $('.topic-input').each(function(key, value){
+      var index = $('.topic-input').index(this);
+      if ($(this).val() == '' && errFlag == false) {
+        errFlag = true;
+        alert('Error: Input fields can not be left empty.');
+      }
+    });
     if (!errFlag) {
       // First grab all candidates the user creates
       var choices = [];
@@ -158,7 +182,7 @@ $(document).ready(function () {
         if (!countdown || (countdown < 0)) {
           console.log('Could not create unique ID for topic, sorry!')
           return;
-        } 
+        }
 
         var id = generateID(Math.max($('#topic-name').val().length, MIN_ID_LENGTH));
         $.get('/api/topic-check', { "topicID": id }, function (data, status) {
@@ -202,34 +226,4 @@ $(document).ready(function () {
     $('#topic-creation').fadeOut();
   });
 
-  //
-  // Add new candidate button.
-  //
-  $('#add-cand').click(function () {
-    var html = '<div class="candidate-div"><input type="text" class="topic-candidate" placeholder="Candidate"/><i class="material-icons delete-candidate">close</i></div>';
-    $('#candidate-append').append(html);
-  });
-
-  //
-  // Onclick events for buttons.
-  //
-  $(document).on('click', '.topic', function () {
-    // Voted topics will not redirect.
-    if(!$(this).hasClass('voted')) {
-      // Reroute the user to the topic page with a string query.
-      window.location.replace("../topic/id?=" + $(this).context.id);
-    } else {
-      alert('Topics you have voted on can not be viewed until the voting period has ended.');
-    }
-  });
-  
-  // Delete topic candidate
-  $(document).on('click', '.delete-candidate', function() {
-    $(this).parent().remove();
-  });
-
-  // Home button
-  $('#title').click(function() {
-    window.location.replace('../topics');
-  });
 });

@@ -2,24 +2,17 @@
 
 .button {
   font-family: "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
-
   word-wrap: normal;
-
-  width: 90%;
-  height: auto;
-
+  width: 93%;
+  height: 50px;
   color: #313131;
   background-color: #F7F7F7;
-
   font-size: 20px;
-
   cursor: pointer;
-
   border-radius: 5px;
+  padding: 5px;
   border: none;
-
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-
+  box-shadow: 2px 3px 10px 1px rgba(0, 0, 0, 0.2);
   margin: 3px auto 3px auto;  
 }
 
@@ -36,3 +29,91 @@
   background-color: #141414;
   color: #F7F7F7;
 }
+
+
+
+/* Generic styling for all input fields */
+
+input[type=text], textarea {
+  font-family: "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
+  font-size: 26px;
+  text-align: center;
+
+  width: 90%;
+  height: 40px;
+
+  padding: 5px;
+  margin: 3px auto 3px auto;
+
+  background-color: #F7F7F7;
+
+  border: none;
+  border-radius: 5px;
+
+  box-shadow: 1px 2px 4px 1px rgba(0, 0, 0, 0.22);
+
+  -webkit-transition: all 0.40s ease-in-out;
+  -moz-transition: all 0.40s ease-in-out;
+  -ms-transition: all 0.40s ease-in-out;
+  -o-transition: all 0.40s ease-in-out;
+  outline: none;
+}
+
+input[type=text]:focus {
+  box-shadow: 2px 4px 5px 1px rgba(0, 0, 0, 0.3);
+}
+
+input[type=password] {
+  font-family: "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
+  font-size: 26px;
+  text-align: center;
+
+  width: 90%;
+  height: 40px;
+
+  padding: 5px;
+  margin: 3px auto 3px auto;
+
+  background-color: #F7F7F7;
+
+  box-shadow: 1px 3px 5px 1px rgba(0, 0, 0, 0.22);
+  
+  border: none;
+  border-radius: 5px;
+
+  -webkit-transition: all 0.40s ease-in-out;
+  -moz-transition: all 0.40s ease-in-out;
+  -ms-transition: all 0.40s ease-in-out;
+  -o-transition: all 0.40s ease-in-out;
+  outline: none;
+}
+
+input[type=password]:focus {
+  box-shadow: 2px 4px 5px 1px rgba(0, 0, 0, 0.3);
+}
+
+select {
+  font-family: "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
+  font-size: 26px;
+  text-align: center;
+
+  width: 90%;
+  height: 40px;
+
+  padding: 5px 5px 5px 10px;
+  margin: 3px auto 3px auto;
+
+  background-color: #F7F7F7;
+
+  box-shadow: 1px 3px 5px 1px rgba(0, 0, 0, 0.22);
+  
+  border: none;
+  border-radius: 5px;
+
+  -webkit-transition: all 0.40s ease-in-out;
+  -moz-transition: all 0.40s ease-in-out;
+  -ms-transition: all 0.40s ease-in-out;
+  -o-transition: all 0.40s ease-in-out;
+  outline: none;
+}
+

@@ -15,11 +15,12 @@ table {
 }
 
 tr {
-    height: 56px;
+  height: 56px;
 }
 
 .button {
     width: 25%;
+    height: auto;
     display: inline-block;
     margin: 2px;
 }
@@ -34,7 +35,7 @@ tr {
   margin-bottom: 10px;
 }
 
-.vote-ammount {
+.vote-amount {
   width: 40px;
   height: 30px;
 
