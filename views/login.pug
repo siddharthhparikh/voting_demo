@@ -21,6 +21,8 @@ block content
     #content-block(class='hidden')
       input(type='text' placeholder='Email' id='username')
       input(type='password' placeholder='Password' id='password')
+      input#files(type='file', name='files[]', multiple='')
+      output#list
       p
       input(type='submit' class='button' id='submit' value='Submit')
       p(id='error-msg')
