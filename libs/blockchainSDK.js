@@ -129,6 +129,9 @@ exports.invoke = function (fcn, args, cb) {
         return new Error("No chaincode ID implies chaincode has not yet deployed");
     }
 
+    console.log("In blockchain sdk invoke args:");
+    console.log(args)
+    
     var invokeRequest = {
         fcn: fcn,
         args: args,
