@@ -197,6 +197,7 @@ router.post('/approved', function (req, res) {
     req.body.Name,
     req.body.Email,
     req.body.Org,
+    req.body.Privileges,
     req.session.name,
     req.body.VoteCount
   ]
@@ -234,7 +235,7 @@ router.post('/declined', function (req, res) {
   console.log("request declined")
   console.log(req.body)
   console.log(req.body.Email)
-  var args = ["declined", req.body.Name, req.body.Email, req.body.Org];
+  var args = ["declined", req.body.Name, req.body.Email, req.body.Org, req.body.Privileges];
   console.log("Email sent");
   console.log("For changing status ars are: ")
   console.log(args)

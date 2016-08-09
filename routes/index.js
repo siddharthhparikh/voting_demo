@@ -56,11 +56,11 @@ router.get('/topic/:id', function (req, res) {
 router.get('/manager', function(req, res) {
   //TODO add check to see if user is manager.
   // This might do that but unsure.
-  if(req.session.name.includes('manager')){
+  //if(req.session.name.includes('manager')){
     res.render('manager', {title: 'Chain Vote'});
-  } else {
-    res.redirect('/');
-  }
+  //} else {
+  //  res.redirect('/');
+  //}
 });
 
 // Logs out the user and wipes their session data.
