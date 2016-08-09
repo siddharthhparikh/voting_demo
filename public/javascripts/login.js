@@ -91,10 +91,12 @@ $(document).ready(function () {
         'privileges':$('#priv-type').val()
       };
       //Send request object.
-      console.log(newUser)
+      //console.log(newUser)
       $.post('/api/register', newUser, function (data, status) {
+        console.log("status = " + status)
         if (status == 'success') {
           console.log(data)
+          window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(data)));
           //var file = new File([data], "hello world.txt", {type: "text/plain;charset=utf-8"});
           //saveAs(file);
           $('#register-box').fadeOut();
