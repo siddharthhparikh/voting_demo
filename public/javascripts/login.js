@@ -96,7 +96,8 @@ $(document).ready(function () {
         console.log("status = " + status)
         if (status == 'success') {
           console.log(data)
-          window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(data)));
+          window.open("data:text/json;charset=utf-8," + escape(data));
+          localStorage.privKey = data;
           //var file = new File([data], "hello world.txt", {type: "text/plain;charset=utf-8"});
           //saveAs(file);
           $('#register-box').fadeOut();
