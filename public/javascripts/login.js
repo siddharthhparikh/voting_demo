@@ -56,6 +56,7 @@ $(document).ready(function () {
       }
     };
 
+    var file = files[0]
     reader.readAsText(file)
 
     var user = {
