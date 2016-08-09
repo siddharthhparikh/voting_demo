@@ -83,15 +83,15 @@ $(document).ready(function () {
   loadTopics();
   // Get account data and access data.
   $.get('/api/get-account', function (data, status) {
+    console.log("[CURRENT USER]", data);
     // Display username in user settings and header.
-    $('#welcome').append(', ' + data.name);
     $('#username').append(data.email);
-    // Get user privileges
-    /*if(data.privileges.includes('manager')) {
+    // TODO Get user privileges
+    if(data["privileges[]"].includes('manager')) {
       $('#manage-users').show();
-    } else if(data.privileges.includes('creator')) {
+    } else if(data["privileges[]"].includes('creator')) {
       $('#new-topic').show();
-    }*/
+    }
   });
   // // // // // // // // //
   // Init page animations //
@@ -153,9 +153,9 @@ $(document).ready(function () {
     window.location.replace('../topics');
   });
 
-  // // / // // // // // // // / // // // // // // //
+  // // // // // // // // // // / // // // // // // // //
   // Topic generation for in the create topic info-box //
-  // // // // // // // // // // // // // // // // //
+  // // // // / // // // // // // // // // // // // // //
   $('#topic-submit').click(function () {
     var errFlag = false;
     // Check for blank input fields
@@ -226,40 +226,4 @@ $(document).ready(function () {
     $('#topic-creation').fadeOut();
   });
 
-  //
-  // Add new candidate button.
-  //
-  $('#add-cand').click(function () {
-    var html = '<div class="candidate-div"><input type="text" class="topic-candidate" placeholder="Candidate"/><i class="material-icons delete-candidate">close</i></div>';
-    $('#candidate-append').append(html);
-  });
-
-  //
-  // Onclick events for buttons.
-  //
-  $(document).on('click', '.topic', function () {
-    // Voted topics will not redirect.
-    if (!$(this).hasClass('voted')) {
-      // Reroute the user to the topic page with a string query.
-      window.location.replace("../topic/id?=" + $(this).context.id);
-    } else {
-      $.get('/api/get-topic', { 'topicID': $(this).context.id }, function (data, status) {
-        if (data) {
-          alert('You have already voted for this topic; results will be available one the voting period has ended (' + data.Topic.expire_date.substring(0, 10) + ')');
-        } else {
-          alert('Error retrieving topic info');
-        }
-      });
-    }
-  });
-  
-  // Delete topic candidate
-  $(document).on('click', '.delete-candidate', function() {
-    $(this).parent().remove();
-  });
-
-  // Home button
-  $('#title').click(function () {
-    window.location.replace('../topics');
-  });
 });

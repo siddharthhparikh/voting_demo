@@ -26,7 +26,7 @@ $(document).ready(function () {
       }
     });
   }, 2000);
-
+  
   //Animation for register info box.
   $('#open-register').click(function () {
     $('#register-box').animate({ height: 'toggle' }, 'fast');
@@ -87,7 +87,8 @@ $(document).ready(function () {
       var newUser = {
         'name': $('#name').val(),
         'email': $('#email').val(),
-        'org': $('#organization').val()
+        'org': $('#organization').val(),
+        'privileges':$('#priv-type').val()
       };
       //Send request object.
       console.log(newUser)

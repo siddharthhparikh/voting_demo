@@ -19,19 +19,18 @@ router.get('/', function (req, res, next) {
 // Submits username and routes user to main topic page.
 router.get('/topics', function (req, res) {
   // If user doesnt not have a session id redirect them to the login page.
-  console.log("[REQ SESSION]", req.session);
-  if(!req.session.name || req.session.name == null) {
-    res.redirect('/');
-  }
+  // if(!req.session.name || req.session.name == null) {
+  //   res.redirect('/');
+  // }
   res.render('topic-select', { title: 'Chain Vote' });
 });
 
 // Routes user to selected topic page.
 router.get('/topic/:id', function (req, res) {
   // If user doesnt not have a session id redirect them to the login page.
-  if(!req.session.name || req.session.name == null) {
-    res.redirect('/');
-  }
+  // if(!req.session.name || req.session.name == null) {
+  //   res.redirect('/');
+  // }
   // Use the string query to aquire the topic id.
   var url_parts = url.parse(req.url, true);
   var id;
@@ -57,11 +56,11 @@ router.get('/topic/:id', function (req, res) {
 router.get('/manager', function(req, res) {
   //TODO add check to see if user is manager.
   // This might do that but unsure.
-  if(req.session.name.includes('manager')){
+  //if(req.session.name.includes('manager')){
     res.render('manager', {title: 'Chain Vote'});
-  } else {
-    res.redirect('/');
-  }
+  //} else {
+  //  res.redirect('/');
+  //}
 });
 
 // Logs out the user and wipes their session data.

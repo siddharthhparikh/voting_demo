@@ -16,16 +16,16 @@
   height: auto;
 
   margin-top: 15px;
-  padding: 25px;
+  padding: 0px 25px;
 }
 
 .info-box {
-  height: 275px;
+  height: 345px;
 }
 
 .info-box p {
   text-align: left;
-  margin: 10px 0px 5px 15px;
+  margin: 5px 0px 5px 15px;
 }
 
 #open-register {
@@ -44,9 +44,8 @@
 #submit {
   display: block;
 
+  font-size: 26px;
   height: 50px;
-
-  margin-bottom: 10px;
 }
 
 #error-msg {
