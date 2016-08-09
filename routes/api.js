@@ -169,7 +169,8 @@ router.post('/register', function (req, res) {
   var privPem = keys.toPrivatePem('base64');
   var pubPem = keys.toPublicPem('base64');
     
-  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org, pubPem], function (err, results) {
+  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org, , req.body.privileges, pubPem], function (err, results) {
+
     if (err != null) {
       res.json('{"status" : "failure", "Error": err}');
     }
@@ -197,7 +198,18 @@ router.get('/manager', function (req, res) {
 
 router.post('/approved', function (req, res) {
 
-  var args = ["approved", req.body.Name, req.body.Email, req.body.Org, req.session.name, req.body.VoteCount]
+  console.log("request approved")
+  console.log(req.body)
+  console.log(req.body.Email)
+  var args = [
+    "approved",
+    req.body.Name,
+    req.body.Email,
+    req.body.Org,
+    req.body.Privileges,
+    req.session.name,
+    req.body.VoteCount
+  ]
   console.log("In approved args")
   console.log(args)
   chaincode.invoke('change_status', args, function (err, data) {
@@ -231,7 +243,7 @@ router.post('/declined', function (req, res) {
   console.log("request declined")
   console.log(req.body)
   console.log(req.body.Email)
-  var args = ["declined", req.body.Name, req.body.Email, req.body.Org];
+  var args = ["declined", req.body.Name, req.body.Email, req.body.Org, req.body.Privileges];
   console.log("Email sent");
   console.log("For changing status ars are: ")
   console.log(args)

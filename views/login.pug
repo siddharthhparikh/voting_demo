@@ -19,8 +19,8 @@ block content
     Master content is used to handel click events with info-box divs.
   #master-content
     #content-block(class='hidden')
-      input(type='text' name='username' placeholder='Username' id='username')
-      input(type='password' name='password' placeholder='Password' id='password')
+      input(type='text' placeholder='Email' id='username')
+      input(type='password' placeholder='Password' id='password')
       p
       input(type='submit' class='button' id='submit' value='Submit')
       p(id='error-msg')
@@ -33,6 +33,11 @@ block content
     input(type='text' class='registration-info' id='email' placeholder='Email')
     p Organization: 
     input(type='text' class='registration-info' id='organization' placeholder='Organization')
+    p Requested user type:
+    select(id='priv-type')
+      option(value='normal') Default
+      option(value='creator') Creator
+      option(value='Manager') Manager
     button(class='button' id='register-user') Submit 
   //
     Loading splash screen is displayed until chaincode is finished loading. Div is removed after.

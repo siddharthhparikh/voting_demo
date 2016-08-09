@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	//"strings"
 	"time"
 	//"reflect"
@@ -178,7 +179,7 @@ func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) 
 
 func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 
-	if len(args) != 4 {
+	if len(args) != 5 {
 		fmt.Println("Not enough arguments passed to requestAcount")
 		return nil, errors.New("Incorrect number of arguments. Expecting 3: username, email, org")
 	}
@@ -186,6 +187,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 	fmt.Println("In request Account username= " + args[0] + " email = " + args[1] + " org = " + args[2])
 	var privileges []string
 	var account = Account{ID: "", Name: args[0], Email: args[1], VoteCount: 0, Org: args[2], Privileges: privileges, PubKey: args[3]}
+
 	//Check if request already exists
 	//user email must be unique in all the accounts
 
@@ -212,6 +214,7 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 			&shim.Column{Value: &shim.Column_String_{String_: account.Name}},
 			&shim.Column{Value: &shim.Column_String_{String_: "open"}},
 			&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
+			&shim.Column{Value: &shim.Column_String_{String_: strings.Join(account.Privileges, ",")}},
 			&shim.Column{Value: &shim.Column_String_{String_: requestTime}},
 			&shim.Column{Value: &shim.Column_String_{String_: account.PubKey}},
 		},
@@ -269,9 +272,10 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 	account.Name = t.readStringSafe(row.Columns[1])
 	account.Email = args[0]
 	account.Org = t.readStringSafe(row.Columns[3])
-	account.VoteCount = t.readUint64Safe(row.Columns[4])
-	account.ReqTime = t.readStringSafe(row.Columns[5])
-	account.PubKey = t.readStringSafe(row.Columns[6])
+	account.VoteCount = t.readUint64Safe(row.Columns[5])
+	account.ReqTime = t.readStringSafe(row.Columns[6])
+	account.PubKey = t.readStringSafe(row.Columns[7])
+	account.Privileges = strings.Split(t.readStringSafe(row.Columns[4]), ",")
 	account.ID = "****************" //blank out account ID so user cannot view it
 
 	return account, nil
@@ -288,11 +292,12 @@ func (t *SimpleChaincode) getOpenRequests(stub *shim.ChaincodeStub) ([]Account, 
 	for chanValue := range rowChan {
 		if chanValue.Columns[2].GetString_() == "open" {
 			openRequest = append(openRequest, Account{
-				Email:     chanValue.Columns[0].GetString_(),
-				Name:      chanValue.Columns[1].GetString_(),
-				Org:       chanValue.Columns[3].GetString_(),
-				VoteCount: 0,
-				ReqTime:   chanValue.Columns[4].GetString_(),
+				Email:      chanValue.Columns[0].GetString_(),
+				Name:       chanValue.Columns[1].GetString_(),
+				VoteCount:  0,
+				Org:        chanValue.Columns[3].GetString_(),
+				Privileges: strings.Split(chanValue.Columns[4].GetString_(), ","),
+				ReqTime:    chanValue.Columns[5].GetString_(),
 			})
 			//timings = append(timings, chanValue.Columns[4].GetString_())
 		}
@@ -341,6 +346,7 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 				&shim.Column{Value: &shim.Column_String_{String_: account.Name}},
 				&shim.Column{Value: &shim.Column_String_{String_: status}},
 				&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
+				&shim.Column{Value: &shim.Column_String_{String_: strings.Join(account.Privileges, ",")}},
 				&shim.Column{Value: &shim.Column_String_{String_: requestTime}},
 				&shim.Column{Value: &shim.Column_String_{String_: PubKey}},
 			},
@@ -383,8 +389,9 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 	fmt.Println("Inside change status args are: ")
 	fmt.Println(args)
 	status := args[0]
-	account := Account{Name: args[1], Email: args[2], Org: args[3]}
+	account := Account{Name: args[1], Email: args[2], Org: args[3], Privileges: strings.Split(args[4], ",")}
 	reqTime, PubKey, errReplceRow := t.replaceRowRequest(stub, args)
+
 	if errReplceRow != nil {
 		return nil, errReplceRow
 	}
@@ -394,8 +401,8 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		userID = generateUserID()
 		fmt.Println("My random ID is:")
 		fmt.Println(userID)
-		manager := args[3]
-		votes, _ := strconv.ParseUint(args[4], 10, 64)
+		manager := args[4]
+		votes, _ := strconv.ParseUint(args[5], 10, 64)
 		_, err := stub.InsertRow("ApprovedAccounts",
 			shim.Row{
 				Columns: []*shim.Column{
@@ -403,6 +410,7 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 					&shim.Column{Value: &shim.Column_String_{String_: account.Name}},
 					&shim.Column{Value: &shim.Column_String_{String_: account.Email}},
 					&shim.Column{Value: &shim.Column_String_{String_: account.Org}},
+					&shim.Column{Value: &shim.Column_String_{String_: strings.Join(account.Privileges, ",")}},
 					&shim.Column{Value: &shim.Column_Uint64{Uint64: votes}},
 					&shim.Column{Value: &shim.Column_String_{String_: reqTime}},
 					&shim.Column{Value: &shim.Column_String_{String_: time.Now().String()}},
@@ -698,7 +706,7 @@ func (t *SimpleChaincode) hasUserVoted(stub *shim.ChaincodeStub, args []string) 
 	var topic Topic
 	errJSON := json.Unmarshal(topicBytes, &topic)
 	if errJSON != nil {
-		fmt.Println("Error unmarshalling topic "+topicID+": ", errJSON)
+		fmt.Println("[ERROR] Error unmarshalling topic "+topicID+": ", errJSON)
 		return true, errJSON
 	}
 
@@ -1226,6 +1234,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		&shim.ColumnDefinition{Name: "full_name", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "org", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "privileges", Type: shim.ColumnDefinition_STRING, Key: false}, //stored as an array in one string, with ' ' designating a new privilege (e.g. "manager creater")
 		&shim.ColumnDefinition{Name: "time", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "pub_key", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
@@ -1242,6 +1251,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		&shim.ColumnDefinition{Name: "full_name", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "email", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "org", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "privileges", Type: shim.ColumnDefinition_STRING, Key: false}, //stored as an array in one string, with ' ' designating a new privilege (e.g. "manager creater")
 		&shim.ColumnDefinition{Name: "votes", Type: shim.ColumnDefinition_UINT64, Key: false},
 		&shim.ColumnDefinition{Name: "req_time", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "appr_time", Type: shim.ColumnDefinition_STRING, Key: false},
