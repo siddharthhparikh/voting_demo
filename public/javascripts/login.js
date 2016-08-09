@@ -43,17 +43,16 @@ $(document).ready(function () {
   $('#submit').click(function (e) {
     e.preventDefault();
 
-    document.getElementById('file').addEventListener('change', readFile, false);
-    function readFile(evt) {
-      var files = evt.target.files;
-      var file = files[0];
-      var reader = new FileReader();
-      reader.onload = function () {
-        console.log(this.result);
-      }
-      reader.readAsText(file)
+    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp = new XMLHttpRequest();
     }
-    readFile('/c/Users/IBM_ADMIN/Downloads/privKey')
+    else {// code for IE6, IE5
+      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.open("GET", "/c/Users/IBM_ADMIN/Downloads/privKey", false);
+    xmlhttp.send();
+    xmlDoc = xmlhttp.responseText;
+    console.log(xmlDoc)
     var user = {
       'account_id': $('#username').val(),
       'password': $('#password').val()
