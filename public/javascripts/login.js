@@ -113,8 +113,8 @@ $(document).ready(function () {
       console.log("Randomly generated password: " + PassPhrase);
       var Bits = 1024; 
       var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
-      console.log("private key:" + privRSAkey);
-      window.open("data:text/json;charset=utf-8," + escape(privRSAkey));
+      console.log("private key:" + JSON.stringify(privRSAkey));
+      window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(privRSAkey)));
       var pubPem = cryptico.publicKeyString(privRSAkey);       
       console.log("public key: " + pubPem);
 
