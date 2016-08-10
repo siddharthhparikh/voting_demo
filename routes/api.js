@@ -10,8 +10,9 @@ var router = express.Router();
 var session = require('express-session');
 var chaincode = require('../libs/blockchainSDK');
 var mail = require('../libs/mail')
-var ursa = require('ursa');
 var fs = require('fs');
+//var path = require('path');
+var cryptico = require('../public/javascripts/cryptico');
 
 var DEFAULT_VOTES = 5;
 
@@ -50,6 +51,44 @@ router.post('/login', function (req, res, next) {
   });
 });
 
+router.get('/get-public-key', function (req, res) {
+  fs.readFile('pubKey', 'utf8', function (err, data) {
+    if (err) {
+      console.log(err);
+      var PassPhrase = "The Moon is a Harsh Mistress";
+      // The length of the RSA key, in bits.
+      var Bits = 1024;
+      var ServerRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
+      var ServerPublicKeyString = cryptico.publicKeyString(MattsRSAkey);
+      fs.writeFile("pubKey", ServerPublicKeyString, function (err) {
+        if (err) {
+          console.log(err);
+          res.end(err)
+        }
+        console.log("pubkey was saved!");
+        fs.readFile('pubKey', 'utf8', function (err, data) {
+          if (err) {
+            console.log(err);
+            res.end(err)
+          }
+          console.log(data);
+          res.end(data);
+        });
+      });
+      fs.writeFile("privKey", JSON.stringify(ServerRSAkey), function (err) {
+        if (err) {
+          console.log(err);
+          res.end(err)
+        }
+        console.log("privkey was saved!");
+      });
+    } else {
+      console.log(data);
+      res.end(data);
+    }
+  });
+});
+
 router.get('/get-account', function (req, res) {
   var args = [];
   args.push(req.session.name);
@@ -61,7 +100,7 @@ router.get('/get-account', function (req, res) {
       res.json('{"status" : "could not retrieve user"}');
     }
   });
-})
+});
 
 // Clears all topics on blockchain
 // TODO this is just for debugging!

@@ -40,6 +40,7 @@ $(document).ready(function () {
   //
   // Submit user credendials and verify.
   //
+  var privKey;
   $('#submit').click(function (e) {
     e.preventDefault();
 
@@ -52,35 +53,39 @@ $(document).ready(function () {
     var reader = new FileReader();
     reader.onloadend = function (evt) {
       if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-        console.log(evt.target.result);
+        privKey = JSON.parse(evt.target.result);
+        console.log(JSON.parse(evt.target.result));
+        $.get('/api/get-public-key', , function (data, status) {
+          var user = {
+            'account_id': $('#username').val(),
+            'password': $('#password').val()
+          };
+          console.log(user);
+          console.log("received public key from server: " + data);
+          $.post('/api/login', user, function (data, status) {
+            data = JSON.parse(data);
+            console.log("[DATA]", data);
+            // Handle respse "clonse.
+            if (data.status === 'success') {
+              // Redirect user.
+              if (data.type === 'user') {
+                window.location.replace("../topics");
+              }
+              else if (data.type === 'manager') {
+                console.log("redirecting to manager...");
+                window.location.replace("../manager");
+              }
+            } else {
+              $('#error-msg').html('Error: ' + data.status);
+            }
+          });
+        })
       }
     };
 
     var file = files[0]
     reader.readAsText(file)
 
-    var user = {
-      'account_id': $('#username').val(),
-      'password': $('#password').val()
-    };
-    console.log(user);
-    $.post('/api/login', user, function (data, status) {
-      data = JSON.parse(data);
-      console.log("[DATA]", data);
-      // Handle respse "clonse.
-      if (data.status === 'success') {
-        // Redirect user.
-        if (data.type === 'user') {
-          window.location.replace("../topics");
-        }
-        else if (data.type === 'manager') {
-          console.log("redirecting to manager...");
-          window.location.replace("../manager");
-        }
-      } else {
-        $('#error-msg').html('Error: ' + data.status);
-      }
-    });
   });
 
 
@@ -111,11 +116,11 @@ $(document).ready(function () {
       // Create request object.
       var PassPhrase = makepass();
       console.log("Randomly generated password: " + PassPhrase);
-      var Bits = 1024; 
+      var Bits = 1024;
       var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
       console.log("private key:" + JSON.stringify(privRSAkey));
       window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(privRSAkey)));
-      var pubPem = cryptico.publicKeyString(privRSAkey);       
+      var pubPem = cryptico.publicKeyString(privRSAkey);
       console.log("public key: " + pubPem);
 
       var newUser = {
@@ -125,7 +130,7 @@ $(document).ready(function () {
         'privileges': $('#priv-type').val(),
         'pubPem': pubPem
       };
-      
+
       //Send request object.
       //console.log(newUser)
       $.post('/api/register', newUser, function (data, status) {
