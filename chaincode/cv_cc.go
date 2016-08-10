@@ -239,7 +239,7 @@ func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (st
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 		return "", rowErr
 	}
-	fmt.Println("in getUserID chanValue:")
+	fmt.Println("in get User ID chanValue:")
 	for chanValue := range rowChan {
 		fmt.Println(chanValue);
 		if t.readStringSafe(chanValue.Columns[2]) == email {
@@ -278,6 +278,8 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 	account.ReqTime = t.readStringSafe(row.Columns[6])
 
 	//account.ID = "******" //blank out account ID so user cannot view it
+	fmt.Println("get account return value")
+	fmt.Println(account)
 
 	return account, nil
 }
@@ -979,12 +981,18 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		}
 
 		account, errAccount := t.getAccount(stub, []string{args[0]})
+		fmt.Println("in get all topics after get account account variable is:")
+		fmt.Println(account)
+
 		if errAccount != nil {
 			fmt.Println("Error getting account:", errAccount)
 			return nil, errAccount
 		}
 
 		allTopics, err := t.getAllTopics(stub)
+		fmt.Println("in get all topics after get all topics topics are")
+		fmt.Println(allTopics)
+
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
@@ -1008,7 +1016,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 				return nil, errTimeParse
 			}
 			if time.Now().Before(expireTime) {
-				userVoted, err := t.hasUserVoted(stub, []string{topic.ID, account.ID})
+				userVoted, err := t.hasUserVoted(stub, []string{topic.ID, account.Email})
 				if err != nil {
 					fmt.Println(err)
 					return nil, err
