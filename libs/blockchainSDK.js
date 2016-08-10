@@ -37,7 +37,7 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
     peerURLs = []
     //peerURLs.push('grpcs://e870d548-4520-47cc-be4b-8b44621dedad_vp0.us.blockchain.ibm.com:30303');
-    peerURLs.push('grpc://test-p1.rtp.raleigh.ibm.com:30303');
+    peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
 
     registrar = {
         'username': 'ethanicus',
