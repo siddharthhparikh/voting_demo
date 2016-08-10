@@ -11,9 +11,8 @@ var session = require('express-session');
 var chaincode = require('../libs/blockchainSDK');
 var mail = require('../libs/mail')
 var fs = require('fs');
+var ursa = require('ursa');
 //var path = require('path');
-var cryptico = require('../public/javascripts/cryptico/cryptico');
-
 var DEFAULT_VOTES = 5;
 
 /* Login in request. */
@@ -55,12 +54,15 @@ router.get('/get-public-key', function (req, res) {
   fs.readFile('pubKey', 'utf8', function (err, data) {
     if (err) {
       console.log(err);
-      var PassPhrase = "The Moon is a Harsh Mistress";
-      // The length of the RSA key, in bits.
-      var Bits = 1024;
-      var ServerRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
-      var ServerPublicKeyString = cryptico.publicKeyString(MattsRSAkey);
-      fs.writeFile("pubKey", ServerPublicKeyString, function (err) {
+      // create a pair of keys (a private key contains both keys...)
+      var keys = ursa.generatePrivateKey();
+      // reconstitute the private key from a base64 encoding
+      var privPem = keys.toPrivatePem('base64');
+
+      // make a public key, to be used for encryption
+      var pubPem = keys.toPublicPem('base64');
+
+      fs.writeFile("pubKey", pubPem, function (err) {
         if (err) {
           console.log(err);
           res.end(err)
@@ -75,7 +77,7 @@ router.get('/get-public-key', function (req, res) {
           res.end(data);
         });
       });
-      fs.writeFile("privKey", JSON.stringify(ServerRSAkey), function (err) {
+      fs.writeFile("privKey", privPem, function (err) {
         if (err) {
           console.log(err);
           res.end(err)
