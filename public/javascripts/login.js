@@ -64,7 +64,7 @@ $(document).ready(function () {
           };
           console.log(user);
           console.log("received public key from server: " + data);
-          var EncryptionResult = cryptico.encrypt("JSON.stringify(user)", data, privKey);
+          var EncryptionResult = cryptico.encrypt(JSON.stringify(user), data, privKey);
           $.post('/api/login', EncryptionResult, function (data, status) {
             data = JSON.parse(data);
             console.log("[DATA]", data);
@@ -122,7 +122,8 @@ $(document).ready(function () {
       var Bits = 1024;
       var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
       privKey = privRSAkey;
-      console.log("private key:" + typeof privRSAkey);
+      console.log("private key without stringify:" + privRSAkey);
+      console.log("private key with stringify:" + JSON.stringify(privRSAkey));
       window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(privRSAkey)));
       var pubPem = cryptico.publicKeyString(privRSAkey);
       console.log("public key: " + pubPem);
