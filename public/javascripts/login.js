@@ -121,7 +121,7 @@ $(document).ready(function () {
       var Bits = 1024;
       var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
       privKey = privRSAkey;
-      console.log("private key:" + JSON.stringify(privRSAkey));
+      console.log("private key:" + typeof privRSAkey);
       window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(privRSAkey)));
       var pubPem = cryptico.publicKeyString(privRSAkey);
       console.log("public key: " + pubPem);
