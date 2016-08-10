@@ -53,7 +53,7 @@ $(document).ready(function () {
     var reader = new FileReader();
     reader.onloadend = function (evt) {
       if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-        privKey = JSON.parse(evt.target.result);
+        //privKey = JSON.parse(evt.target.result);
         console.log(JSON.parse(evt.target.result));
         var temp;
         $.get('/api/get-public-key', temp, function (data, status) {
@@ -120,6 +120,7 @@ $(document).ready(function () {
       console.log("Randomly generated password: " + PassPhrase);
       var Bits = 1024;
       var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
+      privKey = privRSAkey;
       console.log("private key:" + JSON.stringify(privRSAkey));
       window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(privRSAkey)));
       var pubPem = cryptico.publicKeyString(privRSAkey);
