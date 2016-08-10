@@ -109,7 +109,7 @@ $(document).ready(function () {
     if (!errFlag) {
       //console.log($('#organization').val());
       // Create request object.
-      var PassPhrase = makeid();
+      var PassPhrase = makepass();
       console.log("Randomly generated password: " + PassPhrase);
       var Bits = 1024; 
       var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
