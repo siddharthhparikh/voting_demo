@@ -12,41 +12,49 @@ var chaincode = require('../libs/blockchainSDK');
 var mail = require('../libs/mail')
 var fs = require('fs');
 var ursa = require('ursa');
+var cryptico = require('cryptico');
+
 //var path = require('path');
 var DEFAULT_VOTES = 5;
 
 /* Login in request. */
 router.post('/login', function (req, res, next) {
   // Set up the user object for the chaincode.
-  var user = req.body;
+  var CipherText = req.body;
+  console.log(req);
   // TODO check if the user already exsits in db.
-
-  console.log("[USER]", user);
-
-  var username = user.account_id;
-  var password = user.password;
-  console.log("inside /login");
-  var args = [];
-  args.push(username);
-  args.push(password);
-  chaincode.query('check_account', args, function (err, data) {
-    console.log("[ERROR]", err)
-    if (err != null) {
-      console.log("Account does not exist. Please register");
-      res.end('{"status" : "Account does not exist. Please register."}');
+  fs.readFile('privKey', 'utf8', function (err, data) {
+    if (err) {
+      console.log(err);
     }
+    var DecryptionResult = cryptico.decrypt(CipherText, data);
+    //console.log("[USER]", user);
 
-    console.log(user);
-    req.session.name = user.account_id;
-    console.log('Logging in as.....');
-    console.log(req.session.name);
-    //Send response.
-    if (username.indexOf('manager') > -1) {
-      res.end('{"status" : "success", "type": "manager"}');
-    }
-    else {
-      res.end('{"status" : "success", "type": "user"}');
-    }
+    /*var username = DecryptionResult.account_id;
+    var password = user.password;
+    console.log("inside /login");
+    var args = [];
+    args.push(username);
+    args.push(password);
+    chaincode.query('check_account', args, function (err, data) {
+      console.log("[ERROR]", err)
+      if (err != null) {
+        console.log("Account does not exist. Please register");
+        res.end('{"status" : "Account does not exist. Please register."}');
+      }
+
+      console.log(user);
+      req.session.name = user.account_id;
+      console.log('Logging in as.....');
+      console.log(req.session.name);
+      //Send response.
+      if (username.indexOf('manager') > -1) {
+        res.end('{"status" : "success", "type": "manager"}');
+      }
+      else {
+        res.end('{"status" : "success", "type": "user"}');
+      }
+    });*/
   });
 });
 
