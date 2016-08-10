@@ -33,16 +33,17 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     chain.setECDSAModeForGRPC(true);
 
     console.log('loading hardcoding users and certificate authority...')
-    caURL = 'grpcs://e870d548-4520-47cc-be4b-8b44621dedad_ca.us.blockchain.ibm.com:30303';
-    //caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+    //caURL = 'grpcs://e870d548-4520-47cc-be4b-8b44621dedad_ca.us.blockchain.ibm.com:30303';
+    caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
     peerURLs = []
-    peerURLs.push('grpcs://e870d548-4520-47cc-be4b-8b44621dedad_vp0.us.blockchain.ibm.com:30303');
-    //peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
+    //peerURLs.push('grpcs://e870d548-4520-47cc-be4b-8b44621dedad_vp0.us.blockchain.ibm.com:30303');
+    peerURLs.push('grpc://test-p1.rtp.raleigh.ibm.com:30303');
 
     registrar = {
-        'username': 'WebAppAdmin',
-        //'secret': 'trainisland'
-        'secret': '82922fdc04'
+        'username': 'ethanicus',
+        //'username': 'WebAppAdmin',
+        'secret': 'trainisland'
+        //'secret': '82922fdc04'
     }
 
     // Set the URL for member services
