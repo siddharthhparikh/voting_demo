@@ -173,7 +173,7 @@ router.post('/register', function (req, res) {
 
     console.log("\n\n\nrequest account result:")
     console.log(results);
-    res.end(privPem);
+    res.end('{"status" : "success"}');
   });
 });
 
