@@ -54,8 +54,8 @@ $(document).ready(function () {
     reader.onloadend = function (evt) {
       if (evt.target.readyState == FileReader.DONE) { // DONE == 2
         privKey = JSON.parse(evt.target.result);
-        console.log("json parse evt target result "+JSON.parse(evt.target.result));
-        console.log("evt target result "+evt.target.result)
+        console.log("json parse evt target result " + JSON.parse(evt.target.result));
+        console.log("evt target result " + evt.target.result)
         var temp;
         $.get('/api/get-public-key', temp, function (data, status) {
           var user = {
@@ -117,7 +117,7 @@ $(document).ready(function () {
     if (!errFlag) {
       //console.log($('#organization').val());
       // Create request object.
-      var PassPhrase = makepass();
+      /*var PassPhrase = makepass();
       console.log("Randomly generated password: " + PassPhrase);
       var Bits = 1024;
       var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
@@ -127,7 +127,11 @@ $(document).ready(function () {
       window.open("data:text/json;charset=utf-8," + escape(privRSAkey));
       var pubPem = cryptico.publicKeyString(privRSAkey);
       console.log("public key: " + pubPem);
+      */
 
+      var keypair = require('keypair')
+      var pair = keypair();
+      console.log(pair);
       var newUser = {
         'name': $('#name').val(),
         'email': $('#email').val(),
