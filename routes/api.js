@@ -62,14 +62,12 @@ router.get('/get-public-key', function (req, res) {
   fs.readFile('pubKey', 'utf8', function (err, data) {
     if (err) {
       console.log(err);
-      // create a pair of keys (a private key contains both keys...)
-      var keys = ursa.generatePrivateKey();
-      // reconstitute the private key from a base64 encoding
-      var privPem = keys.toPrivatePem('base64');
-
-      // make a public key, to be used for encryption
-      var pubPem = keys.toPublicPem('base64');
-
+      var PassPhrase = "The Moon is a Harsh Mistress.";
+      // The length of the RSA key, in bits.
+      var Bits = 1024;
+      var privKey = cryptico.generateRSAKey(PassPhrase, Bits);
+      var pubPem = cryptico.publicKeyString(privKey);       
+      var privPem = JSON.stringify(privKey);
       fs.writeFile("pubKey", pubPem, function (err) {
         if (err) {
           console.log(err);
