@@ -455,6 +455,9 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: json object of topic being issued")
 	}
 
+	fmt.Println("in issue topic args")
+	fmt.Println(args)
+	
 	var topic Topic
 	var err error
 	//var account Account
