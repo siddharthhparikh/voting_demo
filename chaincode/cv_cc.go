@@ -277,7 +277,7 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 	account.VoteCount = t.readUint64Safe(row.Columns[5])
 	account.ReqTime = t.readStringSafe(row.Columns[6])
 
-	account.ID = "******" //blank out account ID so user cannot view it
+	//account.ID = "******" //blank out account ID so user cannot view it
 
 	return account, nil
 }
