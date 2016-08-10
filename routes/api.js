@@ -12,7 +12,7 @@ var chaincode = require('../libs/blockchainSDK');
 var mail = require('../libs/mail')
 var fs = require('fs');
 //var path = require('path');
-var cryptico = require('../public/javascripts/cryptico');
+var cryptico = require('../public/javascripts/cryptico/cryptico');
 
 var DEFAULT_VOTES = 5;
 
