@@ -124,7 +124,7 @@ $(document).ready(function () {
       privKey = privRSAkey;
       console.log("private key without stringify:" + privRSAkey);
       console.log("private key with stringify:" + JSON.stringify(privRSAkey));
-      window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(privRSAkey)));
+      window.open("data:text/json;charset=utf-8," + escape(privRSAkey));
       var pubPem = cryptico.publicKeyString(privRSAkey);
       console.log("public key: " + pubPem);
 
