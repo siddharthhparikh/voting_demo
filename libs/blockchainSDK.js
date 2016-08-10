@@ -18,7 +18,7 @@ var chaincodeID = null;
 
 // Configure the KeyValStore which is used to store sensitive keys
 // as so it is important to secure this storage
-chain.setKeyValStore(hfc.newFileKeyValStore('./tmp/keyValStore'));
+chain.setKeyValStore(hfc.newFileKeyValStore('/tmp/keyValStore'));
 
 var peerURLs = [];
 var caURL = null;
@@ -33,16 +33,16 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     chain.setECDSAModeForGRPC(true);
 
     console.log('loading hardcoding users and certificate authority...')
-    caURL = 'grpcs://fc6b779e-df97-4ea7-a1f7-3c33745cee99_ca.us.blockchain.ibm.com:30303';
+    caURL = 'grpcs://e870d548-4520-47cc-be4b-8b44621dedad_ca.us.blockchain.ibm.com:30303';
     //caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
     peerURLs = []
-    peerURLs.push('grpcs://fc6b779e-df97-4ea7-a1f7-3c33745cee99_vp0.us.blockchain.ibm.com:30303');
+    peerURLs.push('grpcs://e870d548-4520-47cc-be4b-8b44621dedad_vp0.us.blockchain.ibm.com:30303');
     //peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
 
     registrar = {
         'username': 'WebAppAdmin',
         //'secret': 'trainisland'
-        'secret': '0a81e4a48e'
+        'secret': '82922fdc04'
     }
 
     // Set the URL for member services
