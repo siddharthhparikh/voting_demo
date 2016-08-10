@@ -53,8 +53,9 @@ $(document).ready(function () {
     var reader = new FileReader();
     reader.onloadend = function (evt) {
       if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-        //privKey = JSON.parse(evt.target.result);
-        console.log(JSON.parse(evt.target.result));
+        privKey = JSON.parse(evt.target.result);
+        console.log("json parse evt target result "+JSON.parse(evt.target.result));
+        console.log("evt target result "+evt.target.result)
         var temp;
         $.get('/api/get-public-key', temp, function (data, status) {
           var user = {
