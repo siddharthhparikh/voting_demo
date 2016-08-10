@@ -129,7 +129,7 @@ $(document).ready(function () {
       console.log("public key: " + pubPem);
       */
 
-      var keypair = require('keypair')
+      //var keypair = require('keypair')
       var pair = keypair();
       console.log(pair);
       var newUser = {
