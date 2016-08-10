@@ -172,7 +172,7 @@ func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) 
 	row, errGetRow := stub.GetRow("ApprovedAccounts", column)
 	if len(row.Columns) == 0 || errGetRow != nil || t.readStringSafe(row.Columns[2]) != email {
 		fmt.Println("UserID does not exist. Please click on forgot password to recover account. [Just kidding, you can't]")
-		return nil, errors.New("UserID already exist. Please click on forgot password to recover account")
+		return nil, errors.New("UserID already exist. Please click on forgot password to recover account. [Just kidding, you can't]")
 	}
 	return nil, nil
 }
@@ -357,8 +357,12 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	return requestTime, PubKey, nil
 }
 
-func generateUserID() string {
+func (t *SimpleChaincode) generateUserID(stub *shim.ChaincodeStub, count int, email string) (string, error) {
 	//random number generator
+	if count <= 0 {
+		fmt.Println("cannot generate a new userID. Probably because all the userIDs are taken. You can try again in few years.")
+		return "", errors.New("cannot generate a new userID. Probably because all the userIDs are taken. You can try again in few years")
+	}
 	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	const (
 		letterIdxBits = 6                    // 6 bits to represent a letter index
@@ -380,9 +384,14 @@ func generateUserID() string {
 		cache >>= letterIdxBits
 		remain--
 	}
-	fmt.Println("Randmly generated String:")
-	fmt.Println(string(b))
-	return string(b)
+	_, err := t.checkAccount(stub, []string{email, string(b)})
+	if err != nil {
+		fmt.Println("Randmly generated String:")
+		fmt.Println(string(b))
+		return string(b), nil
+	}
+	count = count - 1 
+	return t.generateUserID(stub, count, email)
 }
 
 func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -397,8 +406,12 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 	}
 
 	var userID string
+	var err error
 	if status == "approved" {
-		userID = generateUserID()
+		userID, err = t.generateUserID(stub, 10, account.Email)
+		if err != nil  {
+			return nil, err
+		}
 		fmt.Println("My random ID is:")
 		fmt.Println(userID)
 		manager := args[4]

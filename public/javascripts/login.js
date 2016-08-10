@@ -87,6 +87,15 @@ $(document).ready(function () {
   //
   // Request to register as a new user.
   //
+  function makepass() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 6; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+  }
   $('#register-user').click(function () {
     var errFlag = false;
     $('.registration-info').each(function () {
@@ -100,20 +109,31 @@ $(document).ready(function () {
     if (!errFlag) {
       //console.log($('#organization').val());
       // Create request object.
+      var PassPhrase = makeid();
+      console.log("Randomly generated password: " + PassPhrase);
+      var Bits = 1024; 
+      var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
+      console.log("private key:" + privRSAkey);
+      window.open("data:text/json;charset=utf-8," + escape(privRSAkey));
+      var pubPem = cryptico.publicKeyString(privRSAkey);       
+      console.log("public key: " + pubPem);
+
       var newUser = {
         'name': $('#name').val(),
         'email': $('#email').val(),
         'org': $('#organization').val(),
-        'privileges': $('#priv-type').val()
+        'privileges': $('#priv-type').val(),
+        'pubPem': pubPem
       };
+      
       //Send request object.
       //console.log(newUser)
       $.post('/api/register', newUser, function (data, status) {
         console.log("status = " + status)
         if (status == 'success') {
           console.log(data)
-          window.open("data:text/json;charset=utf-8," + escape(data));
-          localStorage.privKey = data;
+          //window.open("data:text/json;charset=utf-8," + escape(data));
+          //localStorage.privKey = data;
           //var file = new File([data], "hello world.txt", {type: "text/plain;charset=utf-8"});
           //saveAs(file);
           $('#register-box').fadeOut();

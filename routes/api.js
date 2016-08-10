@@ -165,11 +165,7 @@ router.get('/user', function (req, res) {
 /* Regiister a user */
 router.post('/register', function (req, res) {
   console.log(req.body);
-  var keys = ursa.generatePrivateKey();
-  var privPem = keys.toPrivatePem('base64');
-  var pubPem = keys.toPublicPem('base64');
-    
-  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org, req.body.privileges, pubPem], function (err, results) {
+  chaincode.invoke('request_account', [req.body.name, req.body.email, req.body.org, req.body.privileges, req.body.pubPem], function (err, results) {
 
     if (err != null) {
       res.end('{"status" : "failure", "Error": err}');
