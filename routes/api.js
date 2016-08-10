@@ -126,6 +126,7 @@ router.post('/create', function (req, res, next) {
   // Add topic object to database.
 
   var args = [JSON.stringify(newTopic)];
+  console.log("in create before running issue topic args are: " + args);
   chaincode.invoke('issue_topic', args, function (err, results) {
     if (err) console.log(err);
     else res.json('{"status" : "success"}');

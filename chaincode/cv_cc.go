@@ -450,14 +450,14 @@ func (t *SimpleChaincode) getAllRequests(stub *shim.ChaincodeStub, accountID str
 
 func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 
+	fmt.Println("in issue topic args")
+	fmt.Println(args)
+	
 	if len(args) != 1 {
 		fmt.Println("Incorrect number of arguments. Expecting 1: json object of topic being issued")
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: json object of topic being issued")
 	}
 
-	fmt.Println("in issue topic args")
-	fmt.Println(args)
-	
 	var topic Topic
 	var err error
 	//var account Account
@@ -891,7 +891,7 @@ func (t *SimpleChaincode) tallyVotes(stub *shim.ChaincodeStub, args []string) ([
 // Invoke is our entry point to invoke a chaincode function
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
-
+	fmt.Println(args)
 	// Handle different functions
 	switch function {
 	case "init": //initialize the chaincode state, used as reset
