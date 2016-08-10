@@ -232,13 +232,16 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (string, error) {
 	email := args[0]
+	fmt.Println("In get User ID args:")
+	fmt.Println(args)
 	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 		return "", rowErr
 	}
-	fmt.Println("chanValue:")
+	fmt.Println("in getUserID chanValue:")
 	for chanValue := range rowChan {
+		fmt.Println(chanValue);
 		if t.readStringSafe(chanValue.Columns[2]) == email {
 			return t.readStringSafe(chanValue.Columns[0]), nil
 		}
@@ -252,6 +255,8 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 
 	var account Account
 	var err error
+	fmt.Println("before get user id args are")
+	fmt.Println(args)
 	account.ID, err = t.getUserID(stub, args)
 
 	if err != nil {
@@ -910,7 +915,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 // Query is our entry point for queries
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("query is running " + function)
-
+	fmt.Println(args)
 	// Handle different functions
 	switch function {
 
