@@ -55,7 +55,8 @@ $(document).ready(function () {
       if (evt.target.readyState == FileReader.DONE) { // DONE == 2
         privKey = JSON.parse(evt.target.result);
         console.log(JSON.parse(evt.target.result));
-        $.get('/api/get-public-key', , function (data, status) {
+        var temp;
+        $.get('/api/get-public-key', temp, function (data, status) {
           var user = {
             'account_id': $('#username').val(),
             'password': $('#password').val()
