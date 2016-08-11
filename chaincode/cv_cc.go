@@ -834,8 +834,8 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 			//add to table
 			addedRow, errRow := stub.InsertRow(topicHeader+vote.Topic, shim.Row{
 				Columns: []*shim.Column{
-					{&shim.Column_String_{String_: vote.Voter}},
 					{&shim.Column_Uint64{Uint64: transactionID}},
+					{&shim.Column_String_{String_: vote.Voter}},
 					{&shim.Column_String_{String_: topic.Choices[i]}},
 					{&shim.Column_Uint64{Uint64: uint64(voteQty)}},
 					{&shim.Column_String_{String_: vote.CastDate}},
