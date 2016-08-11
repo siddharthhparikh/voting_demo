@@ -6,6 +6,7 @@ $(document).ready(function () {
       data.AllAccReq.forEach(function (entry) {
         // Generate and append the new request html.
         // This was fun to write.
+        console.log(entry)
         $('#request-table tr:last').after(
           '<tr class="request"><td>' + entry.name +
           '</td><td>' + entry.email +
@@ -23,9 +24,9 @@ $(document).ready(function () {
           '" email="' + entry.email +
           '" org="' + entry.org + '"priv"">close</i></td></tr>');
       });
-      $('[name=priv] option').filter(function () {
-        return ($(this).text() == entry.privileges[]); //To select Blue
-      }).prop('selected', true);
+      //$('[name=priv] option').filter(function () {
+      //  return ($(this).text() == entry.privileges[]); //To select Blue
+      //}).prop('selected', true);
     }
   });
   // Events for the approve/decline buttons.
