@@ -21,9 +21,9 @@ $(document).ready(function () {
           //'<select class="privilege" name="priv" value="creator">' +
           '<select class="privilege">' +
           //'<select required class="privilege" data-bind="kendoDropDownList: { data: menuOptions, dataTextField: "option", dataValueField: "menu", value: entry.privileges[0]} />' +
-          '<option value="default">Default</option>' +
-          '<option value="creator">Creator</option>' +
-          '<option value="manager" selected>Manager</option>' +
+          '<option value="default" <?php if(entry.privileges[0]=="default") echo "selected=\"selected\""; ?>>Default</option>' +
+          '<option value="creator" <?php if(entry.privileges[0]=="creator") echo "selected=\"selected\""; ?>>Creator</option>' +
+          '<option value="manager" <?php if(entry.privileges[0]=="manager") echo "selected=\"selected\""; ?>>Manager</option>' +
           '</select>'+
           '</td><td><input type"number" min="0" class="vote-amount request-info" value="5"/></td><td>' +
           '<i class="button approve material-icons" name="' + entry.name +
