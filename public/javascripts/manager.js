@@ -6,17 +6,25 @@ $(document).ready(function () {
       data.AllAccReq.forEach(function (entry) {
         // Generate and append the new request html.
         // This was fun to write.
+        var menuOptions = [
+          { menu: 'default', option: 'Default' },
+          { menu: 'creator', option: 'Creator' },
+          { menu: 'manager', option: 'Manager' }
+        ];
         console.log(entry.privileges[0])
         $('#request-table tr:last').after(
           '<tr class="request"><td>' + entry.name +
           '</td><td>' + entry.email +
           '</td><td>' + entry.org +
           '</td></td><td>' + entry.req_time +
-          '</td><td><select required class="privilege" name="priv" value="creator">' +
-          '<option value="default">Default</option>' +
-          '<option value="creator">Creator</option>' +
-          '<option value="manager">Manager</option>' +
-          '</select></td><td><input type"number" min="0" class="vote-amount request-info" value="5"/></td><td>' +
+          '</td><td>' +
+          //'<select required class="privilege" name="priv" value="creator">' +
+          '<div data-bind="kendoDropDownList: { data: menuOptions, dataTextField: "option", dataValueField: "menu", value: entry.privileges[0]} />' +
+          //'<option value="default">Default</option>' +
+          //'<option value="creator">Creator</option>' +
+          //'<option value="manager">Manager</option>' +
+          //'</select>'+
+          '</td><td><input type"number" min="0" class="vote-amount request-info" value="5"/></td><td>' +
           '<i class="button approve material-icons" name="' + entry.name +
           '" email="' + entry.email +
           '" org="' + entry.org +
