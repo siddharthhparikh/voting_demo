@@ -12,7 +12,7 @@ $(document).ready(function () {
           '</td><td>' + entry.email +
           '</td><td>' + entry.org +
           '</td></td><td>' + entry.req_time +
-          '</td><td><select class="privilege" name="priv">' +
+          '</td><td><select class="privilege" name="priv" data-bind="value: entry.privileges[0]">' +
           '<option value="Default">Default</option>' +
           '<option value="Creator">Creator</option>' +
           '<option value="Manager">Manager</option>' +
@@ -23,12 +23,6 @@ $(document).ready(function () {
           '" priv="">check</i><i class="button decline material-icons" name="' + entry.name +
           '" email="' + entry.email +
           '" org="' + entry.org + '"priv"">close</i></td></tr>');
-        
-        console.log(entry.privileges[0])
-        $('[name=priv] option').filter(function () {
-          console.log(entry);
-          return ($(this).text() == entry.privileges[0]);
-        }).prop('selected', true);
       });
 
     }
