@@ -6,11 +6,7 @@ $(document).ready(function () {
       data.AllAccReq.forEach(function (entry) {
         // Generate and append the new request html.
         // This was fun to write.
-        var menuOptions = [
-          { menu: 'default', option: 'Default' },
-          { menu: 'creator', option: 'Creator' },
-          { menu: 'manager', option: 'Manager' }
-        ];
+        
         console.log(entry.privileges[0])
           
           $('#request-table tr:last').after(
@@ -23,9 +19,9 @@ $(document).ready(function () {
             //'<?php $status = ;?>' +
             '<select class="privilege">' +
             //'<select required class="privilege" data-bind="kendoDropDownList: { data: menuOptions, dataTextField: "option", dataValueField: "menu", value: entry.privileges[0]} />' +
-            '<option value="default" <?php if(entry.privileges[0]=="default"){echo{"selected")};?> >Default</option>' +
-            '<option value="creator" <?php if(entry.privileges[0]=="creator"){echo{"selected")};?> >Creator</option>' +
-            '<option value="manager" <?php echo("selected");?> >Manager</option>' +
+            '<option value="default">Default</option>' +
+            '<option value="creator">Creator</option>' +
+            '<option value="manager">Manager</option>' +
             '</select>' +
             '</td><td><input type"number" min="0" class="vote-amount request-info" value="5"/></td><td>' +
             '<i class="button approve material-icons" name="' + entry.name +
