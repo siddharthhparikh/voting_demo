@@ -42,7 +42,7 @@ type Account struct {
 	Email      string   `json:"email"`
 	Org        string   `json:"org"`
 	ReqTime    string   `json:"req_time"`
-	Privileges []string `json:"privileges[]"`
+	Privileges []string `json:"privileges"`
 }
 
 var accountHeader = "account::"
