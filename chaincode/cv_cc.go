@@ -496,12 +496,14 @@ func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([
 		}
 
 		//change expire_date to go time format
-		expireDateTime, err := time.Parse("01/02/2006", topic.ExpireDate)
+		dur, err := time.ParseDuration(topic.ExpireDate + "ms")
 		if err != nil {
 			fmt.Println(err)
 			return nil, err
 		}
-		topic.ExpireDate = expireDateTime.Format(time.RFC3339)
+
+		topic.ExpireDate = (time.Now().Add(dur)).Format(time.RFC3339)
+		fmt.Println(topic.ExpireDate)
 
 		//set issue_date to current time
 		issueDateTime := time.Now()

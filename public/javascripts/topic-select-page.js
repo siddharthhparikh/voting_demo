@@ -208,14 +208,14 @@ $(document).ready(function () {
         var hours = $('#hours').val() * 3600000;
         var min = $('#min').val() * 60000;
         var topicLifeTime = days + hours + min;
-        console.log('Expire Date: ' + expireDate );
+        //console.log('Expire Date: ' + expireDate );
         // Create a new topic object.
         var topic = {
           'topic_id': id,
           'topic': $('#topic-name').val(),
           'issuer': '',
           'issue_date': '', //this will be set in the chaincode
-          'expire_date': topicLifeTime,
+          'expire_date': topicLifeTime.toString(),
           'choices': choices
         }
         // Submit the new topic

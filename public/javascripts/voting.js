@@ -31,6 +31,8 @@ $(document).ready(function () {
         });
         $('.votes').val('0');
       } else if (data.Status == "closed" || data.Status == "voted") {
+        $('.vote-header').hide();
+
         var graphData = [];
 
         for (var i = 0; i < data.Topic['choices[]'].length; i++) {
