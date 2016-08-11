@@ -175,6 +175,7 @@ router.post('/create', function (req, res, next) {
   // Add topic object to database.
 
   var args = [JSON.stringify(newTopic)];
+  console.log("in create before running issue topic args are: " + args);
   chaincode.invoke('issue_topic', args, function (err, results) {
     if (err) console.log(err);
     else res.json('{"status" : "success"}');
@@ -225,18 +226,23 @@ router.post('/register', function (req, res) {
 });
 
 router.get('/manager', function (req, res) {
+  console.log("in /manager")
   console.log(req.session.name)
-  if (req.session.name.indexOf('manager') > -1) {
-    chaincode.query('get_open_requests', [], function (err, data) {
-      if (err != null) {
-        res.json('{"status" : "failure", "Error": err}');
-      }
-      console.log(data);
-      res.json(data);
-    });
-  } else {
-    res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
-  }
+  chaincode.query('get_account', [req.session.name], function (err, data) {
+    //if (req.session.name.indexOf('manager') > -1) {
+    console.log(data)
+    if (data.privileges.includes('manager')) {
+      chaincode.query('get_open_requests', [], function (err, data) {
+        if (err != null) {
+          res.json('{"status" : "failure", "Error": err}');
+        }
+        console.log(data);
+        res.json(data);
+      });
+    } else {
+      res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
+    }
+  });
 });
 
 router.post('/approved', function (req, res) {

@@ -42,8 +42,9 @@ type Account struct {
 	Email      string   `json:"email"`
 	Org        string   `json:"org"`
 	ReqTime    string   `json:"req_time"`
-	Privileges []string `json:"privileges[]"`
+	Privileges []string `json:"privileges"`
 	PubKey 	   string   `json:"pub_key"`
+
 }
 
 var accountHeader = "account::"
@@ -162,7 +163,7 @@ func (t *SimpleChaincode) checkAccount(stub *shim.ChaincodeStub, args []string) 
 
 	email := args[0]
 	userID := args[1]
-	if userID == "master-manager" {
+	if userID == "master-manager" && email == "manager" {
 		fmt.Println("Got Manager")
 		return nil, nil
 	}
@@ -236,13 +237,16 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (string, error) {
 	email := args[0]
+	//fmt.Println("In get User ID args:")
+	//fmt.Println(args)
 	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
 		return "", rowErr
 	}
-	fmt.Println("chanValue:")
+	fmt.Println("in get User ID chanValue:")
 	for chanValue := range rowChan {
+		//fmt.Println(chanValue);
 		if t.readStringSafe(chanValue.Columns[2]) == email {
 			return t.readStringSafe(chanValue.Columns[0]), nil
 		}
@@ -256,6 +260,8 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 
 	var account Account
 	var err error
+	//fmt.Println("before get user id args are")
+	//fmt.Println(args)
 	account.ID, err = t.getUserID(stub, args)
 
 	if err != nil {
@@ -276,7 +282,11 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 	account.ReqTime = t.readStringSafe(row.Columns[6])
 	account.PubKey = t.readStringSafe(row.Columns[7])
 	account.Privileges = strings.Split(t.readStringSafe(row.Columns[4]), ",")
-	account.ID = "****************" //blank out account ID so user cannot view it
+
+
+	//account.ID = "******" //blank out account ID so user cannot view it
+	fmt.Println("get account return value")
+	fmt.Println(account)
 
 	return account, nil
 }
@@ -325,9 +335,11 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	}
 	fmt.Println("In replace row:")
 	fmt.Println(row)
-	fmt.Println(t.readStringSafe(row.Columns[4]))
-	requestTime = t.readStringSafe(row.Columns[4])
-	PubKey := t.readStringSafe(row.Columns[5])
+
+	fmt.Println(t.readStringSafe(row.Columns[5]))
+	requestTime = t.readStringSafe(row.Columns[5])
+	PubKey := t.readStringSafe(row.Columns[6])
+	
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
@@ -414,8 +426,8 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		}
 		fmt.Println("My random ID is:")
 		fmt.Println(userID)
-		manager := args[4]
-		votes, _ := strconv.ParseUint(args[5], 10, 64)
+		manager := args[5]
+		votes, _ := strconv.ParseUint(args[6], 10, 64)
 		_, err := stub.InsertRow("ApprovedAccounts",
 			shim.Row{
 				Columns: []*shim.Column{
@@ -466,6 +478,9 @@ func (t *SimpleChaincode) getAllRequests(stub *shim.ChaincodeStub, accountID str
 
 func (t *SimpleChaincode) issueTopic(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 
+	fmt.Println("in issue topic args")
+	fmt.Println(args)
+	
 	if len(args) != 1 {
 		fmt.Println("Incorrect number of arguments. Expecting 1: json object of topic being issued")
 		return nil, errors.New("Incorrect number of arguments. Expecting 1: json object of topic being issued")
@@ -842,11 +857,12 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 			}
 			topic.Votes[i] = strconv.Itoa(topicVoteTally + voteQty) //convery to int, add vote, then convert back to string
 
+
 			//add to table
 			addedRow, errRow := stub.InsertRow(topicHeader+vote.Topic, shim.Row{
 				Columns: []*shim.Column{
-					{&shim.Column_String_{String_: vote.Voter}},
 					{&shim.Column_Uint64{Uint64: transactionID}},
+					{&shim.Column_String_{String_: vote.Voter}},
 					{&shim.Column_String_{String_: topic.Choices[i]}},
 					{&shim.Column_Uint64{Uint64: uint64(voteQty)}},
 					{&shim.Column_String_{String_: vote.CastDate}},
@@ -904,7 +920,7 @@ func (t *SimpleChaincode) tallyVotes(stub *shim.ChaincodeStub, args []string) ([
 // Invoke is our entry point to invoke a chaincode function
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
-
+	fmt.Println(args)
 	// Handle different functions
 	switch function {
 	case "init": //initialize the chaincode state, used as reset
@@ -931,7 +947,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 // Query is our entry point for queries
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("query is running " + function)
-
+	//fmt.Println(args)
 	// Handle different functions
 	switch function {
 
@@ -992,12 +1008,18 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		}
 
 		account, errAccount := t.getAccount(stub, []string{args[0]})
+		fmt.Println("in get all topics after get account account variable is:")
+		fmt.Println(account)
+
 		if errAccount != nil {
 			fmt.Println("Error getting account:", errAccount)
 			return nil, errAccount
 		}
 
 		allTopics, err := t.getAllTopics(stub)
+		fmt.Println("in get all topics after get all topics topics are")
+		fmt.Println(allTopics)
+
 		if err != nil {
 			fmt.Println("Error from get_all_topics")
 			return nil, err
@@ -1021,7 +1043,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 				return nil, errTimeParse
 			}
 			if time.Now().Before(expireTime) {
-				userVoted, err := t.hasUserVoted(stub, []string{topic.ID, account.ID})
+				userVoted, err := t.hasUserVoted(stub, []string{topic.ID, account.Email})
 				if err != nil {
 					fmt.Println(err)
 					return nil, err
@@ -1086,7 +1108,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 			return nil, errTimeParse
 		}
 		if time.Now().Before(expireTime) {
-			userVoted, err := t.hasUserVoted(stub, []string{topic.ID, account.ID})
+			userVoted, err := t.hasUserVoted(stub, []string{topic.ID, account.Email})
 			if err != nil {
 				fmt.Println(err)
 				return nil, err

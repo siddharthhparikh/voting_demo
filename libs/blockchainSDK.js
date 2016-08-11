@@ -33,22 +33,18 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     chain.setECDSAModeForGRPC(true);
 
     console.log('loading hardcoding users and certificate authority...')
-    //caURL = 'grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_ca.us.blockchain.ibm.com:30303';
-    //caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
-    //peerURLs = []
-    //peerURLs.push('grpcs://0b133b23-2a14-4680-b8ef-254e17f846d5_vp0.us.blockchain.ibm.com:30303');
-    //peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
 
-    
-    console.log('loading hardcoding users and certificate authority...')
-    caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051'; 
+    //caURL = 'grpcs://e870d548-4520-47cc-be4b-8b44621dedad_ca.us.blockchain.ibm.com:30303';
+    caURL = 'grpc://test-ca.rtp.raleigh.ibm.com:50051';
     peerURLs = []
+    //peerURLs.push('grpcs://e870d548-4520-47cc-be4b-8b44621dedad_vp0.us.blockchain.ibm.com:30303');
     peerURLs.push('grpc://test-peer1.rtp.raleigh.ibm.com:30303');
 
     registrar = {
         'username': 'ethanicus',
+        //'username': 'WebAppAdmin',
         'secret': 'trainisland'
-        //'secret': 'a24f77ffbf'
+        //'secret': '82922fdc04'
     }
 
     // Set the URL for member services
@@ -98,7 +94,8 @@ exports.deploy = function (path, args, cb) {
         args: args,
         //chaincodeID: chaincodeName,
         fcn: 'init',
-        chaincodePath: path
+        chaincodePath: path,
+        certificatePath: "/certs/blockchain-cert.pem"
     }
     console.log('deploying chaincode from path %s', deployRequest.chaincodePath)
     var transactionContext = registrar.deploy(deployRequest);

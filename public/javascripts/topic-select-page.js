@@ -87,9 +87,9 @@ $(document).ready(function () {
     // Display username in user settings and header.
     $('#username').append(data.email);
     // TODO Get user privileges
-    if(data["privileges[]"].includes('manager')) {
+    if(data["privileges"].includes('manager')) {
       $('#manage-users').show();
-    } else if(data["privileges[]"].includes('creator')) {
+    } else if(data["privileges"].includes('creator')) {
       $('#new-topic').show();
     }
   });
@@ -143,7 +143,10 @@ $(document).ready(function () {
     // Voted topics will not redirect.
     if(!$(this).hasClass('voted')) {
       // Reroute the user to the topic page with a string query.
-      window.location.replace("../topic/id?=" + $(this).context.id);
+      //console.log("context = " + $(this));
+      //console.log("context[0] = " + $(this).context[0]);
+      window.location.replace("../topic/id?=" + $(this)[0].id);
+      //window.location.replace("../topic/id?=" + $(this).context[0].id);
     } else {
       alert('Topics you have voted on can not be viewed until the voting period has ended.');
     }

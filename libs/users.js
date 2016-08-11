@@ -72,7 +72,7 @@ function Login(id, secret, cb) {
     });
 }
 
-function registerUSer(user, role, cb) {
+function myRegisterUser(user, role, cb) {
     console.log(typeof user)
     console.log("user = ")
     console.log(user)
@@ -117,14 +117,14 @@ function registerUSer(user, role, cb) {
 }
 
 module.exports.login = Login;
-module.exports.registerUser = registerUSer;
+module.exports.registerUser = myRegisterUser;
 
 module.exports.setup = function (ccID, ch, cb) {
     if (chain && ccID) {
         console.log(TAG, "user manager properly configured");
         chaincodeID = ccID;
         chain = ch;
-        registerUSer("master-manager", "manager", function (err, cred){
+        myRegisterUser("master-manager", "manager", function (err, cred){
             if(err) {
                 console.log("ERROR = " + err);
                 cb(err, null);
