@@ -4,32 +4,30 @@ $(document).ready(function () {
     if (data) {
       // Create a <tr> for each request that exists.
       data.AllAccReq.forEach(function (entry) {
-        // Generate and append the new request html.
-        // This was fun to write.
-        
+        // Generate and append the new request html.        
         console.log(entry.privileges[0])
-          
-          $('#request-table tr:last').after(
-            '<tr class="request"><td>' + entry.name +
-            '</td><td>' + entry.email +
-            '</td><td>' + entry.org +
-            '</td></td><td>' + entry.req_time +
-            '</td><td>' +
-            //'<select class="privilege" name="priv" value="creator">' +
-            //'<?php $status = ;?>' +
-            '<select required class="privilege">' +
-            //'<select required class="privilege" data-bind="kendoDropDownList: { data: menuOptions, dataTextField: "option", dataValueField: "menu", value: entry.privileges[0]} />' +
-            '<option value="default">Default</option>' +
-            '<option value="creator">Creator</option>' +
-            '<option value="manager">Manager</option>' +
-            '</select>' +
-            '</td><td><input type"number" min="0" class="vote-amount request-info" value="5"/></td><td>' +
-            '<i class="button approve material-icons" name="' + entry.name +
-            '" email="' + entry.email +
-            '" org="' + entry.org +
-            '" priv="">check</i><i class="button decline material-icons" name="' + entry.name +
-            '" email="' + entry.email +
-            '" org="' + entry.org + '"priv"">close</i></td></tr>');
+        // line of death
+        $('#request-table tr:last').after(
+          '<tr class="request"><td>' + entry.name +
+          '</td><td>' + entry.email +
+          '</td><td>' + entry.org +
+          '</td></td><td>' + entry.req_time +
+          '</td><td>' +
+          //'<select class="privilege" name="priv" value="creator">' +
+          //'<?php $status = ;?>' +
+          '<select required class="privilege">' +
+          //'<select required class="privilege" data-bind="kendoDropDownList: { data: menuOptions, dataTextField: "option", dataValueField: "menu", value: entry.privileges[0]} />' +
+          '<option value="default">Default</option>' +
+          '<option value="creator">Creator</option>' +
+          '<option value="manager">Manager</option>' +
+          '</select>' +
+          '</td><td><input type"number" min="0" class="vote-amount request-info" value="5"/></td><td>' +
+          '<i class="button approve material-icons" name="' + entry.name +
+          '" email="' + entry.email +
+          '" org="' + entry.org +
+          '" priv="">check</i><i class="button decline material-icons" name="' + entry.name +
+          '" email="' + entry.email +
+          '" org="' + entry.org + '"priv"">close</i></td></tr>');
       });
 
     }

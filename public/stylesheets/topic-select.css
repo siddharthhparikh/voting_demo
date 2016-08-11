@@ -62,6 +62,29 @@
   color: #313131;
 }
 
+#expire {
+  display: inline-block;
+  text-align: center;
+}
+
+.expire {
+  width: 60px;
+  margin: 5px;
+  height: 30px;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  background-color: #F7F7F7;
+  box-shadow: 1px 3px 5px 1px rgba(0, 0, 0, 0.22);
+  font-family: "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
+  font-size: 22px;
+  text-align: center;
+}
+
+.expire::-webkit-input-placeholder {
+  overflow: visible;
+}
+
 /* Add/Remove Candidate buttons */
 
 #add-cand {

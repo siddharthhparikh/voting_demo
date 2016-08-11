@@ -80,7 +80,8 @@ $(document).ready(function () {
   // Page set up and queries //
   // // // // // // // // // //
    $('.hidden').hide();
-  loadTopics();
+   $('#new-topic').show();
+  loadTopics(); 
   // Get account data and access data.
   $.get('/api/get-account', function (data, status) {
     console.log("[CURRENT USER]", data);
@@ -93,6 +94,7 @@ $(document).ready(function () {
       $('#new-topic').show();
     }
   });
+
   // // // // // // // // //
   // Init page animations //
   // // // // // // // // //
@@ -106,6 +108,7 @@ $(document).ready(function () {
     $('#topic-creation').hide();
     $('#user-info').animate({ height: 'toggle' }, 'fast');
   });
+
   // // // // // // // // // //
   // Init page onclick events//
   // // // // // // // // // //
@@ -118,10 +121,6 @@ $(document).ready(function () {
   // Set click action for manage users button
   $('#manage-users').click(function(){
     window.location.replace('../manager');
-  });
-  // Clicke event for data picking
-  $('#datepicker').click(function () {
-    $("#datepicker").datepicker();
   });
   // Click events for open/closed topic tab switching
   $(document).on('click', '.inactive', function () {
@@ -201,16 +200,22 @@ $(document).ready(function () {
       // Issue topic function generates a new voting topic and submits it to the chaincode
       // database for verification. 
       function issueTopic(id) {
+
+        // Get topic life time in miliseconds
+        var days = $('#days').val() * 86400000;
+        var hours = $('#hours').val() * 3600000;
+        var min = $('#min').val() * 60000;
+        var topicLifeTime = days + hours + min;
+        console.log('Expire Date: ' + expireDate );
         // Create a new topic object.
         var topic = {
           'topic_id': id,
           'topic': $('#topic-name').val(),
           'issuer': '',
           'issue_date': '', //this will be set in the chaincode
-          'expire_date': $('#datepicker').val(),
+          'expire_date': topicLifeTime,
           'choices': choices
         }
-
         // Submit the new topic
         $.post('/api/create', topic, function (data, status) {
           // Handle res.

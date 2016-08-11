@@ -4,11 +4,11 @@ block content
     Main viewing pages for Chain Vote displays all voting topics for users to vote on.
     Also allows contains topic creation and account settings/details.
   script(src='/javascripts/topic-select-page.js')
-  link(rel='stylesheet', href='/stylesheets/topic-select.css')
   link(rel='stylesheet', href='/stylesheets/loader.css')
   link(rel='stylesheet' href='//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css')
   link(rel='stylesheet', href='/stylesheets/info-box.css')
   link(rel='stylesheet', href='/stylesheets/button.css')
+  link(rel='stylesheet', href='/stylesheets/topic-select.css')
   //
     Green title bar. Also contains several action buttons which activate info-box divs
   #header
@@ -37,8 +37,11 @@ block content
     #topic-input
       p(class='form-label') Vote Description:
       input(type='text' class='topic-input' id='topic-name' placeholder='Topic Description')
-      p(class='form-label') Expire Date:
-      input(type='text' class='topic-input' id='datepicker' placeholder='MM/DD/YYYY')
+      p(class='form-label') Topic Life Span: 
+      #expire
+        input(type='number' id='days' class='topic-input expire' min='0' placeholder='Days')
+        input(type='number' id='hours' class='topic-input expire' min='0' placeholder='Hours')
+        input(type='number' id='min' class='topic-input expire' min='0' placeholder='Min')
       p(class='form-label') Candidates:
       div(class='candidate-div')
         input(type='text' class='topic-input topic-candidate' placeholder='Candidate')
