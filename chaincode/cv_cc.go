@@ -1321,7 +1321,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		return nil, errApprovedAccount
 	}
 
-	_, _ = t.requestAccount(stub, []string{"", "manager", "", "manager,creator"})
+	_, _ = t.requestAccount(stub, []string{"", "manager", "", "manager,creator", ""})
 	_, _ = t.changeStatus(stub, []string{"approved", "", "manager", "", "manager,creator", "", "10"})
 	return nil, nil
 }
