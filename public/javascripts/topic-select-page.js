@@ -87,9 +87,9 @@ $(document).ready(function () {
     // Display username in user settings and header.
     $('#username').append(data.email);
     // TODO Get user privileges
-    if(data["privileges[]"].includes('manager')) {
+    if(data["privileges"].includes('manager')) {
       $('#manage-users').show();
-    } else if(data["privileges[]"].includes('creator')) {
+    } else if(data["privileges"].includes('creator')) {
       $('#new-topic').show();
     }
   });
