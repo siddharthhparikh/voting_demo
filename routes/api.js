@@ -81,13 +81,6 @@ router.get('/get-public-key', function (req, res) {
           res.end(data);
         });
       });
-      fs.writeFile("privKey", privPem, function (err) {
-        if (err) {
-          console.log(err);
-          res.end(err)
-        }
-        console.log("privkey was saved!");
-      });
     } else {
       console.log(data);
       res.end(data);
