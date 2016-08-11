@@ -7,7 +7,7 @@
 
 $(document).ready(function () {
   var maxVotes;
-  $.get('/api/get-account-info', function (data, status) {
+  $.get('/api/get-account', function (data, status) {
     if (data) {
       maxVotes = data.vote_count;
       $('#remaining-votes').append(maxVotes);
