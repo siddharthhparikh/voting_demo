@@ -25,10 +25,10 @@ $(document).ready(function () {
           '" org="' + entry.org + '"priv"">close</i></td></tr>');
       });
       console.log(entry)
-      $('[name=priv] option').filter(function () {
-        console.log(entry);
-        return ($(this).text() == entry.privileges[0]);
-      }).prop('selected', true);
+      //$('[name=priv] option').filter(function () {
+      //  console.log(entry);
+      //  return ($(this).text() == entry.privileges[0]);
+      //}).prop('selected', true);
     }
   });
   // Events for the approve/decline buttons.
