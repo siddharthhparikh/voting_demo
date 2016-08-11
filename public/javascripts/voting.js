@@ -99,6 +99,7 @@ $(document).ready(function () {
           $('.votes').each(function () {
             var val = this.value.toString();
             if (val == "") val = "0";
+            console.log("VAL: ", val);
             votesArray.push(val);
           });
 
