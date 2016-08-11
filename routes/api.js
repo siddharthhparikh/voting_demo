@@ -17,39 +17,15 @@ var cryptico = require('cryptico');
 //var path = require('path');
 var DEFAULT_VOTES = 5;
  
- (function (c) {
-    var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
-
-    c.privateKeyString = function (rsakey) {
-      var keyObj = {};
-      parametersBigint.forEach(function (parameter) {
-        keyObj[parameter] = c.b16to64(rsakey[parameter].toString(16));
-      });
-      // e is 3 implicitly
-      return JSON.stringify(keyObj);
-    }
-    c.privateKeyFromString = function (string) {
-      var keyObj = JSON.parse(string);
-      var rsa;
-      parametersBigint.forEach(function (parameter) {
-        rsa[parameter] = parseBigInt(c.b64to16(keyObj[parameter].split("|")[0]), 16);
-      });
-      rsa.e = parseInt("03", 16);
-      return rsa
-    }
-  })(cryptico)
+var privKey
   
 /* Login in request. */
 router.post('/login', function (req, res, next) {
   // Set up the user object for the chaincode.
   var CipherText = req.body;
-  console.log(req);
+  console.log(req.body);
   // TODO check if the user already exsits in db.
-  fs.readFile('privKey', 'utf8', function (err, data) {
-    if (err) {
-      console.log(err);
-    }
-    var DecryptionResult = cryptico.decrypt(CipherText, cryptico.privateKeyFromString(data));
+    var DecryptionResult = cryptico.decrypt(CipherText, privKey);
     console.log(DecryptionResult);
     //console.log("[USER]", user);
 
@@ -78,7 +54,6 @@ router.post('/login', function (req, res, next) {
         res.end('{"status" : "success", "type": "user"}');
       }
     });*/
-  });
 });
 
 router.get('/get-public-key', function (req, res) {
@@ -88,7 +63,7 @@ router.get('/get-public-key', function (req, res) {
       var PassPhrase = "The Moon is a Harsh Mistress.";
       // The length of the RSA key, in bits.
       var Bits = 1024;
-      var privKey = cryptico.generateRSAKey(PassPhrase, Bits);
+      privKey = cryptico.generateRSAKey(PassPhrase, Bits);
       var pubPem = cryptico.publicKeyString(privKey);       
       var privPem = JSON.stringify(privKey);
       fs.writeFile("pubKey", pubPem, function (err) {
