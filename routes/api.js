@@ -33,7 +33,7 @@ router.post('/login', function (req, res, next) {
       console.log("Account does not exist. Please register");
       res.end('{"status" : "Account does not exist. Please register."}');
     }
-    
+
     console.log(user);
     req.session.name = user.account_id;
     console.log('Logging in as.....');
@@ -177,17 +177,21 @@ router.post('/register', function (req, res) {
 router.get('/manager', function (req, res) {
   console.log("in /manager")
   console.log(req.session.name)
-  if (req.session.name.indexOf('manager') > -1) {
-    chaincode.query('get_open_requests', [], function (err, data) {
-      if (err != null) {
-        res.json('{"status" : "failure", "Error": err}');
-      }
-      console.log(data);
-      res.json(data);
-    });
-  } else {
-    res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
-  }
+  chaincode.query('get_account', [req.session.name], function (err, data) {
+    //if (req.session.name.indexOf('manager') > -1) {
+    console.log(data)
+    if (data) {
+      chaincode.query('get_open_requests', [], function (err, data) {
+        if (err != null) {
+          res.json('{"status" : "failure", "Error": err}');
+        }
+        console.log(data);
+        res.json(data);
+      });
+    } else {
+      res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
+    }
+  });
 });
 
 router.post('/approved', function (req, res) {
@@ -207,12 +211,12 @@ router.post('/approved', function (req, res) {
   console.log(args)
   chaincode.invoke('change_status', args, function (err, data) {
     if (err != null) {
-      console.log("error="+err)
+      console.log("error=" + err)
       res.json('{"status" : "failure", "Error": err}');
     }
     chaincode.query('get_UserID', [req.body.Email], function (err, data) {
       if (err != null) {
-          res.json('{"status" : "failure", "Error": err}');
+        res.json('{"status" : "failure", "Error": err}');
       }
       console.log(data.AllAccReq)
       //console.log(bin2String(data.AllAccReq))
