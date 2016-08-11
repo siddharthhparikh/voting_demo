@@ -34,6 +34,8 @@ function loadTopics() {
     if (data && data.AllTopics) {
       data = data.AllTopics;
 
+      console.log(data);
+
       // Sort topics by expire_date.
       data.sort(function (a, b) {
         return a.Topic.expire_date.localeCompare(b.Topic.expire_date);

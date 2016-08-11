@@ -179,17 +179,18 @@ router.get('/manager', function (req, res) {
   console.log(req.session.name)
   chaincode.query('get_account', [req.session.name], function (err, data) {
     //if (req.session.name.indexOf('manager') > -1) {
-    console.log(data)
-    if (data.privileges.includes('manager')) {
-      chaincode.query('get_open_requests', [], function (err, data) {
-        if (err != null) {
-          res.json('{"status" : "failure", "Error": err}');
-        }
-        console.log(data);
-        res.json(data);
-      });
-    } else {
-      res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
+    if (data && data.privileges) {
+      if (data.privileges.indexOf('manager') > -1) {
+        chaincode.query('get_open_requests', [], function (err, data) {
+          if (err != null) {
+            res.json('{"status" : "failure", "Error": err}');
+          }
+          console.log(data);
+          res.json(data);
+        });
+      } else {
+        res.json('{"status" : "failure", "Error": "You dont have access rights to view this page"}');
+      }
     }
   });
 });
