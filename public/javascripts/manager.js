@@ -17,7 +17,7 @@ $(document).ready(function () {
             '</td><td>' +
             //'<select class="privilege" name="priv" value="creator">' +
             //'<?php $status = ;?>' +
-            '<select class="privilege">' +
+            '<select required class="privilege" value='+ entry.privileges[0] +'>' +
             //'<select required class="privilege" data-bind="kendoDropDownList: { data: menuOptions, dataTextField: "option", dataValueField: "menu", value: entry.privileges[0]} />' +
             '<option value="default">Default</option>' +
             '<option value="creator">Creator</option>' +
