@@ -831,6 +831,7 @@ func (t *SimpleChaincode) castVote(stub *shim.ChaincodeStub, args []string) ([]b
 			}
 			topic.Votes[i] = strconv.Itoa(topicVoteTally + voteQty) //convery to int, add vote, then convert back to string
 
+
 			//add to table
 			addedRow, errRow := stub.InsertRow(topicHeader+vote.Topic, shim.Row{
 				Columns: []*shim.Column{
