@@ -1081,7 +1081,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 			return nil, errTimeParse
 		}
 		if time.Now().Before(expireTime) {
-			userVoted, err := t.hasUserVoted(stub, []string{topic.ID, account.ID})
+			userVoted, err := t.hasUserVoted(stub, []string{topic.ID, account.Email})
 			if err != nil {
 				fmt.Println(err)
 				return nil, err
