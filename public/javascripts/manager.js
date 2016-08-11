@@ -6,7 +6,7 @@ $(document).ready(function () {
       data.AllAccReq.forEach(function (entry) {
         // Generate and append the new request html.
         // This was fun to write.
-        console.log(entry)
+        console.log(entry.privileges[0])
         $('#request-table tr:last').after(
           '<tr class="request"><td>' + entry.name +
           '</td><td>' + entry.email +
