@@ -142,10 +142,10 @@ $(document).ready(function () {
     $('#remaining-votes').html(maxVotes - sum);
     if (maxVotes >= sum) {
       document.getElementById("remaining-votes").style.color = "#005C34";
-      document.getElementById("remaining-votes-header").style.color = "#005C34";
+      //document.getElementById("remaining-votes-header").style.color = "#005C34";
     } else {
       document.getElementById("remaining-votes").style.color = "#C20900";
-      document.getElementById("remaining-votes-header").style.color = "#C20900";
+      //document.getElementById("remaining-votes-header").style.color = "#C20900";
     }
   });
 
