@@ -23,12 +23,14 @@ $(document).ready(function () {
           '" priv="">check</i><i class="button decline material-icons" name="' + entry.name +
           '" email="' + entry.email +
           '" org="' + entry.org + '"priv"">close</i></td></tr>');
+        
+        console.log(entry)
+        $('[name=priv] option').filter(function () {
+          console.log(entry);
+          return ($(this).text() == entry.privileges[0]);
+        }).prop('selected', true);
       });
-      console.log(entry)
-      //$('[name=priv] option').filter(function () {
-      //  console.log(entry);
-      //  return ($(this).text() == entry.privileges[0]);
-      //}).prop('selected', true);
+
     }
   });
   // Events for the approve/decline buttons.
