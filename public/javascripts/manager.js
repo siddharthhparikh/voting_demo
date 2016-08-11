@@ -13,9 +13,9 @@ $(document).ready(function () {
           '</td><td>' + entry.org +
           '</td></td><td>' + entry.req_time +
           '</td><td><select required class="privilege" name="priv" value=entry.privileges[0]>' +
-          '<option value="Default">Default</option>' +
-          '<option value="Creator">Creator</option>' +
-          '<option value="Manager">Manager</option>' +
+          '<option value="default">Default</option>' +
+          '<option value="creator">Creator</option>' +
+          '<option value="manager">Manager</option>' +
           '</select></td><td><input type"number" min="0" class="vote-amount request-info" value="5"/></td><td>' +
           '<i class="button approve material-icons" name="' + entry.name +
           '" email="' + entry.email +
