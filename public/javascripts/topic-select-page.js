@@ -143,7 +143,7 @@ $(document).ready(function () {
     // Voted topics will not redirect.
     if(!$(this).hasClass('voted')) {
       // Reroute the user to the topic page with a string query.
-      window.location.replace("../topic/id?=" + $(this).context.id);
+      window.location.replace("../topic/id?=" + $(this).context[0]);
     } else {
       alert('Topics you have voted on can not be viewed until the voting period has ended.');
     }
