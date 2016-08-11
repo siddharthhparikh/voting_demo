@@ -24,7 +24,7 @@ $(document).ready(function () {
           '" email="' + entry.email +
           '" org="' + entry.org + '"priv"">close</i></td></tr>');
         
-        console.log(entry.privileges)
+        console.log(entry.privileges[0])
         $('[name=priv] option').filter(function () {
           console.log(entry);
           return ($(this).text() == entry.privileges[0]);
