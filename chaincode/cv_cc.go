@@ -232,8 +232,8 @@ func (t *SimpleChaincode) requestAccount(stub *shim.ChaincodeStub, args []string
 
 func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (string, error) {
 	email := args[0]
-	fmt.Println("In get User ID args:")
-	fmt.Println(args)
+	//fmt.Println("In get User ID args:")
+	//fmt.Println(args)
 	rowChan, rowErr := stub.GetRows("ApprovedAccounts", []shim.Column{})
 	if rowErr != nil {
 		fmt.Println(fmt.Sprintf("[ERROR] Could not retrieve the rows: %s", rowErr))
@@ -241,7 +241,7 @@ func (t *SimpleChaincode) getUserID(stub *shim.ChaincodeStub, args []string) (st
 	}
 	fmt.Println("in get User ID chanValue:")
 	for chanValue := range rowChan {
-		fmt.Println(chanValue);
+		//fmt.Println(chanValue);
 		if t.readStringSafe(chanValue.Columns[2]) == email {
 			return t.readStringSafe(chanValue.Columns[0]), nil
 		}
@@ -255,8 +255,8 @@ func (t *SimpleChaincode) getAccount(stub *shim.ChaincodeStub, args []string) (A
 
 	var account Account
 	var err error
-	fmt.Println("before get user id args are")
-	fmt.Println(args)
+	//fmt.Println("before get user id args are")
+	//fmt.Println(args)
 	account.ID, err = t.getUserID(stub, args)
 
 	if err != nil {
@@ -328,8 +328,8 @@ func (t *SimpleChaincode) replaceRowRequest(stub *shim.ChaincodeStub, args []str
 	}
 	fmt.Println("In replace row:")
 	fmt.Println(row)
-	fmt.Println(t.readStringSafe(row.Columns[4]))
-	requestTime = t.readStringSafe(row.Columns[4])
+	fmt.Println(t.readStringSafe(row.Columns[6]))
+	requestTime = t.readStringSafe(row.Columns[6])
 	fmt.Println("request time = " + requestTime)
 	//Delete old row
 	err := stub.DeleteRow(
@@ -401,8 +401,8 @@ func (t *SimpleChaincode) changeStatus(stub *shim.ChaincodeStub, args []string) 
 		userID = generateUserID()
 		fmt.Println("My random ID is:")
 		fmt.Println(userID)
-		manager := args[4]
-		votes, _ := strconv.ParseUint(args[5], 10, 64)
+		manager := args[5]
+		votes, _ := strconv.ParseUint(args[6], 10, 64)
 		_, err := stub.InsertRow("ApprovedAccounts",
 			shim.Row{
 				Columns: []*shim.Column{
@@ -920,7 +920,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 // Query is our entry point for queries
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("query is running " + function)
-	fmt.Println(args)
+	//fmt.Println(args)
 	// Handle different functions
 	switch function {
 
