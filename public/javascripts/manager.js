@@ -12,7 +12,7 @@ $(document).ready(function () {
           '</td><td>' + entry.email +
           '</td><td>' + entry.org +
           '</td></td><td>' + entry.req_time +
-          '</td><td><select required class="privilege" name="priv" value=entry.privileges[0]>' +
+          '</td><td><select required class="privilege" name="priv" value="creator">' +
           '<option value="default">Default</option>' +
           '<option value="creator">Creator</option>' +
           '<option value="manager">Manager</option>' +
