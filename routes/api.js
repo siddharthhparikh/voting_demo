@@ -180,7 +180,7 @@ router.get('/manager', function (req, res) {
   chaincode.query('get_account', [req.session.name], function (err, data) {
     //if (req.session.name.indexOf('manager') > -1) {
     console.log(data)
-    if (data) {
+    if (data.privileges.includes('manager')) {
       chaincode.query('get_open_requests', [], function (err, data) {
         if (err != null) {
           res.json('{"status" : "failure", "Error": err}');
