@@ -40,6 +40,29 @@ $(document).ready(function () {
   //
   // Submit user credendials and verify.
   //
+
+  (function (c) {
+    var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
+
+    c.privateKeyString = function (rsakey) {
+      var keyObj = {};
+      parametersBigint.forEach(function (parameter) {
+        keyObj[parameter] = c.b16to64(rsakey[parameter].toString(16));
+      });
+      // e is 3 implicitly
+      return JSON.stringify(keyObj);
+    }
+    c.privateKeyFromString = function (string) {
+      var keyObj = JSON.parse(string);
+      var rsa = new RSAKey();
+      parametersBigint.forEach(function (parameter) {
+        rsa[parameter] = parseBigInt(c.b64to16(keyObj[parameter].split("|")[0]), 16);
+      });
+      rsa.e = parseInt("03", 16);
+      return rsa
+    }
+  })(cryptico)
+  
   var privKey;
   $('#submit').click(function (e) {
     e.preventDefault();
@@ -53,8 +76,8 @@ $(document).ready(function () {
     var reader = new FileReader();
     reader.onloadend = function (evt) {
       if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-        privKey = JSON.parse(evt.target.result);
-        console.log("json parse evt target result " + JSON.parse(evt.target.result));
+        privKey = cryptico.privateKeyFromString(evt.target.result);
+        //console.log("json parse evt target result " + JSON.parse(evt.target.result));
         console.log("evt target result " + evt.target.result)
         var temp;
         $.get('/api/get-public-key', temp, function (data, status) {
@@ -117,21 +140,17 @@ $(document).ready(function () {
     if (!errFlag) {
       //console.log($('#organization').val());
       // Create request object.
-      /*var PassPhrase = makepass();
+      var PassPhrase = makepass();
       console.log("Randomly generated password: " + PassPhrase);
       var Bits = 1024;
       var privRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
-      privKey = privRSAkey;
-      console.log("private key without stringify:" + privRSAkey);
-      console.log("private key with stringify:" + JSON.stringify(privRSAkey));
-      window.open("data:text/json;charset=utf-8," + escape(privRSAkey));
+      //privKey = privRSAkey;
+      //console.log("private key without stringify:" + privRSAkey);
+      //console.log("private key with stringify:" + JSON.stringify(privRSAkey));
+      window.open("data:text/json;charset=utf-8," + escape(cryptico.privateKeyString(privRSAkey)));
       var pubPem = cryptico.publicKeyString(privRSAkey);
       console.log("public key: " + pubPem);
-      */
-
-      //var keypair = require('keypair')
-      var pair = keypair();
-      console.log(pair);
+      
       var newUser = {
         'name': $('#name').val(),
         'email': $('#email').val(),
@@ -146,10 +165,6 @@ $(document).ready(function () {
         console.log("status = " + status)
         if (status == 'success') {
           console.log(data)
-          //window.open("data:text/json;charset=utf-8," + escape(data));
-          //localStorage.privKey = data;
-          //var file = new File([data], "hello world.txt", {type: "text/plain;charset=utf-8"});
-          //saveAs(file);
           $('#register-box').fadeOut();
           $('#error-msg').html('New account request has been sent.');
         }
