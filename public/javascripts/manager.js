@@ -19,7 +19,7 @@ $(document).ready(function () {
           '</td></td><td>' + entry.req_time +
           '</td><td>' +
           //'<select required class="privilege" name="priv" value="creator">' +
-          '<select class="privilege" data-bind="kendoDropDownList: { data: menuOptions, dataTextField: "option", dataValueField: "menu"} />' +
+          '<div select class="privilege" data-bind="kendoDropDownList: { data: menuOptions, dataTextField: "option", dataValueField: "menu", value: entry.privileges[0]} />' +
           //'<option value="default">Default</option>' +
           //'<option value="creator">Creator</option>' +
           //'<option value="manager">Manager</option>' +
