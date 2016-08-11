@@ -30,7 +30,7 @@ var DEFAULT_VOTES = 5;
     }
     c.privateKeyFromString = function (string) {
       var keyObj = JSON.parse(string);
-      var rsa = new RSAKey();
+      var rsa;
       parametersBigint.forEach(function (parameter) {
         rsa[parameter] = parseBigInt(c.b64to16(keyObj[parameter].split("|")[0]), 16);
       });
