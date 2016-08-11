@@ -24,9 +24,9 @@ $(document).ready(function () {
           '" email="' + entry.email +
           '" org="' + entry.org + '"priv"">close</i></td></tr>');
       });
-      //$('[name=priv] option').filter(function () {
-      //  return ($(this).text() == entry.privileges[]); //To select Blue
-      //}).prop('selected', true);
+      $('[name=priv] option').filter(function () {
+        return ($(this).text() == entry.privileges[0]); //To select Blue
+      }).prop('selected', true);
     }
   });
   // Events for the approve/decline buttons.
