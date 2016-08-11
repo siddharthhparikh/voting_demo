@@ -143,10 +143,10 @@ $(document).ready(function () {
     // Voted topics will not redirect.
     if(!$(this).hasClass('voted')) {
       // Reroute the user to the topic page with a string query.
-      console.log("context = " + $(this).context);
-      console.log("context[0] = " + $(this).context[0]);
-      window.location.replace("../topic/id?=" + $(this)[0].context.id);
-      window.location.replace("../topic/id?=" + $(this).context[0].id);
+      //console.log("context = " + $(this));
+      //console.log("context[0] = " + $(this).context[0]);
+      window.location.replace("../topic/id?=" + $(this)[0].id);
+      //window.location.replace("../topic/id?=" + $(this).context[0].id);
     } else {
       alert('Topics you have voted on can not be viewed until the voting period has ended.');
     }
