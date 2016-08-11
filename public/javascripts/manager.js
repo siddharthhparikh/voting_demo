@@ -24,8 +24,10 @@ $(document).ready(function () {
           '" email="' + entry.email +
           '" org="' + entry.org + '"priv"">close</i></td></tr>');
       });
+      console.log(entry)
       $('[name=priv] option').filter(function () {
-        return ($(this).text() == entry.privileges[0]); //To select Blue
+        console.log(entry);
+        return ($(this).text() == entry.privileges[0]);
       }).prop('selected', true);
     }
   });
