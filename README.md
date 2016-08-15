@@ -7,3 +7,5 @@ We're making a demo that utilizes blockchain technology to help create a decentr
 #Getting Started
 idk how this code works so this will be fun!
 
+[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/siddharthhparikh/voting_demo.git)
+
