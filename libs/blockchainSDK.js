@@ -25,7 +25,80 @@ var caURL = null;
 var users = null;
 var user_manager = require("./users")
 var registrar = null; //user used to register other users and deploy chaincode
+var peerURLs = [];
+var caURL = null;
+var users = null;
+var registrar = null; //user used to register other users and deploy chaincode
+var peerHosts = [];
 
+//hard-coded the peers and CA addresses.
+//added for reading configs from file
+try {
+    var manual = JSON.parse(fs.readFileSync('mycreds.json', 'utf8'));
+    var peers = manual.credentials.peers;
+    for (var i in peers) {
+        peerURLs.push("grpcs://" + peers[i].discovery_host + ":" + peers[i].discovery_port);
+        peerHosts.push("" + peers[i].discovery_host);
+    }
+    var ca = manual.credentials.ca;
+    for (var i in ca) {
+        caURL = "grpcs://" + ca[i].url;
+    }
+    console.log('loading hardcoded peers');
+    var users = null;																			//users are only found if security is on
+    if (manual.credentials.users) users = manual.credentials.users;
+    console.log('loading hardcoded users');
+}
+catch (e) {
+    console.log('Error - could not find hardcoded peers/users, this is okay if running in bluemix');
+}
+
+if (process.env.VCAP_SERVICES) {
+    //load from vcap, search for service, 1 of the 3 should be found...
+    var servicesObject = JSON.parse(process.env.VCAP_SERVICES);
+    for (var i in servicesObject) {
+        if (i.indexOf('ibm-blockchain') >= 0) {											//looks close enough
+            if (servicesObject[i][0].credentials.error) {
+                console.log('!\n!\n! Error from Bluemix: \n', servicesObject[i][0].credentials.error, '!\n!\n');
+                peers = null;
+                users = null;
+                process.error = { type: 'network', msg: 'Due to overwhelming demand the IBM Blockchain Network service is at maximum capacity.  Please try recreating this service at a later date.' };
+            }
+            if (servicesObject[i][0].credentials && servicesObject[i][0].credentials.peers) {
+                console.log('overwritting peers, loading from a vcap service: ', i);
+                peers = servicesObject[i][0].credentials.peers;
+                peerURLs = [];
+                peerHosts = [];
+                for (var j in peers) {
+                    peerURLs.push("grpcs://" + peers[j].discovery_host + ":" + peers[j].discovery_port);
+                    peerHosts.push("" + peers[j].discovery_host);
+                }
+                if (servicesObject[i][0].credentials.ca) {
+                    console.log('overwritting ca, loading from a vcap service: ', i);
+                    ca = servicesObject[i][0].credentials.ca;
+                    for (var z in ca) {
+                        caURL = "grpcs://" + ca[z].discovery_host + ":" + ca[z].discovery_port;
+                    }
+                    if (servicesObject[i][0].credentials.users) {
+                        console.log('overwritting users, loading from a vcap service: ', i);
+                        users = servicesObject[i][0].credentials.users;
+                        //TODO extract registrar from users once user list has been updated to new SDK
+                    }
+                    else users = null;													//no security	
+                }
+                else ca = null;
+                break;
+            }
+        }
+    }
+}
+
+var pwd = "";
+for (var z in users) {
+    if (users[z].username == "WebAppAdmin") {
+        pwd = users[z].secret;
+    }
+}
 
 if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     var pem = fs.readFileSync('us.blockchain.ibm.com.cert');
@@ -33,42 +106,38 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     chain.setECDSAModeForGRPC(true);
 
     console.log('loading hardcoding users and certificate authority...')
-    caURL = 'grpcs://4eb1f2ef-81ee-438b-adc6-6dd6bf6d5617_ca.us.blockchain.ibm.com:30303';
-    //caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
-    peerURLs = []
-    peerURLs.push('grpcs://4eb1f2ef-81ee-438b-adc6-6dd6bf6d5617_vp0.us.blockchain.ibm.com:30303');
-    //peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
-
-    registrar = {
-        'username': 'ethanicus',
-        //'username': 'WebAppAdmin',
-        'secret': 'trainisland'
-        //'secret': '82922fdc04'
-    }
 
     // Set the URL for member services
     console.log('adding ca: \'' + caURL + '\'');
-    chain.setMemberServicesUrl(caURL, {pem: pem});
+    chain.setMemberServicesUrl(caURL, { pem: pem });
 
     // Add all peers' URL
     for (var i in peerURLs) {
         console.log('adding peer: \'' + peerURLs[i] + '\'');
-        chain.addPeer(peerURLs[i], {pem: pem});
+        chain.addPeer(peerURLs[i], { pem: pem });
     }
 
-    console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', registrar.username, registrar.secret);
-    chain.enroll(registrar.username, registrar.secret, function (err, user) {
-        if (err) return console.log('Error: failed to enroll user: %s', err);
+    chain.getMember("WebAppAdmin", function (err, WebAppAdmin) {
+        if (err) {
+            console.log("Failed to get WebAppAdmin member " + " ---> " + err);
+        } else {
+            console.log("Successfully got WebAppAdmin member" + " ---> " /*+ JSON.stringify(crypto)*/);
 
-        console.log('successfully enrolled user \'%s\'!', registrar.username);
-        chain.setRegistrar(user);
+            // Enroll the WebAppAdmin member with the certificate authority using
+            // the one time password hard coded inside the membersrvc.yaml.
+            WebAppAdmin.enroll(pwd, function (err, crypto) {
+                console.log('enrolling user \'%s\' with secret \'%s\' as registrar...', "WebAppAdmin", pw);
+                if (err) return console.log('Error: failed to enroll user: %s', err);
 
-        registrar = user;
+                console.log('successfully enrolled user \'%s\'!', "WebAppAdmin");
+                chain.setRegistrar(WebAppAdmin);
 
-        exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function (chaincodeID) {
-            user_manager.setup(chaincodeID, chain, cb_deployed);
-        });
+                exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function (chaincodeID) {
+                    user_manager.setup(chaincodeID, chain, cb_deployed);
+                });
 
+            });
+        };
     });
 } else {
     console.log('[ERROR] us.blockchain.ibm.com.cert not found')
