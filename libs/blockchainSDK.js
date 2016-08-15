@@ -33,11 +33,11 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
     chain.setECDSAModeForGRPC(true);
 
     console.log('loading hardcoding users and certificate authority...')
-    //caURL = 'grpcs://e870d548-4520-47cc-be4b-8b44621dedad_ca.us.blockchain.ibm.com:30303';
-    caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
+    caURL = 'grpcs://4eb1f2ef-81ee-438b-adc6-6dd6bf6d5617_ca.us.blockchain.ibm.com:30303';
+    //caURL = 'grpc://ethan-ca.rtp.raleigh.ibm.com:50051';
     peerURLs = []
-    //peerURLs.push('grpcs://e870d548-4520-47cc-be4b-8b44621dedad_vp0.us.blockchain.ibm.com:30303');
-    peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
+    peerURLs.push('grpcs://4eb1f2ef-81ee-438b-adc6-6dd6bf6d5617_vp0.us.blockchain.ibm.com:30303');
+    //peerURLs.push('grpc://ethan-p1.rtp.raleigh.ibm.com:30303');
 
     registrar = {
         'username': 'ethanicus',
