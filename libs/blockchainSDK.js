@@ -133,7 +133,7 @@ if (fs.existsSync("us.blockchain.ibm.com.cert")) {
                 console.log('successfully enrolled user \'%s\'!', "WebAppAdmin");
                 chain.setRegistrar(WebAppAdmin);
 
-                exports.deploy('github.com/voting_demo/chaincode/', ['ready!'], function (chaincodeID) {
+                exports.deploy('/', ['ready!'], function (chaincodeID) {
                     user_manager.setup(chaincodeID, chain, cb_deployed);
                 });
 
