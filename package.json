@@ -32,7 +32,6 @@
     "rai": "^0.1.12",
     "serve-favicon": "~2.3.0",
     "session-file-store": "^0.2.0",
-    "sjcl": "^1.0.3",
-    "xoauth2": "^1.2.0"
+    "sjcl": "^1.0.3"
   }
 }
